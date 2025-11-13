@@ -383,39 +383,34 @@ document.addEventListener('DOMContentLoaded', async function() {
                     body: JSON.stringify(datos)
                 });
 
-                    console.log('📨 Respuesta recibida, status:', response.status);
-                    const result = await response.json();
-                    console.log('📋 Resultado:', result);
+                console.log('📨 Respuesta recibida, status:', response.status);
+                const result = await response.json();
+                console.log('📋 Resultado:', result);
 
-                    if (result.success) {
-                        // Mostrar mensaje de éxito
-                        successMessage.classList.add('show');
+                if (result.success) {
+                    // Mostrar mensaje de éxito
+                    successMessage.classList.add('show');
 
-                        // Limpiar formulario
-                        form.reset();
-                        clearSignature();
-                        imagePreview.innerHTML = '';
+                    // Limpiar formulario
+                    form.reset();
+                    clearSignature();
+                    imagePreview.innerHTML = '';
+                    compressedImageData = null;
 
-                        // Reiniciar después de 3 segundos
-                        setTimeout(() => {
-                            successMessage.classList.remove('show');
-                            currentSlide = 0;
-                            showSlide(0);
-                        }, 3000);
+                    // Reiniciar después de 3 segundos
+                    setTimeout(() => {
+                        successMessage.classList.remove('show');
+                        currentSlide = 0;
+                        showSlide(0);
+                    }, 3000);
 
-                        console.log('Datos guardados:', result.data);
-                    } else {
-                        alert('Error: ' + result.message);
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Enviar';
-                    }
-
-                } catch (error) {
-                    console.error('❌ Error en fetch:', error);
-                    alert('Error al enviar el formulario. Por favor intenta nuevamente.');
+                    console.log('Datos guardados:', result.data);
+                } else {
+                    alert('Error: ' + result.message);
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Enviar';
                 }
+
             } catch (error) {
                 console.error('❌ Error en fetch:', error);
                 alert('Error al enviar el formulario. Por favor intenta nuevamente.');
