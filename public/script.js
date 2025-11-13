@@ -112,17 +112,61 @@ document.addEventListener('DOMContentLoaded', async function() {
         firmaData.value = '';
     }
 
+    // Función para comprimir imagen
+    function compressImage(file, maxWidth = 800, quality = 0.7) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Redimensionar si es muy grande
+                    if (width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convertir a base64 con compresión
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+                    resolve(compressedBase64);
+                };
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
     // Image upload preview
     const fotoInput = document.getElementById('fotoInput');
     const imagePreview = document.getElementById('imagePreview');
+    let compressedImageData = null;
 
     if (fotoInput) {
-        fotoInput.addEventListener('change', function(e) {
+        fotoInput.addEventListener('change', async function(e) {
             const file = e.target.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                try {
+                    // Mostrar loading
+                    imagePreview.innerHTML = '<p style="color: #00B8E6;">Procesando imagen...</p>';
+
+                    // Comprimir imagen
+                    compressedImageData = await compressImage(file, 800, 0.7);
+
+                    // Mostrar preview
+                    imagePreview.innerHTML = `<img src="${compressedImageData}" alt="Preview">`;
+
+                    console.log('📷 Imagen comprimida lista, tamaño:', Math.round(compressedImageData.length / 1024), 'KB');
 
                     // Mostrar mensaje de que puede enviar
                     setTimeout(() => {
@@ -131,8 +175,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                             submitBtn.style.animation = 'pulse 1s infinite';
                         }
                     }, 500);
-                };
-                reader.readAsDataURL(file);
+                } catch (error) {
+                    console.error('Error al procesar imagen:', error);
+                    imagePreview.innerHTML = '<p style="color: red;">Error al procesar la imagen</p>';
+                }
             }
         });
     }
@@ -319,27 +365,23 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
         }
 
-        // Agregar la foto como base64 si existe
-        const fotoFile = fotoInput.files[0];
-        console.log('📷 Archivo de foto:', fotoFile);
+        // Agregar la foto como base64 si existe (ya comprimida)
+        console.log('📷 Verificando foto...');
 
-        if (fotoFile) {
-            console.log('🔄 Convirtiendo foto a base64...');
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                datos.foto = e.target.result;
-                console.log('✅ Foto convertida, tamaño:', datos.foto.length, 'caracteres');
+        if (compressedImageData) {
+            console.log('✅ Usando foto comprimida, tamaño:', Math.round(compressedImageData.length / 1024), 'KB');
+            datos.foto = compressedImageData;
 
-                try {
-                    console.log('📡 Enviando al servidor...');
-                    // Enviar datos al servidor
-                    const response = await fetch('/api/formulario', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(datos)
-                    });
+            try {
+                console.log('📡 Enviando al servidor...');
+                // Enviar datos al servidor
+                const response = await fetch('/api/formulario', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(datos)
+                });
 
                     console.log('📨 Respuesta recibida, status:', response.status);
                     const result = await response.json();
@@ -374,15 +416,12 @@ document.addEventListener('DOMContentLoaded', async function() {
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Enviar';
                 }
-            };
-            reader.onerror = function(error) {
-                console.error('❌ Error al leer archivo:', error);
-                alert('Error al procesar la foto. Por favor intenta nuevamente.');
+            } catch (error) {
+                console.error('❌ Error en fetch:', error);
+                alert('Error al enviar el formulario. Por favor intenta nuevamente.');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Enviar';
-            };
-            reader.readAsDataURL(fotoFile);
-            console.log('📖 Iniciando lectura de archivo...');
+            }
         } else {
             console.log('❌ No hay foto seleccionada');
             alert('Por favor sube una foto antes de enviar.');
