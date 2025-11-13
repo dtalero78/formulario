@@ -1,17 +1,91 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const { Pool } = require('pg');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'));
+// Configuración de PostgreSQL
+const pool = new Pool({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
 
-// Base de datos en memoria (temporal)
-let formularios = [];
+// Crear tabla si no existe
+const initDB = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS formularios (
+                id SERIAL PRIMARY KEY,
+                genero VARCHAR(20),
+                edad INTEGER,
+                fecha_nacimiento VARCHAR(20),
+                lugar_nacimiento VARCHAR(100),
+                ciudad_residencia VARCHAR(100),
+                hijos INTEGER,
+                profesion_oficio VARCHAR(100),
+                empresa1 VARCHAR(100),
+                empresa2 VARCHAR(100),
+                estado_civil VARCHAR(50),
+                nivel_educativo VARCHAR(50),
+                email VARCHAR(100),
+                estatura VARCHAR(10),
+                peso DECIMAL(5,2),
+                ejercicio VARCHAR(50),
+                cirugia_ocular VARCHAR(10),
+                consumo_licor VARCHAR(50),
+                cirugia_programada VARCHAR(10),
+                condicion_medica VARCHAR(10),
+                dolor_cabeza VARCHAR(10),
+                dolor_espalda VARCHAR(10),
+                ruido_jaqueca VARCHAR(10),
+                embarazo VARCHAR(10),
+                enfermedad_higado VARCHAR(10),
+                enfermedad_pulmonar VARCHAR(10),
+                fuma VARCHAR(10),
+                hernias VARCHAR(10),
+                hormigueos VARCHAR(10),
+                presion_alta VARCHAR(10),
+                problemas_azucar VARCHAR(10),
+                problemas_cardiacos VARCHAR(10),
+                problemas_sueno VARCHAR(10),
+                usa_anteojos VARCHAR(10),
+                usa_lentes_contacto VARCHAR(10),
+                varices VARCHAR(10),
+                hepatitis VARCHAR(10),
+                familia_hereditarias VARCHAR(10),
+                familia_geneticas VARCHAR(10),
+                familia_diabetes VARCHAR(10),
+                familia_hipertension VARCHAR(10),
+                familia_infartos VARCHAR(10),
+                familia_cancer VARCHAR(10),
+                familia_trastornos VARCHAR(10),
+                familia_infecciosas VARCHAR(10),
+                firma TEXT,
+                inscripcion_boletin VARCHAR(10),
+                foto TEXT,
+                fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        console.log('✅ Base de datos inicializada correctamente');
+    } catch (error) {
+        console.error('❌ Error al inicializar la base de datos:', error);
+    }
+};
+
+initDB();
+
+// Middleware
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.static('public'));
 
 // Ruta principal - servir el formulario
 app.get('/', (req, res) => {
@@ -19,68 +93,125 @@ app.get('/', (req, res) => {
 });
 
 // Ruta para recibir el formulario
-app.post('/api/formulario', (req, res) => {
+app.post('/api/formulario', async (req, res) => {
     try {
         const datos = req.body;
 
         // Validación básica
-        if (!datos.primerNombre || !datos.primerApellido || !datos.numeroId) {
+        if (!datos.genero || !datos.edad || !datos.email) {
             return res.status(400).json({
                 success: false,
                 message: 'Faltan campos obligatorios'
             });
         }
 
-        // Guardar en memoria
-        const nuevoFormulario = {
-            id: Date.now(),
-            ...datos,
-            fecha: new Date().toISOString()
-        };
+        // Insertar en PostgreSQL
+        const query = `
+            INSERT INTO formularios (
+                genero, edad, fecha_nacimiento, lugar_nacimiento, ciudad_residencia,
+                hijos, profesion_oficio, empresa1, empresa2, estado_civil,
+                nivel_educativo, email, estatura, peso, ejercicio,
+                cirugia_ocular, consumo_licor, cirugia_programada, condicion_medica,
+                dolor_cabeza, dolor_espalda, ruido_jaqueca, embarazo,
+                enfermedad_higado, enfermedad_pulmonar, fuma, hernias,
+                hormigueos, presion_alta, problemas_azucar, problemas_cardiacos,
+                problemas_sueno, usa_anteojos, usa_lentes_contacto, varices,
+                hepatitis, familia_hereditarias, familia_geneticas, familia_diabetes,
+                familia_hipertension, familia_infartos, familia_cancer,
+                familia_trastornos, familia_infecciosas, firma, inscripcion_boletin, foto
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+                $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
+                $21, $22, $23, $24, $25, $26, $27, $28, $29, $30,
+                $31, $32, $33, $34, $35, $36, $37, $38, $39, $40,
+                $41, $42, $43, $44, $45, $46, $47
+            ) RETURNING id
+        `;
 
-        formularios.push(nuevoFormulario);
+        const values = [
+            datos.genero, datos.edad, datos.fechaNacimiento, datos.lugarDeNacimiento, datos.ciudadDeResidencia,
+            datos.hijos, datos.profesionUOficio, datos.empresa1, datos.empresa2, datos.estadoCivil,
+            datos.nivelEducativo, datos.email, datos.estatura, datos.peso, datos.ejercicio,
+            datos.cirugiaOcular, datos.consumoLicor, datos.cirugiaProgramada, datos.condicionMedica,
+            datos.dolorCabeza, datos.dolorEspalda, datos.ruidoJaqueca, datos.embarazo,
+            datos.enfermedadHigado, datos.enfermedadPulmonar, datos.fuma, datos.hernias,
+            datos.hormigueos, datos.presionAlta, datos.problemasAzucar, datos.problemasCardiacos,
+            datos.problemasSueno, datos.usaAnteojos, datos.usaLentesContacto, datos.varices,
+            datos.hepatitis, datos.familiaHereditarias, datos.familiaGeneticas, datos.familiaDiabetes,
+            datos.familiaHipertension, datos.familiaInfartos, datos.familiaCancer,
+            datos.familiaTrastornos, datos.familiaInfecciosas, datos.firma, datos.inscripcionBoletin, datos.foto
+        ];
 
-        console.log('Formulario recibido:', nuevoFormulario);
+        const result = await pool.query(query, values);
+
+        console.log('✅ Formulario guardado en PostgreSQL:', result.rows[0].id);
 
         res.json({
             success: true,
             message: 'Formulario guardado correctamente',
-            data: nuevoFormulario
+            data: { id: result.rows[0].id }
         });
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ Error:', error);
         res.status(500).json({
             success: false,
-            message: 'Error al procesar el formulario'
+            message: 'Error al procesar el formulario',
+            error: error.message
         });
     }
 });
 
 // Ruta para obtener todos los formularios
-app.get('/api/formularios', (req, res) => {
-    res.json({
-        success: true,
-        total: formularios.length,
-        data: formularios
-    });
-});
+app.get('/api/formularios', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM formularios ORDER BY fecha_registro DESC');
 
-// Ruta para buscar por documento
-app.get('/api/formulario/:numeroId', (req, res) => {
-    const { numeroId } = req.params;
-    const formulario = formularios.find(f => f.numeroId === numeroId);
-
-    if (formulario) {
-        res.json({ success: true, data: formulario });
-    } else {
-        res.status(404).json({
+        res.json({
+            success: true,
+            total: result.rows.length,
+            data: result.rows
+        });
+    } catch (error) {
+        console.error('❌ Error:', error);
+        res.status(500).json({
             success: false,
-            message: 'Formulario no encontrado'
+            message: 'Error al obtener formularios',
+            error: error.message
         });
     }
 });
 
+// Ruta para buscar por ID
+app.get('/api/formulario/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query('SELECT * FROM formularios WHERE id = $1', [id]);
+
+        if (result.rows.length > 0) {
+            res.json({ success: true, data: result.rows[0] });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: 'Formulario no encontrado'
+            });
+        }
+    } catch (error) {
+        console.error('❌ Error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al buscar formulario',
+            error: error.message
+        });
+    }
+});
+
+// Health check
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', database: 'connected' });
+});
+
 app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`📊 Base de datos: PostgreSQL en Digital Ocean`);
 });

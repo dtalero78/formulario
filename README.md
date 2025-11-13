@@ -1,11 +1,28 @@
 # Formulario Médico Ocupacional
 
-Formulario simple en Node.js con Express para capturar información médica de pacientes.
+Formulario moderno en Node.js con Express y PostgreSQL para capturar información médica de pacientes.
 
 ## Instalación
 
 ```bash
 npm install
+```
+
+## Configuración
+
+1. Copia el archivo `.env.example` a `.env`:
+```bash
+cp .env.example .env
+```
+
+2. Configura las variables de entorno en `.env`:
+```
+DB_HOST=tu-host-postgresql
+DB_PORT=25060
+DB_USER=tu-usuario
+DB_PASSWORD=tu-contraseña
+DB_NAME=defaultdb
+PORT=8080
 ```
 
 ## Uso
