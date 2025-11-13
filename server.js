@@ -283,35 +283,32 @@ app.post('/api/formulario', async (req, res) => {
                 primerNombre: datos.primerNombre || "",
                 examenes: "", // No tenemos este dato
                 celular: datos.celular || "No disponible",
-                respuestas: {
-                    ejercicio: datos.ejercicio || "",
-                    estadoCivil: datos.estadoCivil || "",
-                    hijos: datos.hijos || "",
-                    consumoLicor: datos.consumoLicor || "",
-                    email: datos.email || "",
-                    foto: datos.foto || "",
-                    firma: datos.firma || "",
-                    encuestaSalud: encuestaSalud,
-                    antecedentesFamiliares: antecedentesFamiliares,
-                    fechaNacimiento: datos.fechaNacimiento || "",
-                    edad: datos.edad || "",
-                    genero: datos.genero || "",
-                    lugarDeNacimiento: datos.lugarDeNacimiento || "",
-                    ciudadDeResidencia: datos.ciudadDeResidencia || "",
-                    direccion: "", // No lo tenemos en el formulario
-                    profesionUOficio: datos.profesionUOficio || "",
-                    nivelEducativo: datos.nivelEducativo || "",
-                    empresa1: datos.empresa1 || "",
-                    empresa2: datos.empresa2 || "",
-                    arl: "", // No lo tenemos en el formulario
-                    estatura: datos.estatura || "",
-                    peso: datos.peso || "",
-                    documentoIdentidad: datos.numeroId || "",
-                    codEmpresa: datos.codEmpresa || "",
-                    idGeneral: datos.wixId || "",
-                    primerNombre: datos.primerNombre || "",
-                    inscripcionBoletin: datos.inscripcionBoletin || ""
-                }
+                // Todos los campos van al mismo nivel, no dentro de "respuestas"
+                ejercicio: datos.ejercicio || "",
+                estadoCivil: datos.estadoCivil || "",
+                hijos: datos.hijos || "",
+                consumoLicor: datos.consumoLicor || "",
+                email: datos.email || "",
+                foto: datos.foto || "",
+                firma: datos.firma || "",
+                encuestaSalud: encuestaSalud,
+                antecedentesFamiliares: antecedentesFamiliares,
+                fechaNacimiento: datos.fechaNacimiento || "",
+                edad: datos.edad || "",
+                genero: datos.genero || "",
+                lugarDeNacimiento: datos.lugarDeNacimiento || "",
+                ciudadDeResidencia: datos.ciudadDeResidencia || "",
+                direccion: "", // No lo tenemos en el formulario
+                profesionUOficio: datos.profesionUOficio || "",
+                nivelEducativo: datos.nivelEducativo || "",
+                empresa1: datos.empresa1 || "",
+                empresa2: datos.empresa2 || "",
+                arl: "", // No lo tenemos en el formulario
+                estatura: datos.estatura || "",
+                peso: datos.peso || "",
+                documentoIdentidad: datos.numeroId || "",
+                idGeneral: datos.wixId || "",
+                inscripcionBoletin: datos.inscripcionBoletin || ""
             };
 
             console.log('📤 Enviando datos a Wix...');
