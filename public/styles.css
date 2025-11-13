@@ -402,9 +402,9 @@ input[type="number"]::-webkit-inner-spin-button {
 /* Accessibility */
 .question-input:focus-visible,
 .question-textarea:focus-visible,
+.question-select:focus-visible,
 .option-card:focus-within {
-    outline: 2px solid #00B8E6;
-    outline-offset: 2px;
+    outline: none;
 }
 
 /* Loading state */
