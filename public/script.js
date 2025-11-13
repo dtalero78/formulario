@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Aplicación inicializada');
+
     const form = document.getElementById('formularioMedico');
     const slides = document.querySelectorAll('.question-slide');
     const prevBtn = document.getElementById('prevBtn');
@@ -8,6 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentQuestionSpan = document.getElementById('currentQuestion');
     const totalQuestionsSpan = document.getElementById('totalQuestions');
     const successMessage = document.getElementById('successMessage');
+
+    console.log('✅ Elementos encontrados:', {
+        form: !!form,
+        slides: slides.length,
+        submitBtn: !!submitBtn
+    });
 
     // Signature canvas
     const signatureCanvas = document.getElementById('signatureCanvas');
@@ -238,10 +246,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Enviar formulario
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
+        console.log('📝 Formulario submit iniciado');
 
         if (!validateCurrentSlide()) {
+            console.log('❌ Validación falló');
             return;
         }
+
+        console.log('✅ Validación pasó');
 
         // Deshabilitar botón de envío
         submitBtn.disabled = true;
@@ -259,14 +271,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        console.log('📦 Datos recopilados (sin foto):', datos);
+
         // Agregar la foto como base64 si existe
         const fotoFile = fotoInput.files[0];
+        console.log('📷 Archivo de foto:', fotoFile);
+
         if (fotoFile) {
+            console.log('🔄 Convirtiendo foto a base64...');
             const reader = new FileReader();
             reader.onload = async function(e) {
                 datos.foto = e.target.result;
+                console.log('✅ Foto convertida, tamaño:', datos.foto.length, 'caracteres');
 
                 try {
+                    console.log('📡 Enviando al servidor...');
                     // Enviar datos al servidor
                     const response = await fetch('/api/formulario', {
                         method: 'POST',
@@ -276,7 +295,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         body: JSON.stringify(datos)
                     });
 
+                    console.log('📨 Respuesta recibida, status:', response.status);
                     const result = await response.json();
+                    console.log('📋 Resultado:', result);
 
                     if (result.success) {
                         // Mostrar mensaje de éxito
@@ -302,14 +323,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                 } catch (error) {
-                    console.error('Error:', error);
+                    console.error('❌ Error en fetch:', error);
                     alert('Error al enviar el formulario. Por favor intenta nuevamente.');
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Enviar';
                 }
             };
+            reader.onerror = function(error) {
+                console.error('❌ Error al leer archivo:', error);
+                alert('Error al procesar la foto. Por favor intenta nuevamente.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar';
+            };
             reader.readAsDataURL(fotoFile);
+            console.log('📖 Iniciando lectura de archivo...');
         } else {
+            console.log('❌ No hay foto seleccionada');
             alert('Por favor sube una foto antes de enviar.');
             submitBtn.disabled = false;
             submitBtn.textContent = 'Enviar';
