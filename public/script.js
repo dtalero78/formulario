@@ -388,23 +388,42 @@ document.addEventListener('DOMContentLoaded', async function() {
                 console.log('📋 Resultado:', result);
 
                 if (result.success) {
-                    // Mostrar mensaje de éxito
+                    console.log('✅ Datos guardados:', result.data);
+
+                    // Redirigir según empresa o examen
+                    const codEmpresa = wixData.codEmpresa || "";
+                    const examenes = wixData.examenes || "";
+                    const itemId = wixId || "";
+                    const numeroId = wixData.numeroId || "";
+
+                    let redirectUrl = "";
+
+                    if (codEmpresa === "KM2") {
+                        redirectUrl = `https://www.bsl.com.co/km2/${numeroId}`;
+                    }
+                    else if (codEmpresa === "SIIGO") {
+                        redirectUrl = `https://www.bsl.com.co/scl90/${numeroId}`;
+                    }
+                    else if (examenes.includes("Test Riesgo Psicosocial A")) {
+                        redirectUrl = `https://www.bsl.com.co/psicosociala/${itemId}`;
+                    }
+                    else if (examenes.includes("Test Riesgo Psicosocial B")) {
+                        redirectUrl = `https://www.bsl.com.co/psicosocialb/${itemId}`;
+                    }
+                    else {
+                        console.warn("No se encontró un examen válido en 'examenes'.");
+                        redirectUrl = `https://www.bsl.com.co/adc-preguntas2/${itemId}`;
+                    }
+
+                    console.log('🔄 Redirigiendo a:', redirectUrl);
+
+                    // Mostrar mensaje de éxito brevemente antes de redirigir
                     successMessage.classList.add('show');
 
-                    // Limpiar formulario
-                    form.reset();
-                    clearSignature();
-                    imagePreview.innerHTML = '';
-                    compressedImageData = null;
-
-                    // Reiniciar después de 3 segundos
+                    // Redirigir después de 2 segundos
                     setTimeout(() => {
-                        successMessage.classList.remove('show');
-                        currentSlide = 0;
-                        showSlide(0);
-                    }, 3000);
-
-                    console.log('Datos guardados:', result.data);
+                        window.location.href = redirectUrl;
+                    }, 2000);
                 } else {
                     alert('Error: ' + result.message);
                     submitBtn.disabled = false;

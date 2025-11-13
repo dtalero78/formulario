@@ -164,7 +164,8 @@ app.get('/api/wix/:id', async (req, res) => {
                 celular: wixData.celular,
                 empresa: wixData.empresa,
                 codEmpresa: wixData.codEmpresa,
-                fechaAtencion: wixData.fechaAtencion
+                fechaAtencion: wixData.fechaAtencion,
+                examenes: wixData.examenes || ""
             }
         });
 
