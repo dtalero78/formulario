@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     // Función para comprimir imagen
-    function compressImage(file, maxWidth = 800, quality = 0.7) {
+    function compressImage(file, maxWidth = 600, quality = 0.6) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -160,8 +160,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                     // Mostrar loading
                     imagePreview.innerHTML = '<p style="color: #00B8E6;">Procesando imagen...</p>';
 
-                    // Comprimir imagen
-                    compressedImageData = await compressImage(file, 800, 0.7);
+                    // Comprimir imagen con balance calidad/velocidad
+                    compressedImageData = await compressImage(file, 600, 0.6);
 
                     // Mostrar preview
                     imagePreview.innerHTML = `<img src="${compressedImageData}" alt="Preview">`;
