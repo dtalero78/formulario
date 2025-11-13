@@ -237,6 +237,105 @@ app.post('/api/formulario', async (req, res) => {
 
         console.log('✅ Formulario guardado en PostgreSQL:', result.rows[0].id);
 
+        // Enviar datos a Wix
+        try {
+            const fetch = (await import('node-fetch')).default;
+
+            // Mapear encuestaSalud (19 preguntas de condiciones médicas)
+            const encuestaSalud = [
+                { pregunta: "¿Ha tenido cirugía ocular?", respuesta: datos.cirugiaOcular || "No" },
+                { pregunta: "¿Tiene cirugía programada?", respuesta: datos.cirugiaProgramada || "No" },
+                { pregunta: "¿Tiene alguna condición médica?", respuesta: datos.condicionMedica || "No" },
+                { pregunta: "¿Sufre de dolor de cabeza?", respuesta: datos.dolorCabeza || "No" },
+                { pregunta: "¿Sufre de dolor de espalda?", respuesta: datos.dolorEspalda || "No" },
+                { pregunta: "¿Sufre de ruido/jaqueca?", respuesta: datos.ruidoJaqueca || "No" },
+                { pregunta: "¿Está embarazada?", respuesta: datos.embarazo || "No" },
+                { pregunta: "¿Tiene enfermedad de hígado?", respuesta: datos.enfermedadHigado || "No" },
+                { pregunta: "¿Tiene enfermedad pulmonar?", respuesta: datos.enfermedadPulmonar || "No" },
+                { pregunta: "¿Fuma?", respuesta: datos.fuma || "No" },
+                { pregunta: "¿Tiene hernias?", respuesta: datos.hernias || "No" },
+                { pregunta: "¿Tiene hormigueos?", respuesta: datos.hormigueos || "No" },
+                { pregunta: "¿Tiene presión alta?", respuesta: datos.presionAlta || "No" },
+                { pregunta: "¿Tiene problemas de azúcar?", respuesta: datos.problemasAzucar || "No" },
+                { pregunta: "¿Tiene problemas cardíacos?", respuesta: datos.problemasCardiacos || "No" },
+                { pregunta: "¿Tiene problemas de sueño?", respuesta: datos.problemasSueno || "No" },
+                { pregunta: "¿Usa anteojos?", respuesta: datos.usaAnteojos || "No" },
+                { pregunta: "¿Usa lentes de contacto?", respuesta: datos.usaLentesContacto || "No" },
+                { pregunta: "¿Tiene varices?", respuesta: datos.varices || "No" }
+            ];
+
+            // Mapear antecedentesFamiliares (8 preguntas)
+            const antecedentesFamiliares = [
+                { pregunta: "Hepatitis", respuesta: datos.hepatitis || "No" },
+                { pregunta: "Enfermedades hereditarias", respuesta: datos.familiaHereditarias || "No" },
+                { pregunta: "Enfermedades genéticas", respuesta: datos.familiaGeneticas || "No" },
+                { pregunta: "Diabetes", respuesta: datos.familiaDiabetes || "No" },
+                { pregunta: "Hipertensión", respuesta: datos.familiaHipertension || "No" },
+                { pregunta: "Infartos", respuesta: datos.familiaInfartos || "No" },
+                { pregunta: "Cáncer", respuesta: datos.familiaCancer || "No" },
+                { pregunta: "Trastornos mentales", respuesta: datos.familiaTrastornos || "No" }
+            ];
+
+            const wixPayload = {
+                itemId: datos.wixId || "",
+                numeroId: datos.numeroId || "",
+                codEmpresa: datos.codEmpresa || "",
+                primerNombre: datos.primerNombre || "",
+                examenes: "", // No tenemos este dato
+                celular: datos.celular || "No disponible",
+                respuestas: {
+                    ejercicio: datos.ejercicio || "",
+                    estadoCivil: datos.estadoCivil || "",
+                    hijos: datos.hijos || "",
+                    consumoLicor: datos.consumoLicor || "",
+                    email: datos.email || "",
+                    foto: datos.foto || "",
+                    firma: datos.firma || "",
+                    encuestaSalud: encuestaSalud,
+                    antecedentesFamiliares: antecedentesFamiliares,
+                    fechaNacimiento: datos.fechaNacimiento || "",
+                    edad: datos.edad || "",
+                    genero: datos.genero || "",
+                    lugarDeNacimiento: datos.lugarDeNacimiento || "",
+                    ciudadDeResidencia: datos.ciudadDeResidencia || "",
+                    direccion: "", // No lo tenemos en el formulario
+                    profesionUOficio: datos.profesionUOficio || "",
+                    nivelEducativo: datos.nivelEducativo || "",
+                    empresa1: datos.empresa1 || "",
+                    empresa2: datos.empresa2 || "",
+                    arl: "", // No lo tenemos en el formulario
+                    estatura: datos.estatura || "",
+                    peso: datos.peso || "",
+                    documentoIdentidad: datos.numeroId || "",
+                    codEmpresa: datos.codEmpresa || "",
+                    idGeneral: datos.wixId || "",
+                    primerNombre: datos.primerNombre || "",
+                    inscripcionBoletin: datos.inscripcionBoletin || ""
+                }
+            };
+
+            console.log('📤 Enviando datos a Wix...');
+
+            const wixResponse = await fetch('https://www.bsl.com.co/_functions/crearFormulario', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(wixPayload)
+            });
+
+            if (wixResponse.ok) {
+                const wixResult = await wixResponse.json();
+                console.log('✅ Datos guardados en Wix:', wixResult);
+            } else {
+                console.warn('⚠️ Error al guardar en Wix:', wixResponse.status, await wixResponse.text());
+            }
+
+        } catch (wixError) {
+            console.error('⚠️ Error al enviar a Wix (continuando):', wixError.message);
+            // No bloqueamos la respuesta si Wix falla
+        }
+
         res.json({
             success: true,
             message: 'Formulario guardado correctamente',
