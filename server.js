@@ -305,7 +305,7 @@ app.post('/api/formulario', async (req, res) => {
                 arl: "", // No lo tenemos en el formulario
                 estatura: datos.estatura || "",
                 peso: datos.peso || "",
-                documentoIdentidad: datos.wixId || "", // documentoIdentidad también usa wixId
+                documentoIdentidad: datos.numeroId || "", // Número de cédula de HistoriaClinica
                 idGeneral: datos.wixId || "",
                 inscripcionBoletin: datos.inscripcionBoletin || ""
             };
