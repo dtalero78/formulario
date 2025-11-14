@@ -311,6 +311,7 @@ app.post('/api/formulario', async (req, res) => {
             };
 
             console.log('📤 Enviando datos a Wix...');
+            console.log('📦 Payload:', JSON.stringify(wixPayload, null, 2));
 
             const wixResponse = await fetch('https://www.bsl.com.co/_functions/crearFormulario', {
                 method: 'POST',
@@ -320,15 +321,29 @@ app.post('/api/formulario', async (req, res) => {
                 body: JSON.stringify(wixPayload)
             });
 
+            console.log('📡 Respuesta de Wix - Status:', wixResponse.status);
+
             if (wixResponse.ok) {
                 const wixResult = await wixResponse.json();
-                console.log('✅ Datos guardados en Wix:', wixResult);
+                console.log('✅ Datos guardados en Wix exitosamente:', wixResult);
             } else {
-                console.warn('⚠️ Error al guardar en Wix:', wixResponse.status, await wixResponse.text());
+                const errorText = await wixResponse.text();
+                console.error('❌ ERROR al guardar en Wix:');
+                console.error('   Status:', wixResponse.status);
+                console.error('   Response:', errorText);
+                // Intentar parsear como JSON para ver el error
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    console.error('   Error JSON:', errorJson);
+                } catch (e) {
+                    // No es JSON, ya imprimimos el texto
+                }
             }
 
         } catch (wixError) {
-            console.error('⚠️ Error al enviar a Wix (continuando):', wixError.message);
+            console.error('❌ EXCEPCIÓN al enviar a Wix:');
+            console.error('   Mensaje:', wixError.message);
+            console.error('   Stack:', wixError.stack);
             // No bloqueamos la respuesta si Wix falla
         }
 
