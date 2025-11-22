@@ -422,16 +422,45 @@ app.get('/api/formulario/:id', async (req, res) => {
 app.get('/api/formularios/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const result = await pool.query('SELECT * FROM formularios WHERE id = $1', [id]);
 
-        if (result.rows.length > 0) {
-            res.json({ success: true, data: result.rows[0] });
-        } else {
-            res.status(404).json({
+        // Obtener datos del formulario
+        const formularioResult = await pool.query('SELECT * FROM formularios WHERE id = $1', [id]);
+
+        if (formularioResult.rows.length === 0) {
+            return res.status(404).json({
                 success: false,
                 message: 'Formulario no encontrado'
             });
         }
+
+        const formulario = formularioResult.rows[0];
+
+        // Intentar obtener datos de HistoriaClinica usando wix_id
+        let historiaClinica = null;
+        if (formulario.wix_id) {
+            try {
+                const historiaResult = await pool.query(
+                    'SELECT * FROM "HistoriaClinica" WHERE "idGeneral" = $1',
+                    [formulario.wix_id]
+                );
+
+                if (historiaResult.rows.length > 0) {
+                    historiaClinica = historiaResult.rows[0];
+                }
+            } catch (historiaError) {
+                console.error('⚠️ No se pudo obtener HistoriaClinica:', historiaError.message);
+                // Continuar sin historia clínica
+            }
+        }
+
+        // Combinar los datos
+        const datosCompletos = {
+            ...formulario,
+            historiaClinica: historiaClinica
+        };
+
+        res.json({ success: true, data: datosCompletos });
+
     } catch (error) {
         console.error('❌ Error:', error);
         res.status(500).json({

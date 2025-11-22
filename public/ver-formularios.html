@@ -899,6 +899,72 @@
                         </div>
                     </div>
                 ` : ''}
+
+                ${form.historiaClinica ? `
+                    <div style="margin: 32px 0; padding: 16px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); border-radius: 12px; text-align: center;">
+                        <h3 style="color: white; font-size: 20px; font-weight: 700; margin: 0;">📋 Datos de la Consulta Médica</h3>
+                    </div>
+
+                    <div class="detalles-section">
+                        <div class="detalles-section-title">Información de la Consulta</div>
+                        <div class="detalles-grid">
+                            ${form.historiaClinica.fechaAtencion ? `
+                                <div class="detalle-item">
+                                    <div class="detalle-label">Fecha de Atención</div>
+                                    <div class="detalle-value">${form.historiaClinica.fechaAtencion}</div>
+                                </div>
+                            ` : ''}
+                            ${form.historiaClinica.nivelRuido ? `
+                                <div class="detalle-item">
+                                    <div class="detalle-label">Nivel de Ruido</div>
+                                    <div class="detalle-value">${form.historiaClinica.nivelRuido}</div>
+                                </div>
+                            ` : ''}
+                            ${form.historiaClinica.elementosProteccionAuditiva ? `
+                                <div class="detalle-item">
+                                    <div class="detalle-label">Elementos de Protección Auditiva</div>
+                                    <div class="detalle-value">${form.historiaClinica.elementosProteccionAuditiva}</div>
+                                </div>
+                            ` : ''}
+                            ${form.historiaClinica.otoscopia ? `
+                                <div class="detalle-item">
+                                    <div class="detalle-label">Otoscopia</div>
+                                    <div class="detalle-value">${form.historiaClinica.otoscopia}</div>
+                                </div>
+                            ` : ''}
+                            ${form.historiaClinica.audiometria ? `
+                                <div class="detalle-item">
+                                    <div class="detalle-label">Audiometría</div>
+                                    <div class="detalle-value">${form.historiaClinica.audiometria}</div>
+                                </div>
+                            ` : ''}
+                            ${form.historiaClinica.visiometria ? `
+                                <div class="detalle-item">
+                                    <div class="detalle-label">Visiometría</div>
+                                    <div class="detalle-value">${form.historiaClinica.visiometria}</div>
+                                </div>
+                            ` : ''}
+                            ${form.historiaClinica.espirometria ? `
+                                <div class="detalle-item">
+                                    <div class="detalle-label">Espirometría</div>
+                                    <div class="detalle-value">${form.historiaClinica.espirometria}</div>
+                                </div>
+                            ` : ''}
+                            ${form.historiaClinica.conceptoMedico ? `
+                                <div class="detalle-item" style="grid-column: 1 / -1;">
+                                    <div class="detalle-label">Concepto Médico</div>
+                                    <div class="detalle-value">${form.historiaClinica.conceptoMedico}</div>
+                                </div>
+                            ` : ''}
+                            ${form.historiaClinica.recomendaciones ? `
+                                <div class="detalle-item" style="grid-column: 1 / -1;">
+                                    <div class="detalle-label">Recomendaciones</div>
+                                    <div class="detalle-value">${form.historiaClinica.recomendaciones}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                ` : ''}
             `;
         }
 
