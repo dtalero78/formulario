@@ -302,7 +302,9 @@ app.post('/api/formulario', async (req, res) => {
                 nivelEducativo: datos.nivelEducativo || "",
                 empresa1: datos.empresa1 || "",
                 empresa2: datos.empresa2 || "",
-                arl: "", // No lo tenemos en el formulario
+                eps: datos.eps || "",
+                arl: datos.arl || "",
+                pensiones: datos.pensiones || "",
                 estatura: datos.estatura || "",
                 peso: datos.peso || "",
                 documentoIdentidad: datos.numeroId || "", // Número de cédula de HistoriaClinica
