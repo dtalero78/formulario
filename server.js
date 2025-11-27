@@ -374,10 +374,11 @@ app.get('/api/formularios', async (req, res) => {
         const result = await pool.query(`
             SELECT
                 id,
-                wix_id,
                 numero_id,
                 celular,
-                fecha_registro
+                primer_nombre,
+                primer_apellido,
+                cod_empresa
             FROM formularios
             ORDER BY fecha_registro DESC
         `);
