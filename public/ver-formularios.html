@@ -1155,6 +1155,11 @@
         async function cargarFormularios() {
             try {
                 const response = await fetch('/api/formularios');
+
+                if (!response.ok) {
+                    throw new Error(`Error del servidor: ${response.status} ${response.statusText}`);
+                }
+
                 const result = await response.json();
 
                 document.getElementById('loading').style.display = 'none';
@@ -1178,12 +1183,6 @@
                                 <div class="formulario-id">ID: ${form.id}</div>
                                 ${form.wix_id ? `<div class="formulario-id" style="background: #10B981; margin-top: 8px;">Wix ID: ${form.wix_id}</div>` : ''}
                             </div>
-
-                            ${form.foto ? `
-                                <div class="foto-container-summary">
-                                    <img src="${form.foto}" alt="Foto del paciente">
-                                </div>
-                            ` : ''}
 
                             <div class="summary-info">
                                 <div class="summary-dato">

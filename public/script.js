@@ -326,6 +326,29 @@ document.addEventListener('DOMContentLoaded', async function() {
             return;
         }
 
+        // Verificar si hay campos con errores de validación
+        const camposConError = form.querySelectorAll('[data-valid="false"]');
+        if (camposConError.length > 0) {
+            console.log('❌ Hay campos con errores de validación:', camposConError.length);
+
+            // Encontrar el primer campo con error y mostrar mensaje
+            const primerCampoError = camposConError[0];
+            const nombreCampo = primerCampoError.name || 'un campo';
+
+            // Buscar la slide que contiene el campo con error
+            const slideConError = primerCampoError.closest('.question-slide');
+            if (slideConError) {
+                const slideIndex = Array.from(document.querySelectorAll('.question-slide')).indexOf(slideConError);
+                if (slideIndex !== -1) {
+                    showSlide(slideIndex);
+                }
+            }
+
+            alert('Por favor corrige los errores en el formulario antes de enviar. Revisa el campo: ' + nombreCampo);
+            primerCampoError.focus();
+            return;
+        }
+
         console.log('✅ Validación pasó');
 
         // Deshabilitar botón de envío
@@ -444,31 +467,127 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 
-    // Validaciones específicas
+    // ============================================
+    // VALIDACIONES EN TIEMPO REAL
+    // ============================================
+
+    // Función para mostrar error en un campo
+    function showFieldError(input, message) {
+        // Remover error previo si existe
+        clearFieldError(input);
+
+        input.style.borderColor = '#ef4444';
+        input.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
+
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'field-error';
+        errorDiv.style.cssText = 'color: #ef4444; font-size: 12px; margin-top: 5px; font-weight: 500;';
+        errorDiv.textContent = message;
+        input.parentNode.appendChild(errorDiv);
+    }
+
+    // Función para limpiar error de un campo
+    function clearFieldError(input) {
+        input.style.borderColor = '';
+        input.style.boxShadow = '';
+        const existingError = input.parentNode.querySelector('.field-error');
+        if (existingError) {
+            existingError.remove();
+        }
+    }
+
+    // Función para mostrar éxito en un campo
+    function showFieldSuccess(input) {
+        clearFieldError(input);
+        input.style.borderColor = '#22c55e';
+        input.style.boxShadow = '0 0 0 3px rgba(34, 197, 94, 0.2)';
+    }
+
+    // VALIDACIÓN DE EMAIL
+    const emailInput = form.querySelector('[name="email"]');
+    if (emailInput) {
+        emailInput.addEventListener('blur', function() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const value = this.value.trim();
+
+            if (value && !emailRegex.test(value)) {
+                showFieldError(this, 'Por favor ingresa un email válido (ejemplo: tucorreo@gmail.com)');
+                this.dataset.valid = 'false';
+            } else if (value) {
+                showFieldSuccess(this);
+                this.dataset.valid = 'true';
+            }
+        });
+
+        emailInput.addEventListener('input', function() {
+            clearFieldError(this);
+        });
+    }
+
+    // VALIDACIÓN DE EDAD
     const edadInput = form.querySelector('[name="edad"]');
     if (edadInput) {
         edadInput.addEventListener('input', function() {
             if (this.value < 0) this.value = 0;
             if (this.value > 120) this.value = 120;
         });
+
+        edadInput.addEventListener('blur', function() {
+            const value = parseInt(this.value);
+            if (isNaN(value) || value < 1) {
+                showFieldError(this, 'Por favor ingresa una edad válida');
+                this.dataset.valid = 'false';
+            } else if (value < 15 || value > 100) {
+                showFieldError(this, 'La edad debe estar entre 15 y 100 años');
+                this.dataset.valid = 'false';
+            } else {
+                showFieldSuccess(this);
+                this.dataset.valid = 'true';
+            }
+        });
     }
 
+    // VALIDACIÓN DE HIJOS
     const hijosInput = form.querySelector('[name="hijos"]');
     if (hijosInput) {
         hijosInput.addEventListener('input', function() {
             if (this.value < 0) this.value = 0;
+            if (this.value > 20) this.value = 20;
+        });
+
+        hijosInput.addEventListener('blur', function() {
+            const value = this.value.trim();
+            if (value === '') {
+                showFieldError(this, 'Por favor ingresa el número de hijos (0 si no tienes)');
+                this.dataset.valid = 'false';
+            } else {
+                showFieldSuccess(this);
+                this.dataset.valid = 'true';
+            }
         });
     }
 
+    // VALIDACIÓN DE PESO
     const pesoInput = form.querySelector('[name="peso"]');
     if (pesoInput) {
         pesoInput.addEventListener('input', function() {
             if (this.value < 0) this.value = 0;
             if (this.value > 300) this.value = 300;
         });
+
+        pesoInput.addEventListener('blur', function() {
+            const value = parseInt(this.value);
+            if (isNaN(value) || value < 30 || value > 250) {
+                showFieldError(this, 'Por favor ingresa un peso válido (entre 30 y 250 kg)');
+                this.dataset.valid = 'false';
+            } else {
+                showFieldSuccess(this);
+                this.dataset.valid = 'true';
+            }
+        });
     }
 
-    // Validación de fecha DD/MM/AAAA
+    // VALIDACIÓN DE FECHA DE NACIMIENTO
     const fechaInput = form.querySelector('[name="fechaNacimiento"]');
     if (fechaInput) {
         fechaInput.addEventListener('input', function() {
@@ -480,6 +599,145 @@ document.addEventListener('DOMContentLoaded', async function() {
                 value = value.slice(0, 5) + '/' + value.slice(5, 9);
             }
             this.value = value;
+        });
+
+        fechaInput.addEventListener('blur', function() {
+            const value = this.value.trim();
+            const parts = value.split('/');
+
+            if (parts.length !== 3 || value.length < 10) {
+                showFieldError(this, 'Formato: DD/MM/AAAA (ejemplo: 15/03/1990)');
+                this.dataset.valid = 'false';
+                return;
+            }
+
+            const day = parseInt(parts[0]);
+            const month = parseInt(parts[1]);
+            const year = parseInt(parts[2]);
+
+            // Validar día
+            if (day < 1 || day > 31) {
+                showFieldError(this, 'El día debe estar entre 1 y 31');
+                this.dataset.valid = 'false';
+                return;
+            }
+
+            // Validar mes
+            if (month < 1 || month > 12) {
+                showFieldError(this, 'El mes debe estar entre 1 y 12');
+                this.dataset.valid = 'false';
+                return;
+            }
+
+            // Validar año
+            const currentYear = new Date().getFullYear();
+            if (year < 1900 || year > currentYear) {
+                showFieldError(this, 'El año debe estar entre 1900 y ' + currentYear);
+                this.dataset.valid = 'false';
+                return;
+            }
+
+            // Validar que la fecha no sea en el futuro
+            const fechaNac = new Date(year, month - 1, day);
+            const hoy = new Date();
+            if (fechaNac > hoy) {
+                showFieldError(this, 'La fecha de nacimiento no puede ser en el futuro');
+                this.dataset.valid = 'false';
+                return;
+            }
+
+            // Validar edad mínima (15 años)
+            const edadMinima = new Date();
+            edadMinima.setFullYear(edadMinima.getFullYear() - 15);
+            if (fechaNac > edadMinima) {
+                showFieldError(this, 'Debes tener al menos 15 años');
+                this.dataset.valid = 'false';
+                return;
+            }
+
+            showFieldSuccess(this);
+            this.dataset.valid = 'true';
+        });
+    }
+
+    // VALIDACIÓN DE CAMPOS DE TEXTO (no vacíos, sin solo espacios)
+    const textInputs = form.querySelectorAll('input[type="text"][required]');
+    textInputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            const value = this.value.trim();
+            if (value.length < 2) {
+                showFieldError(this, 'Este campo debe tener al menos 2 caracteres');
+                this.dataset.valid = 'false';
+            } else {
+                showFieldSuccess(this);
+                this.dataset.valid = 'true';
+            }
+        });
+    });
+
+    // VALIDACIÓN DE NÚMERO DE DOCUMENTO
+    const numeroIdInput = form.querySelector('[name="numeroId"]');
+    if (numeroIdInput) {
+        numeroIdInput.addEventListener('input', function() {
+            // Solo permitir números
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        numeroIdInput.addEventListener('blur', function() {
+            const value = this.value.trim();
+            if (value.length < 6) {
+                showFieldError(this, 'El número de documento debe tener al menos 6 dígitos');
+                this.dataset.valid = 'false';
+            } else if (value.length > 15) {
+                showFieldError(this, 'El número de documento no puede tener más de 15 dígitos');
+                this.dataset.valid = 'false';
+            } else {
+                showFieldSuccess(this);
+                this.dataset.valid = 'true';
+            }
+        });
+    }
+
+    // VALIDACIÓN DE CELULAR
+    const celularInput = form.querySelector('[name="celular"]');
+    if (celularInput) {
+        celularInput.addEventListener('input', function() {
+            // Solo permitir números
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        celularInput.addEventListener('blur', function() {
+            const value = this.value.trim();
+            if (value.length < 10) {
+                showFieldError(this, 'El número de celular debe tener al menos 10 dígitos');
+                this.dataset.valid = 'false';
+            } else if (value.length > 15) {
+                showFieldError(this, 'El número de celular no puede tener más de 15 dígitos');
+                this.dataset.valid = 'false';
+            } else {
+                showFieldSuccess(this);
+                this.dataset.valid = 'true';
+            }
+        });
+    }
+
+    // VALIDACIÓN DE ESTATURA
+    const estaturaInput = form.querySelector('[name="estatura"]');
+    if (estaturaInput) {
+        estaturaInput.addEventListener('input', function() {
+            if (this.value < 0) this.value = 0;
+            if (this.value > 250) this.value = 250;
+        });
+
+        estaturaInput.addEventListener('blur', function() {
+            const value = parseInt(this.value);
+            if (isNaN(value) || value < 100 || value > 250) {
+                showFieldError(this, 'Por favor ingresa una estatura válida (entre 100 y 250 cm)');
+                this.dataset.valid = 'false';
+            } else {
+                showFieldSuccess(this);
+                this.dataset.valid = 'true';
+            }
         });
     }
 

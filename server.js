@@ -369,13 +369,14 @@ app.post('/api/formulario', async (req, res) => {
 app.get('/api/formularios', async (req, res) => {
     try {
         // Solo seleccionar los campos necesarios para la vista resumida
+        // IMPORTANTE: No incluir 'foto' aquí porque son imágenes base64 muy grandes
+        // que pueden causar errores de memoria cuando hay muchos registros
         const result = await pool.query(`
             SELECT
                 id,
                 wix_id,
                 numero_id,
                 celular,
-                foto,
                 fecha_registro
             FROM formularios
             ORDER BY fecha_registro DESC
