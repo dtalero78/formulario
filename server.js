@@ -970,6 +970,129 @@ app.post('/api/marcar-atendido', async (req, res) => {
     }
 });
 
+// Endpoint para editar HistoriaClinica por _id
+app.put('/api/historia-clinica/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const datos = req.body;
+
+        console.log('');
+        console.log('═══════════════════════════════════════════════════════════');
+        console.log('📝 Recibida solicitud de edición de HistoriaClinica');
+        console.log('   _id:', id);
+        console.log('═══════════════════════════════════════════════════════════');
+
+        // Verificar que el registro existe
+        const checkResult = await pool.query('SELECT "_id" FROM "HistoriaClinica" WHERE "_id" = $1', [id]);
+        if (checkResult.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Registro no encontrado en HistoriaClinica'
+            });
+        }
+
+        // Construir query dinámico solo con los campos que vienen en el body
+        const camposPermitidos = [
+            'numeroId', 'primerNombre', 'segundoNombre', 'primerApellido', 'segundoApellido',
+            'celular', 'email', 'fechaNacimiento', 'edad', 'genero', 'estadoCivil', 'hijos',
+            'ejercicio', 'codEmpresa', 'empresa', 'cargo', 'tipoExamen', 'fechaAtencion',
+            'atendido', 'fechaConsulta', 'mdConceptoFinal', 'mdRecomendacionesMedicasAdicionales',
+            'mdObservacionesCertificado', 'mdAntecedentes', 'mdObsParaMiDocYa', 'mdDx1', 'mdDx2',
+            'talla', 'peso', 'motivoConsulta', 'diagnostico', 'tratamiento', 'pvEstado', 'medico',
+            'encuestaSalud', 'antecedentesFamiliares', 'empresa1'
+        ];
+
+        const setClauses = [];
+        const values = [];
+        let paramIndex = 1;
+
+        for (const campo of camposPermitidos) {
+            if (datos[campo] !== undefined) {
+                setClauses.push(`"${campo}" = $${paramIndex}`);
+                // Convertir fechas si es necesario
+                if (['fechaNacimiento', 'fechaAtencion', 'fechaConsulta'].includes(campo) && datos[campo]) {
+                    values.push(new Date(datos[campo]));
+                } else {
+                    values.push(datos[campo] === '' ? null : datos[campo]);
+                }
+                paramIndex++;
+            }
+        }
+
+        if (setClauses.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'No se proporcionaron campos para actualizar'
+            });
+        }
+
+        // Agregar _updatedDate
+        setClauses.push(`"_updatedDate" = NOW()`);
+
+        // Agregar el _id al final de los values
+        values.push(id);
+
+        const query = `
+            UPDATE "HistoriaClinica" SET
+                ${setClauses.join(', ')}
+            WHERE "_id" = $${paramIndex}
+            RETURNING *
+        `;
+
+        const result = await pool.query(query, values);
+
+        console.log('✅ HistoriaClinica actualizada exitosamente');
+        console.log('   _id:', result.rows[0]._id);
+        console.log('   numeroId:', result.rows[0].numeroId);
+        console.log('   primerNombre:', result.rows[0].primerNombre);
+        console.log('═══════════════════════════════════════════════════════════');
+        console.log('');
+
+        res.json({
+            success: true,
+            message: 'HistoriaClinica actualizada correctamente',
+            data: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error('❌ Error al actualizar HistoriaClinica:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al actualizar HistoriaClinica',
+            error: error.message
+        });
+    }
+});
+
+// Endpoint para obtener HistoriaClinica por _id
+app.get('/api/historia-clinica/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const result = await pool.query('SELECT * FROM "HistoriaClinica" WHERE "_id" = $1', [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Registro no encontrado en HistoriaClinica'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error('❌ Error al obtener HistoriaClinica:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener HistoriaClinica',
+            error: error.message
+        });
+    }
+});
+
 // Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', database: 'connected' });
