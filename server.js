@@ -808,6 +808,102 @@ app.put('/api/formularios/:id', async (req, res) => {
     }
 });
 
+// Endpoint para marcar como atendido desde Wix
+app.post('/api/marcar-atendido', async (req, res) => {
+    try {
+        const { wixId, atendido, fechaConsulta, mdConceptoFinal, mdRecomendacionesMedicasAdicionales, mdObservacionesCertificado, certificadoEnviado } = req.body;
+
+        console.log('');
+        console.log('═══════════════════════════════════════════════════════════');
+        console.log('📥 Recibida solicitud de marcar-atendido desde Wix');
+        console.log('   wixId:', wixId);
+        console.log('   atendido:', atendido);
+        console.log('   fechaConsulta:', fechaConsulta);
+        console.log('═══════════════════════════════════════════════════════════');
+
+        if (!wixId) {
+            return res.status(400).json({
+                success: false,
+                message: 'wixId es requerido'
+            });
+        }
+
+        // Verificar si necesitamos agregar columnas nuevas
+        const columnsToAdd = [
+            'atendido VARCHAR(50)',
+            'fecha_consulta TIMESTAMP',
+            'md_concepto_final TEXT',
+            'md_recomendaciones_medicas TEXT',
+            'md_observaciones_certificado TEXT',
+            'certificado_enviado BOOLEAN'
+        ];
+
+        for (const column of columnsToAdd) {
+            const columnName = column.split(' ')[0];
+            try {
+                await pool.query(`ALTER TABLE formularios ADD COLUMN IF NOT EXISTS ${column}`);
+            } catch (err) {
+                // Columna ya existe
+            }
+        }
+
+        // Buscar el formulario por wix_id
+        const checkResult = await pool.query('SELECT id FROM formularios WHERE wix_id = $1', [wixId]);
+
+        if (checkResult.rows.length === 0) {
+            console.log('⚠️ No se encontró formulario con wix_id:', wixId);
+            return res.status(404).json({
+                success: false,
+                message: 'Formulario no encontrado con el wixId proporcionado'
+            });
+        }
+
+        // Actualizar el formulario
+        const query = `
+            UPDATE formularios SET
+                atendido = $1,
+                fecha_consulta = $2,
+                md_concepto_final = $3,
+                md_recomendaciones_medicas = $4,
+                md_observaciones_certificado = $5,
+                certificado_enviado = $6
+            WHERE wix_id = $7
+            RETURNING id
+        `;
+
+        const values = [
+            atendido || 'ATENDIDO',
+            fechaConsulta ? new Date(fechaConsulta) : new Date(),
+            mdConceptoFinal || null,
+            mdRecomendacionesMedicasAdicionales || null,
+            mdObservacionesCertificado || null,
+            certificadoEnviado || false,
+            wixId
+        ];
+
+        const result = await pool.query(query, values);
+
+        console.log('✅ Formulario marcado como ATENDIDO');
+        console.log('   ID:', result.rows[0].id);
+        console.log('═══════════════════════════════════════════════════════════');
+        console.log('');
+
+        res.json({
+            success: true,
+            message: 'Formulario actualizado como ATENDIDO',
+            data: { id: result.rows[0].id }
+        });
+
+    } catch (error) {
+        console.error('❌ Error en marcar-atendido:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al marcar como atendido',
+            error: error.message
+        });
+    }
+});
+
 // Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', database: 'connected' });
