@@ -1157,6 +1157,164 @@ app.get('/api/historia-clinica/:id', async (req, res) => {
     }
 });
 
+// Endpoint para buscar paciente por numeroId (para actualizar foto)
+app.get('/api/buscar-paciente/:numeroId', async (req, res) => {
+    try {
+        const { numeroId } = req.params;
+
+        console.log('🔍 Buscando paciente con numeroId:', numeroId);
+
+        // Buscar en formularios
+        const formResult = await pool.query(
+            'SELECT id, wix_id, primer_nombre, primer_apellido, numero_id, foto FROM formularios WHERE numero_id = $1 ORDER BY fecha_registro DESC LIMIT 1',
+            [numeroId]
+        );
+
+        if (formResult.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No se encontró paciente con ese número de identificación'
+            });
+        }
+
+        const paciente = formResult.rows[0];
+
+        res.json({
+            success: true,
+            data: {
+                id: paciente.id,
+                wix_id: paciente.wix_id,
+                nombre: `${paciente.primer_nombre || ''} ${paciente.primer_apellido || ''}`.trim(),
+                numero_id: paciente.numero_id,
+                tiene_foto: !!paciente.foto
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Error al buscar paciente:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al buscar paciente',
+            error: error.message
+        });
+    }
+});
+
+// Endpoint para actualizar foto de paciente
+app.post('/api/actualizar-foto', async (req, res) => {
+    try {
+        const { numeroId, foto } = req.body;
+
+        console.log('');
+        console.log('═══════════════════════════════════════════════════════════');
+        console.log('📸 Recibida solicitud de actualización de foto');
+        console.log('   numeroId:', numeroId);
+        console.log('   Tamaño foto:', foto ? `${(foto.length / 1024).toFixed(2)} KB` : 'No proporcionada');
+        console.log('═══════════════════════════════════════════════════════════');
+
+        if (!numeroId || !foto) {
+            return res.status(400).json({
+                success: false,
+                message: 'Se requiere numeroId y foto'
+            });
+        }
+
+        // Buscar el formulario por numero_id
+        const checkResult = await pool.query(
+            'SELECT id, wix_id, primer_nombre, primer_apellido FROM formularios WHERE numero_id = $1 ORDER BY fecha_registro DESC LIMIT 1',
+            [numeroId]
+        );
+
+        if (checkResult.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No se encontró paciente con ese número de identificación'
+            });
+        }
+
+        const paciente = checkResult.rows[0];
+
+        // Actualizar foto en PostgreSQL
+        await pool.query(
+            'UPDATE formularios SET foto = $1 WHERE id = $2',
+            [foto, paciente.id]
+        );
+
+        console.log('✅ POSTGRESQL: Foto actualizada');
+        console.log('   ID:', paciente.id);
+        console.log('   Paciente:', paciente.primer_nombre, paciente.primer_apellido);
+
+        // Sincronizar con Wix si tiene wix_id
+        let wixSincronizado = false;
+        if (paciente.wix_id) {
+            try {
+                const fetch = (await import('node-fetch')).default;
+
+                // Primero obtener el _id de Wix
+                const queryResponse = await fetch(`https://www.bsl.com.co/_functions/formularioPorIdGeneral?idGeneral=${paciente.wix_id}`);
+
+                if (queryResponse.ok) {
+                    const queryResult = await queryResponse.json();
+
+                    if (queryResult.success && queryResult.item) {
+                        const wixId = queryResult.item._id;
+
+                        // Actualizar foto en Wix
+                        const wixPayload = {
+                            _id: wixId,
+                            foto: foto
+                        };
+
+                        console.log('📤 Sincronizando foto con Wix...');
+
+                        const wixResponse = await fetch('https://www.bsl.com.co/_functions/actualizarFormulario', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(wixPayload)
+                        });
+
+                        if (wixResponse.ok) {
+                            wixSincronizado = true;
+                            console.log('✅ WIX: Foto sincronizada exitosamente');
+                        } else {
+                            console.error('❌ WIX: Error al sincronizar foto');
+                        }
+                    }
+                }
+            } catch (wixError) {
+                console.error('❌ WIX: Excepción al sincronizar:', wixError.message);
+            }
+        }
+
+        console.log('');
+        console.log('🎉 RESUMEN: Actualización de foto completada');
+        console.log('   ✅ PostgreSQL: OK');
+        console.log('   ' + (wixSincronizado ? '✅' : '⚠️') + ' Wix:', wixSincronizado ? 'Sincronizado' : 'No sincronizado');
+        console.log('═══════════════════════════════════════════════════════════');
+        console.log('');
+
+        res.json({
+            success: true,
+            message: 'Foto actualizada correctamente',
+            data: {
+                id: paciente.id,
+                nombre: `${paciente.primer_nombre || ''} ${paciente.primer_apellido || ''}`.trim(),
+                wixSincronizado
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Error al actualizar foto:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al actualizar foto',
+            error: error.message
+        });
+    }
+});
+
 // Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', database: 'connected' });
