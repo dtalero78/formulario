@@ -1,6 +1,32 @@
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🚀 Aplicación inicializada');
 
+    // ====== MODAL DE VIDEO INTRODUCTORIO ======
+    const videoModal = document.getElementById('videoModal');
+    const introVideo = document.getElementById('introVideo');
+    const skipVideoBtn = document.getElementById('skipVideoBtn');
+
+    // Función para cerrar el modal de video
+    function closeVideoModal() {
+        videoModal.classList.add('hidden');
+        introVideo.pause();
+        // Remover el modal del DOM después de la transición
+        setTimeout(() => {
+            videoModal.style.display = 'none';
+        }, 500);
+    }
+
+    // Cerrar modal cuando termina el video
+    if (introVideo) {
+        introVideo.addEventListener('ended', closeVideoModal);
+    }
+
+    // Botón para omitir el video
+    if (skipVideoBtn) {
+        skipVideoBtn.addEventListener('click', closeVideoModal);
+    }
+    // ====== FIN MODAL DE VIDEO ======
+
     const form = document.getElementById('formularioMedico');
     const slides = document.querySelectorAll('.question-slide');
     const prevBtn = document.getElementById('prevBtn');
@@ -177,7 +203,9 @@ document.addEventListener('DOMContentLoaded', async function() {
                     }, 500);
                 } catch (error) {
                     console.error('Error al procesar imagen:', error);
-                    imagePreview.innerHTML = '<p style="color: red;">Error al procesar la imagen</p>';
+                    imagePreview.innerHTML = '<p style="color: red;">Error al procesar la imagen. Por favor intenta con otra foto.</p>';
+                    compressedImageData = null;  // Resetear para que el submit detecte el problema
+                    fotoInput.value = '';  // Limpiar input para permitir re-selección del mismo archivo
                 }
             }
         });
@@ -323,8 +351,21 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         if (!validateCurrentSlide()) {
             console.log('❌ Validación falló');
+            // El alert ya se muestra dentro de validateCurrentSlide()
+            // Asegurar que el botón esté habilitado para reintentar
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Enviar';
             return;
         }
+
+        // Forzar validación de campos críticos antes de verificar errores
+        // Esto dispara el evento blur en campos que el usuario pudo no haber tocado
+        const camposCriticos = form.querySelectorAll('[name="email"], [name="edad"], [name="peso"], [name="estatura"], [name="fechaNacimiento"]');
+        camposCriticos.forEach(campo => {
+            if (campo && campo.value) {
+                campo.dispatchEvent(new Event('blur'));
+            }
+        });
 
         // Verificar si hay campos con errores de validación
         const camposConError = form.querySelectorAll('[data-valid="false"]');
@@ -354,6 +395,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Deshabilitar botón de envío
         submitBtn.disabled = true;
         submitBtn.textContent = 'Enviando...';
+
+        // Timeout de seguridad: si el envío tarda más de 30 segundos, permitir reintento
+        const submitTimeout = setTimeout(() => {
+            if (submitBtn.disabled && submitBtn.textContent === 'Enviando...') {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Reintentar envío';
+                alert('El envío está tardando demasiado. Por favor verifica tu conexión a internet e intenta de nuevo.');
+            }
+        }, 30000);
 
         // Recopilar datos del formulario
         const formData = new FormData(form);
@@ -411,6 +461,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 console.log('📋 Resultado:', result);
 
                 if (result.success) {
+                    clearTimeout(submitTimeout);  // Limpiar timeout de seguridad
                     console.log('✅ Datos guardados:', result.data);
 
                     // Redirigir según empresa o examen
@@ -448,20 +499,27 @@ document.addEventListener('DOMContentLoaded', async function() {
                         window.location.href = redirectUrl;
                     }, 2000);
                 } else {
+                    clearTimeout(submitTimeout);
                     alert('Error: ' + result.message);
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Enviar';
                 }
 
             } catch (error) {
+                clearTimeout(submitTimeout);
                 console.error('❌ Error en fetch:', error);
                 alert('Error al enviar el formulario. Por favor intenta nuevamente.');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Enviar';
             }
         } else {
-            console.log('❌ No hay foto seleccionada');
-            alert('Por favor sube una foto antes de enviar.');
+            console.log('❌ No hay foto seleccionada o comprimida');
+            // Verificar si el usuario intentó subir una foto pero falló la compresión
+            if (fotoInput && fotoInput.files && fotoInput.files.length > 0) {
+                alert('Hubo un error procesando tu foto. Por favor selecciona otra imagen más pequeña o en formato JPG/PNG.');
+            } else {
+                alert('Por favor sube una foto antes de enviar.');
+            }
             submitBtn.disabled = false;
             submitBtn.textContent = 'Enviar';
         }

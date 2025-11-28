@@ -10,6 +10,17 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Modal de Video Introductorio -->
+    <div id="videoModal" class="video-modal">
+        <div class="video-modal-content">
+            <video id="introVideo" autoplay playsinline>
+                <source src="introPruebas.mp4" type="video/mp4">
+                Tu navegador no soporta el video.
+            </video>
+            <button id="skipVideoBtn" class="skip-video-btn">Omitir</button>
+        </div>
+    </div>
+
     <div class="container">
         <!-- Logo -->
         <div class="logo">
@@ -23,7 +34,7 @@
 
         <!-- Question counter -->
         <div class="question-counter">
-            <span id="currentQuestion">1</span> → <span id="totalQuestions">50</span>
+            <span id="currentQuestion">1</span> → <span id="totalQuestions">56</span>
         </div>
 
         <form id="formularioMedico">
@@ -244,6 +255,14 @@
                     <label class="question-label">¿Con qué frecuencia consumes licor?</label>
                     <div class="options-grid">
                         <label class="option-card">
+                            <input type="radio" name="consumoLicor" value="Nunca" required>
+                            <span>Nunca</span>
+                        </label>
+                        <label class="option-card">
+                            <input type="radio" name="consumoLicor" value="Ocasionalmente" required>
+                            <span>Ocasionalmente</span>
+                        </label>
+                        <label class="option-card">
                             <input type="radio" name="consumoLicor" value="1 día semanal" required>
                             <span>1 día semanal</span>
                         </label>
@@ -255,10 +274,6 @@
                             <input type="radio" name="consumoLicor" value="+ de 2 días semanales" required>
                             <span>+ de 2 días semanales</span>
                         </label>
-                        <label class="option-card">
-                            <input type="radio" name="consumoLicor" value="Ocasionalmente" required>
-                            <span>Ocasionalmente</span>
-                        </label>
                     </div>
                 </div>
             </div>
@@ -269,7 +284,7 @@
             <!-- 20 --> <div class="question-slide" data-question="23"><div class="question-content"><label class="question-label">¿Sufres de dolor de cabeza?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="dolorCabeza" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="dolorCabeza" value="NO" required><span>No</span></label></div></div></div>
             <!-- 21 --> <div class="question-slide" data-question="24"><div class="question-content"><label class="question-label">¿Sufres de dolor de espalda?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="dolorEspalda" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="dolorEspalda" value="NO" required><span>No</span></label></div></div></div>
             <!-- 22 --> <div class="question-slide" data-question="25"><div class="question-content"><label class="question-label">¿El ruido te produce jaqueca?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="ruidoJaqueca" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="ruidoJaqueca" value="NO" required><span>No</span></label></div></div></div>
-            <!-- 23 --> <div class="question-slide" data-question="26"><div class="question-content"><label class="question-label">¿Estás en embarazo actualmente?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="embarazo" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="embarazo" value="NO" required><span>No</span></label></div></div></div>
+            <!-- 23 --> <div class="question-slide" data-question="26"><div class="question-content"><label class="question-label">En caso de encontrarte en estado de embarazo, ¿ha sido confirmado por un profesional de salud?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="embarazo" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="embarazo" value="NO" required><span>No</span></label><label class="option-card"><input type="radio" name="embarazo" value="NO_APLICA" required><span>No aplica</span></label></div></div></div>
             <!-- 24 --> <div class="question-slide" data-question="27"><div class="question-content"><label class="question-label">¿Has tenido enfermedades de hígado?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="enfermedadHigado" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="enfermedadHigado" value="NO" required><span>No</span></label></div></div></div>
             <!-- 25 --> <div class="question-slide" data-question="28"><div class="question-content"><label class="question-label">¿Has tenido enfermedades pulmonares?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="enfermedadPulmonar" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="enfermedadPulmonar" value="NO" required><span>No</span></label></div></div></div>
             <!-- 26 --> <div class="question-slide" data-question="29"><div class="question-content"><label class="question-label">¿Fumas o fumabas?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="fuma" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="fuma" value="NO" required><span>No</span></label></div></div></div>
@@ -294,8 +309,16 @@
             <!-- 43 --> <div class="question-slide" data-question="46"><div class="question-content"><label class="question-label">¿En tu familia ha habido trastornos mentales o psicológicos?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="familiaTrastornos" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="familiaTrastornos" value="NO" required><span>No</span></label></div></div></div>
             <!-- 44 --> <div class="question-slide" data-question="47"><div class="question-content"><label class="question-label">¿En tu familia ha habido enfermedades infecciosas?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="familiaInfecciosas" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="familiaInfecciosas" value="NO" required><span>No</span></label></div></div></div>
 
-            <!-- 48. Firma -->
-            <div class="question-slide" data-question="48">
+            <!-- Nuevas preguntas de salud personal -->
+            <!-- 45 --> <div class="question-slide" data-question="48"><div class="question-content"><label class="question-label">¿Actualmente tienes diagnóstico confirmado de algún trastorno psicológico o psiquiátrico?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="trastornoPsicologico" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="trastornoPsicologico" value="NO" required><span>No</span></label></div></div></div>
+            <!-- 46 --> <div class="question-slide" data-question="49"><div class="question-content"><label class="question-label">En los últimos dos años, ¿has presentado síntomas significativos compatibles con trastornos psicológicos o psiquiátricos (por ejemplo, ansiedad, depresión, crisis de pánico), diagnosticados por un profesional de la salud?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="sintomasPsicologicos" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="sintomasPsicologicos" value="NO" required><span>No</span></label></div></div></div>
+            <!-- 47 --> <div class="question-slide" data-question="50"><div class="question-content"><label class="question-label">¿Has tenido diagnóstico confirmado de cáncer o actualmente te encuentras en estudio por sospecha de cáncer?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="diagnosticoCancer" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="diagnosticoCancer" value="NO" required><span>No</span></label></div></div></div>
+            <!-- 48 --> <div class="question-slide" data-question="51"><div class="question-content"><label class="question-label">¿Has presentado enfermedades laborales o accidentes de trabajo en tus empleos anteriores que hayan sido diagnosticados y reportados formalmente?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="enfermedadesLaborales" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="enfermedadesLaborales" value="NO" required><span>No</span></label></div></div></div>
+            <!-- 49 --> <div class="question-slide" data-question="52"><div class="question-content"><label class="question-label">¿Tienes actualmente alguna enfermedad o lesión osteomuscular diagnosticada por un profesional de la salud (por ejemplo, lumbalgia, tendinitis, síndrome del túnel carpiano)?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="enfermedadOsteomuscular" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="enfermedadOsteomuscular" value="NO" required><span>No</span></label></div></div></div>
+            <!-- 50 --> <div class="question-slide" data-question="53"><div class="question-content"><label class="question-label">¿Tienes diagnóstico confirmado de alguna enfermedad autoinmune (por ejemplo, artritis reumatoide, lupus, esclerosis múltiple)?</label><div class="options-grid options-si-no"><label class="option-card"><input type="radio" name="enfermedadAutoinmune" value="SI" required><span>Sí</span></label><label class="option-card"><input type="radio" name="enfermedadAutoinmune" value="NO" required><span>No</span></label></div></div></div>
+
+            <!-- 54. Firma -->
+            <div class="question-slide" data-question="54">
                 <div class="question-content">
                     <label class="question-label">Firma con tu dedo o con el mouse</label>
                     <div class="signature-container">
@@ -306,8 +329,8 @@
                 </div>
             </div>
 
-            <!-- 49. Boletín WhatsApp -->
-            <div class="question-slide" data-question="49">
+            <!-- 55. Boletín WhatsApp -->
+            <div class="question-slide" data-question="55">
                 <div class="question-content">
                     <label class="question-label">¿Te gustaría recibir consejos de tu médico directamente en tu WhatsApp SIN costo? (Recomendado)</label>
                     <select name="inscripcionBoletin" class="question-select" required>
@@ -318,8 +341,8 @@
                 </div>
             </div>
 
-            <!-- 50. Upload Foto -->
-            <div class="question-slide" data-question="50">
+            <!-- 56. Upload Foto -->
+            <div class="question-slide" data-question="56">
                 <div class="question-content">
                     <label class="question-label">Sube una foto de tu cara</label>
                     <div class="upload-container">

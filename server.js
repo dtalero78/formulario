@@ -76,6 +76,12 @@ const initDB = async () => {
                 familia_cancer VARCHAR(10),
                 familia_trastornos VARCHAR(10),
                 familia_infecciosas VARCHAR(10),
+                trastorno_psicologico VARCHAR(10),
+                sintomas_psicologicos VARCHAR(10),
+                diagnostico_cancer VARCHAR(10),
+                enfermedades_laborales VARCHAR(10),
+                enfermedad_osteomuscular VARCHAR(10),
+                enfermedad_autoinmune VARCHAR(10),
                 firma TEXT,
                 inscripcion_boletin VARCHAR(10),
                 foto TEXT,
@@ -92,7 +98,14 @@ const initDB = async () => {
             'celular VARCHAR(20)',
             'empresa VARCHAR(100)',
             'cod_empresa VARCHAR(50)',
-            'fecha_atencion VARCHAR(50)'
+            'fecha_atencion VARCHAR(50)',
+            // Nuevas preguntas de salud personal
+            'trastorno_psicologico VARCHAR(10)',
+            'sintomas_psicologicos VARCHAR(10)',
+            'diagnostico_cancer VARCHAR(10)',
+            'enfermedades_laborales VARCHAR(10)',
+            'enfermedad_osteomuscular VARCHAR(10)',
+            'enfermedad_autoinmune VARCHAR(10)'
         ];
 
         for (const column of columnsToAdd) {
@@ -207,14 +220,18 @@ app.post('/api/formulario', async (req, res) => {
                 problemas_sueno, usa_anteojos, usa_lentes_contacto, varices,
                 hepatitis, familia_hereditarias, familia_geneticas, familia_diabetes,
                 familia_hipertension, familia_infartos, familia_cancer,
-                familia_trastornos, familia_infecciosas, firma, inscripcion_boletin, foto
+                familia_trastornos, familia_infecciosas,
+                trastorno_psicologico, sintomas_psicologicos, diagnostico_cancer,
+                enfermedades_laborales, enfermedad_osteomuscular, enfermedad_autoinmune,
+                firma, inscripcion_boletin, foto
             ) VALUES (
                 $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
                 $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
                 $21, $22, $23, $24, $25, $26, $27, $28, $29, $30,
                 $31, $32, $33, $34, $35, $36, $37, $38, $39, $40,
                 $41, $42, $43, $44, $45, $46, $47, $48, $49, $50,
-                $51, $52, $53, $54, $55, $56, $57, $58
+                $51, $52, $53, $54, $55, $56, $57, $58, $59, $60,
+                $61, $62, $63, $64
             ) RETURNING id
         `;
 
@@ -231,7 +248,10 @@ app.post('/api/formulario', async (req, res) => {
             datos.problemasSueno, datos.usaAnteojos, datos.usaLentesContacto, datos.varices,
             datos.hepatitis, datos.familiaHereditarias, datos.familiaGeneticas, datos.familiaDiabetes,
             datos.familiaHipertension, datos.familiaInfartos, datos.familiaCancer,
-            datos.familiaTrastornos, datos.familiaInfecciosas, datos.firma, datos.inscripcionBoletin, datos.foto
+            datos.familiaTrastornos, datos.familiaInfecciosas,
+            datos.trastornoPsicologico, datos.sintomasPsicologicos, datos.diagnosticoCancer,
+            datos.enfermedadesLaborales, datos.enfermedadOsteomuscular, datos.enfermedadAutoinmune,
+            datos.firma, datos.inscripcionBoletin, datos.foto
         ];
 
         const result = await pool.query(query, values);
@@ -263,6 +283,13 @@ app.post('/api/formulario', async (req, res) => {
             if (datos.usaAnteojos === "Sí") encuestaSaludTags.push("Usa anteojos");
             if (datos.usaLentesContacto === "Sí") encuestaSaludTags.push("Usa lentes de contacto");
             if (datos.varices === "Sí") encuestaSaludTags.push("Várices");
+            // Nuevas preguntas de salud personal
+            if (datos.trastornoPsicologico === "Sí") encuestaSaludTags.push("Trastorno psicológico o psiquiátrico");
+            if (datos.sintomasPsicologicos === "Sí") encuestaSaludTags.push("Síntomas psicológicos recientes");
+            if (datos.diagnosticoCancer === "Sí") encuestaSaludTags.push("Diagnóstico o sospecha de cáncer");
+            if (datos.enfermedadesLaborales === "Sí") encuestaSaludTags.push("Enfermedades laborales o accidentes de trabajo");
+            if (datos.enfermedadOsteomuscular === "Sí") encuestaSaludTags.push("Enfermedad osteomuscular");
+            if (datos.enfermedadAutoinmune === "Sí") encuestaSaludTags.push("Enfermedad autoinmune");
 
             // Mapear antecedentesFamiliares - solo incluir respuestas "Sí" (para tags de Wix)
             const antecedentesFamiliaresTags = [];
