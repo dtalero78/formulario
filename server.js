@@ -635,29 +635,31 @@ app.put('/api/formularios/:id', async (req, res) => {
         // Actualizar solo los campos que vienen en el body
         const query = `
             UPDATE formularios SET
-                genero = COALESCE($1, genero),
-                edad = COALESCE($2, edad),
-                fecha_nacimiento = COALESCE($3, fecha_nacimiento),
-                lugar_nacimiento = COALESCE($4, lugar_nacimiento),
-                ciudad_residencia = COALESCE($5, ciudad_residencia),
-                estado_civil = COALESCE($6, estado_civil),
-                hijos = COALESCE($7, hijos),
-                nivel_educativo = COALESCE($8, nivel_educativo),
-                email = COALESCE($9, email),
-                eps = COALESCE($10, eps),
-                arl = COALESCE($11, arl),
-                pensiones = COALESCE($12, pensiones),
-                profesion_oficio = COALESCE($13, profesion_oficio),
-                empresa1 = COALESCE($14, empresa1),
-                empresa2 = COALESCE($15, empresa2),
-                estatura = COALESCE($16, estatura),
-                peso = COALESCE($17, peso),
-                ejercicio = COALESCE($18, ejercicio)
-            WHERE id = $19
+                wix_id = COALESCE($1, wix_id),
+                genero = COALESCE($2, genero),
+                edad = COALESCE($3, edad),
+                fecha_nacimiento = COALESCE($4, fecha_nacimiento),
+                lugar_nacimiento = COALESCE($5, lugar_nacimiento),
+                ciudad_residencia = COALESCE($6, ciudad_residencia),
+                estado_civil = COALESCE($7, estado_civil),
+                hijos = COALESCE($8, hijos),
+                nivel_educativo = COALESCE($9, nivel_educativo),
+                email = COALESCE($10, email),
+                eps = COALESCE($11, eps),
+                arl = COALESCE($12, arl),
+                pensiones = COALESCE($13, pensiones),
+                profesion_oficio = COALESCE($14, profesion_oficio),
+                empresa1 = COALESCE($15, empresa1),
+                empresa2 = COALESCE($16, empresa2),
+                estatura = COALESCE($17, estatura),
+                peso = COALESCE($18, peso),
+                ejercicio = COALESCE($19, ejercicio)
+            WHERE id = $20
             RETURNING *
         `;
 
         const values = [
+            datos.wix_id || null,
             datos.genero,
             parseNumeric(datos.edad),
             datos.fecha_nacimiento,

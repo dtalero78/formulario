@@ -914,7 +914,16 @@
             <form id="formEdicion" onsubmit="guardarCambios(event)">
                 <input type="hidden" id="edit-id" name="id">
 
-                <div class="form-section-title">👤 Datos Personales</div>
+                <div class="form-section-title">🔗 Datos de Wix</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Wix ID</label>
+                        <input type="text" class="form-input" id="edit-wix_id" name="wix_id" placeholder="ID de Wix">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">👤 Datos Personales</div>
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">Género</label>
@@ -1796,6 +1805,7 @@
 
                 // Llenar el formulario del modal con los datos
                 document.getElementById('edit-id').value = formularioActual.id || '';
+                document.getElementById('edit-wix_id').value = formularioActual.wix_id || '';
                 document.getElementById('edit-genero').value = formularioActual.genero || '';
                 document.getElementById('edit-edad').value = formularioActual.edad || '';
                 document.getElementById('edit-fecha_nacimiento').value = formularioActual.fecha_nacimiento || '';

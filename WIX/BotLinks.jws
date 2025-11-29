@@ -1,0 +1,444 @@
+import wixData from 'wix-data';
+import { fetch } from 'wix-fetch';
+import { sendTextMessage } from 'backend/WHATSAPP';
+import { guardarMensajeWix } from 'backend/BotGuardarMensajesWix.jsw';
+import { generarPdfDesdeApi2Pdf } from 'backend/api2pdf.jsw';
+import { sendPdf } from 'backend/WHATSAPP';
+
+// URL del endpoint en Digital Ocean para actualizar PostgreSQL
+const POSTGRES_API_URL = "https://bsl-formulario-f5qx3.ondigitalocean.app/api/marcar-atendido";
+
+// Función para sincronizar estado ATENDIDO con PostgreSQL
+async function sincronizarAtendidoPostgres(wixId, datosAdicionales = {}) {
+    try {
+        const response = await fetch(POSTGRES_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                wixId: wixId,
+                atendido: "ATENDIDO",
+                fechaConsulta: new Date().toISOString(),
+                ...datosAdicionales
+            })
+        });
+
+        if (response.ok) {
+            console.log(`✅ PostgreSQL actualizado para wixId: ${wixId}`);
+            return true;
+        } else {
+            const errorData = await response.text();
+            console.error(`❌ Error actualizando PostgreSQL para wixId ${wixId}: ${errorData}`);
+            return false;
+        }
+    } catch (error) {
+        console.error(`❌ Error de conexión a PostgreSQL para wixId ${wixId}:`, error.message);
+        return false;
+    }
+}
+
+// Función principal
+export async function barridoYEnvioMensajesConDelay() {
+    try {
+        await limpiarDuplicados();
+
+        const ahora = new Date();
+        const unaHoraDespues = new Date(ahora.getTime() + 60 * 60 * 1000);
+
+        // Busca registros con cita dentro de la próxima hora y aún no atendidos
+        const chatbotResult = await wixData.query('CHATBOT')
+            .ge('fechaAtencion', ahora)
+            .le('fechaAtencion', unaHoraDespues)
+            .ne("atendido", "ATENDIDO")
+            .find();
+
+        if (chatbotResult.items.length === 0) {
+            return { mensaje: 'No hay registros con fecha de atención dentro de la próxima hora.' };
+        }
+
+        const basesDeDatos = [
+            { nombre: 'FORMULARIO', url: 'https://www.bsl.com.co/historia-clinica2/' },
+            { nombre: 'ADCTEST', url: 'https://www.bsl.com.co/adc-preguntas2/' },
+            { nombre: 'AUDIOMETRIA', url: 'https://www.bsl.com.co/audiometria2/' },
+            { nombre: 'VISUAL', url: 'https://www.bsl.com.co/visual2/' }
+        ];
+
+        const delay = 2000;
+        const registros = chatbotResult.items;
+
+        for (let i = 0; i < registros.length; i++) {
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            await procesarRegistro(registros[i], basesDeDatos);
+        }
+
+        return { mensaje: 'Registros procesados correctamente.' };
+    } catch (error) {
+        console.error("Error en barridoYEnvioMensajesConDelay:", error.message);
+        throw new Error("Ha ocurrido un error al procesar los datos.");
+    }
+}
+
+// Revisa pruebas y decide el flujo
+async function procesarRegistro(registro, basesDeDatos) {
+    const {
+        primerNombre,
+        celular,
+        _id: idGeneral,
+        fechaAtencion,
+        pruebaPendienteRecordatorioEnviado = {}
+    } = registro;
+
+    let formularioCompletado = false;
+
+    // 1. Revisa solo FORMULARIO
+    try {
+        const result = await wixData.query('FORMULARIO')
+            .eq('idGeneral', idGeneral)
+            .find();
+
+        if (result.items.length > 0) {
+            formularioCompletado = true;
+        }
+    } catch (queryError) {
+        formularioCompletado = false;
+    }
+
+    if (!celular) return;
+    const toNumber = `57${celular}`;
+
+    const ahora = new Date();
+    const cincoMinDespues = new Date(ahora.getTime() + 5 * 60 * 1000);
+    const fechaAtencionDate = new Date(fechaAtencion);
+    const minutosHastaCita = (fechaAtencionDate.getTime() - ahora.getTime()) / 60000;
+
+    // 2. Si FORMULARIO NO está completado, enviar mensaje de recordatorio
+    if (!formularioCompletado) {
+        // Si estamos en el rango de 10 minutos antes, enviamos el mensaje especial
+        if (minutosHastaCita >= 9.5 && minutosHastaCita <= 10.5) {
+            const messageBody = "Necesitamos que termines esas pruebas para continuar con tu orden médica.";
+            try {
+                await sendTextMessage(toNumber, messageBody);
+                await guardarMensajeWix({
+                    userId: celular,
+                    nombre: primerNombre,
+                    mensaje: messageBody,
+                    from: "wix",
+                    tipo: "pendiente_pruebas_en_link"
+                });
+            } catch (sendError) {
+                console.error(`Error enviando mensaje de pruebas pendientes a ${toNumber}:`, sendError);
+            }
+        }
+        return;
+    }
+
+    // --- EL RESTO DEL FLUJO SIGUE IGUAL ---
+    // 3. Si FORMULARIO SÍ está completado, enviar link de DigitalOcean 10 minutos antes
+    if (minutosHastaCita >= 9.5 && minutosHastaCita <= 10.5) {
+        const consolidatedUrl = `https://www.bsl.com.co/desbloqueo`;
+        const messageBody = `Hola ${primerNombre}: Te falta terminar esta prueba para la cita médica:\n\n${consolidatedUrl}`;
+        try {
+            await sendTextMessage(toNumber, messageBody);
+            await guardarMensajeWix({
+                userId: celular,
+                nombre: primerNombre,
+                mensaje: messageBody,
+                from: "wix",
+                tipo: "prueba_pendiente"
+            });
+        } catch (sendError) {
+            console.error(`Error enviando link de cita médica a ${toNumber}:`, sendError);
+        }
+    }
+
+    // 4. Link médico virtual 10 minutos antes
+
+    if (minutosHastaCita >= 9.5 && minutosHastaCita <= 10.5) {
+        const url = `https://sea-lion-app-qcttp.ondigitalocean.app/?_id=${idGeneral}`;
+        const messageBody = `Comunícate ya haciendo clic en este link.\n\n${url}` //`Comunícate ya haciendo clic en este link.\n\n${url}`;
+        try {
+            await sendTextMessage(toNumber, messageBody);
+        } catch (sendError) {
+            console.error(`Error enviando link médico virtual a ${toNumber}:`, sendError);
+        }
+    }
+
+    // 4. Certificado y PDF a los 5 minutos antes de la cita
+    if (
+        fechaAtencionDate.getTime() >= ahora.getTime() &&
+        fechaAtencionDate.getTime() <= cincoMinDespues.getTime()
+    ) {
+        try {
+            const chatbotItem = await wixData.get('CHATBOT', idGeneral);
+            chatbotItem.pruebasFinalizadas = true;
+            chatbotItem.atendido = "ATENDIDO";
+            await wixData.update('CHATBOT', chatbotItem);
+        } catch (sendError) {
+            console.error(`Error haciendo el update a ${toNumber}:`, sendError);
+        }
+
+        const actualizacionOK = await actualizarHistoriaClinica(idGeneral);
+
+        if (actualizacionOK) {
+            try {
+                const pdfUrl = await generarPdfDesdeApi2Pdf(idGeneral);
+                await sendPdf(toNumber, pdfUrl, idGeneral);
+                await guardarMensajeWix({
+                    userId: celular,
+                    nombre: primerNombre,
+                    mensaje: `Certificado médico enviado en PDF: ${pdfUrl}`,
+                    from: "wix",
+                    tipo: "certificado_enviado"
+                });
+                // NUEVO MENSAJE AQUÍ
+                const mensajePago = "Revisa que todo esté en orden";
+                await sendTextMessage(toNumber, mensajePago);
+                await guardarMensajeWix({
+                    userId: celular,
+                    nombre: primerNombre,
+                    mensaje: mensajePago,
+                    from: "wix",
+                    tipo: "mensaje_pago"
+                });
+                // ACTUALIZAR OBSERVACIONES EN WHP
+                try {
+                    const whpResult = await wixData.query('WHP')
+                        .eq('userId', `57${celular}`)
+                        .find();
+
+                    if (whpResult.items.length > 0) {
+                        let whpItem = whpResult.items[0];
+                        whpItem.observaciones = "";
+                        whpItem.nivel = 2;
+                        await wixData.update('WHP', whpItem);
+                        console.log(`Observaciones limpiadas y nivel actualizado a 2 para celular: ${celular}`);
+                        
+                        // Enviar mensaje de pago del bot
+                        const mensajePagoBot = `Paga $46.000 en las siguientes cuentas:\n\n*Bancolombia*\nCta Ahorros: 442 9119 2456\nCédula: 79 981 585\n\n*Daviplata:* 301 440 0818\n\n*Nequi:* 300 802 1701\n\nCuándo lo hagas *envía el soporte de pago por acá*`;
+                        await sendTextMessage(toNumber, mensajePagoBot);
+                        await guardarMensajeWix({
+                            userId: celular,
+                            nombre: primerNombre,
+                            mensaje: mensajePagoBot,
+                            from: "wix",
+                            tipo: "mensaje_pago_bot"
+                        });
+                    } else {
+                        console.log(`No se encontró registro en WHP para userId: ${celular}`);
+                    }
+                } catch (obsError) {
+                    console.error(`Error actualizando observaciones en WHP para ${celular}:`, obsError);
+                }
+            } catch (sendError) {
+                console.error(`Error enviando pdf a ${toNumber}:`, sendError);
+            }
+        }
+
+        return;
+    }
+}
+
+// Función auxiliar: actualiza HistoriaClinica con los datos de "ATENDIDO"
+async function actualizarHistoriaClinica(idGeneral) {
+    try {
+        const currentItem = await wixData.get("HistoriaClinica", idGeneral);
+
+        const fechaConsulta = new Date();
+        currentItem.fechaConsulta = fechaConsulta;
+        currentItem.atendido = "ATENDIDO";
+        currentItem.mdConceptoFinal = "ELEGIBLE PARA EL CARGO SIN RECOMENDACIONES LABORALES";
+        currentItem.mdRecomendacionesMedicasAdicionales = `1. PAUSAS ACTIVAS
+2. HIGIENE POSTURAL
+3. MEDIDAS ERGONOMICAS
+4. TÉCNICAS DE MANEJO DE ESTRÉS
+5. EJERCICIO AEROBICO
+6. MANTENER MEDIDAS DE BIOSEGURIDAD PARA COVID.
+7. ALIMENTACIÓN BALANCEADA`;
+        currentItem.mdObservacionesCertificado = `
+Basándonos en los resultados obtenidos de la evaluación osteomuscular, certificamos que el paciente presenta un sistema osteomuscular en condiciones óptimas de salud. Esta condición le permite llevar a cabo una variedad de actividades físicas y cotidianas sin restricciones notables y con un riesgo mínimo de lesiones osteomusculares.`;
+        currentItem.certificadoEnviado = true;
+
+        await wixData.update("HistoriaClinica", currentItem);
+
+        // Sincronizar con PostgreSQL usando el _id de Wix
+        await sincronizarAtendidoPostgres(idGeneral, {
+            mdConceptoFinal: currentItem.mdConceptoFinal,
+            mdRecomendacionesMedicasAdicionales: currentItem.mdRecomendacionesMedicasAdicionales,
+            mdObservacionesCertificado: currentItem.mdObservacionesCertificado,
+            certificadoEnviado: true
+        });
+
+        return true;
+    } catch (err) {
+        console.error(`Error actualizando HistoriaClinica para ${idGeneral}:`, err.message);
+        return false;
+    }
+}
+
+export async function limpiarDuplicados() {
+
+    try {
+        const ahora = new Date();
+
+        // Obtener todos los registros con fechaAtencion > ahora
+        const chatbotResult = await wixData.query('CHATBOT')
+            .gt('fechaAtencion', ahora)
+            .find();
+
+        if (chatbotResult.items.length === 0) {
+            console.log('No hay registros con fecha de atención futura para limpiar.');
+            return { mensaje: 'No hay registros duplicados para limpiar.' };
+        }
+
+        // Crear un mapa para agrupar por idGeneral
+        const registrosPorIdGeneral = chatbotResult.items.reduce((mapa, registro) => {
+            const { idGeneral } = registro;
+
+            if (!mapa[idGeneral]) {
+                mapa[idGeneral] = [];
+            }
+            mapa[idGeneral].push(registro);
+
+            return mapa;
+        }, {});
+
+        // Procesar cada grupo de duplicados
+        for (const idGeneral in registrosPorIdGeneral) {
+            const registros = registrosPorIdGeneral[idGeneral];
+
+            // Si solo hay un registro, no hacer nada
+            if (registros.length === 1) {
+                continue;
+            }
+
+            // Separar registros con y sin valor en el campo genero
+            const conGenero = registros.filter((r) => r.genero && r.genero.trim() !== '');
+            const sinGenero = registros.filter((r) => !r.genero || r.genero.trim() === '');
+
+            const registrosAEliminar = [];
+
+            if (conGenero.length > 0) {
+                // Mantener uno de los registros con genero y eliminar los demás
+                registrosAEliminar.push(...conGenero.slice(1)); // Mantener el primero
+                registrosAEliminar.push(...sinGenero); // Eliminar todos los que no tienen genero
+            } else {
+                // Si todos tienen genero vacío, mantener uno cualquiera
+                registrosAEliminar.push(...registros.slice(1));
+            }
+
+            // Eliminar los registros marcados
+            for (const registroAEliminar of registrosAEliminar) {
+                await wixData.remove('CHATBOT', registroAEliminar._id);
+                console.log(`Eliminado registro duplicado con idGeneral: ${idGeneral}, ID: ${registroAEliminar._id}`);
+            }
+        }
+
+        return { mensaje: 'Duplicados eliminados correctamente.' };
+    } catch (error) {
+        console.error("Error en limpiarDuplicados:", error.message);
+        throw new Error("Ha ocurrido un error al limpiar duplicados.");
+    }
+}
+
+export async function enviarRecordatorioPago() {
+    try {
+
+        const ahora = new Date();
+        const unaHoraAntes = new Date(ahora.getTime() - 60 * 60000); // hace 1 hora
+        const haceMediaHora = new Date(ahora.getTime() - 30 * 60000); // hace 30 minutos
+
+        // Buscar registros en CHATBOT con fechaAtencion en la última hora y infoPago vacío
+        const resultado = await wixData.query('CHATBOT')
+            .ge('fechaAtencion', unaHoraAntes)
+            .le('fechaAtencion', haceMediaHora) // Solo entre hace 1 hora y hace 30 minutos
+            .contains("atendido", "Atendido")
+            .isEmpty("infoPago")
+            .find();
+
+        if (resultado.items.length === 0) {
+            console.log('No hay registros pendientes por revisar.');
+            return { mensaje: 'No hay registros pendientes.' };
+        }
+
+        for (const item of resultado.items) {
+            const { _id, celular, primerNombre, infoPago } = item;
+
+            // Verificar si infoPago está vacío o no existe
+            if (!Array.isArray(infoPago) || infoPago.length === 0) {
+                // Si infoPago está vacío, enviar el mensaje de recordatorio
+                if (celular) {
+                    const toNumber = `57${celular}`;
+                    const messageBody = `Hola ${primerNombre}! Revisaste tu certificado? Necesito cerrarlo. 
+                    
+Regálame soporte de pago porfa.`;
+
+                    await sendTextMessage(toNumber, messageBody);
+                    console.log(`Mensaje de recordatorio enviado a ${toNumber}`);
+                } else {
+                    console.warn(`No se encontró número de celular para el registro: ${_id}`);
+                }
+            }
+        }
+
+        return { mensaje: 'Mensajes de recordatorio procesados y enviados correctamente.' };
+    } catch (error) {
+        console.error('Error al enviar recordatorios de pago:', error.message);
+        throw new Error('Error al enviar recordatorios de pago.');
+    }
+}
+
+export async function envioLinkMedicoVirtual() {
+    console.log("ENVIANDO LINK MEDICO VIRTUAL");
+
+    try {
+        // Hora actual
+        const ahora = new Date();
+
+        // Calcular la ventana: entre 5 y 6 minutos en el futuro.
+        const cincoMinutosDespues = new Date(ahora.getTime() + 12 * 60 * 1000);
+        const seisMinutosDespues = new Date(ahora.getTime() + 13 * 60 * 1000);
+
+        // Query para obtener los registros con fechaAtencion en la ventana definida
+        const chatbotResult = await wixData.query('CHATBOT')
+            .ge('fechaAtencion', cincoMinutosDespues)
+            .le('fechaAtencion', seisMinutosDespues)
+            .ne("atendido", "ATENDIDO")
+            .find();
+
+        if (chatbotResult.items.length === 0) {
+            return { mensaje: 'No hay registros con fecha de atención en 5 minutos.' };
+        }
+
+        // Procesa cada registro encontrado y envía el mensaje de recordatorio a WhatsApp
+        for (const registro of chatbotResult.items) {
+            const { celular, _id } = registro;
+
+            if (!celular) {
+                console.error(`El registro con ID ${_id} no tiene número de celular.`);
+                continue;
+            }
+
+            // Formar el número de destino (incluyendo el prefijo)
+            const toNumber = `57${celular}`;
+            // Construir la URL incluyendo el _id del registro
+            const url = `https://sea-lion-app-qcttp.ondigitalocean.app/?_id=${_id}`;
+
+            // Mensaje de WhatsApp
+            const messageBody = `Comunícate ya haciendo clic en este link.\n\n${url}`;
+
+            try {
+                console.log(`Enviando recordatorio a ${toNumber}: ${messageBody}`);
+                await sendTextMessage(toNumber, messageBody);
+            } catch (sendError) {
+                console.error(`Error enviando recordatorio a ${toNumber}:`, sendError.message);
+            }
+        }
+
+        return { mensaje: 'Recordatorios enviados correctamente.' };
+
+    } catch (error) {
+        console.error("Error en envioRecordatorioAntes5Min:", error.message);
+        throw new Error("Ha ocurrido un error al procesar los recordatorios.");
+    }
+}
