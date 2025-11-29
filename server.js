@@ -36,11 +36,26 @@ function sendWhatsAppMessage(toNumber, messageBody) {
     });
 }
 
-// Función para enviar alertas de preguntas críticas (solo para empresa SIIGO)
+// Configuración de números de alerta por empresa
+const NUMEROS_ALERTA_POR_EMPRESA = {
+    "SIIGO": [
+        "573008021701",
+        "573045792035",
+        "573138232201"
+    ],
+    "MASIN": [
+        "573112634312",
+        "573008021701"
+    ]
+};
+
+// Función para enviar alertas de preguntas críticas (para empresas SIIGO y MASIN)
 async function enviarAlertasPreguntasCriticas(datos) {
-    // Solo enviar alertas si la empresa es SIIGO
-    if (datos.codEmpresa !== "SIIGO") {
-        console.log('ℹ️ Alertas WhatsApp omitidas - Empresa:', datos.codEmpresa || 'No especificada', '(solo aplica para SIIGO)');
+    // Verificar si la empresa tiene alertas configuradas
+    const numerosAlerta = NUMEROS_ALERTA_POR_EMPRESA[datos.codEmpresa];
+
+    if (!numerosAlerta) {
+        console.log('ℹ️ Alertas WhatsApp omitidas - Empresa:', datos.codEmpresa || 'No especificada', '(solo aplica para SIIGO y MASIN)');
         return;
     }
 
@@ -77,16 +92,9 @@ async function enviarAlertasPreguntasCriticas(datos) {
             `⚠️ *Condiciones reportadas:*\n${alertas.map(a => `• ${a}`).join('\n')}\n\n` +
             `_Revisar historia clínica antes de la consulta._`;
 
-        // Números a notificar (formato internacional sin espacios)
-        const numerosAlerta = [
-            "573008021701",
-            "573045792035",
-            "573138232201"
-        ];
+        console.log('🚨 Enviando alertas de preguntas críticas para empresa', datos.codEmpresa, '...');
 
-        console.log('🚨 Enviando alertas de preguntas críticas...');
-
-        // Enviar a todos los números
+        // Enviar a todos los números de la empresa
         const promesas = numerosAlerta.map(numero => sendWhatsAppMessage(numero, mensaje));
         await Promise.all(promesas);
 
