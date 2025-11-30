@@ -1715,60 +1715,77 @@
         // ========== MODAL: EDITAR ==========
         async function editarOrden(ordenId) {
             try {
-                const response = await fetch(`/api/historia-clinica/${ordenId}`);
-                const result = await response.json();
+                // Cargar datos de HistoriaClinica
+                const ordenResponse = await fetch(`/api/historia-clinica/${ordenId}`);
+                const ordenResult = await ordenResponse.json();
 
-                if (!result.success) {
+                if (!ordenResult.success) {
                     alert('Error al cargar la orden');
                     return;
                 }
 
-                formularioActual = result.data;
+                const orden = ordenResult.data;
+                let formulario = null;
 
-                // Fill form with orden data
-                document.getElementById('edit-id').value = formularioActual._id || '';
-                document.getElementById('edit-wix_id').value = formularioActual._id || '';
-                document.getElementById('edit-genero').value = '';
-                document.getElementById('edit-edad').value = '';
-                document.getElementById('edit-fecha_nacimiento').value = '';
-                document.getElementById('edit-lugar_nacimiento').value = '';
-                document.getElementById('edit-ciudad_residencia').value = formularioActual.ciudad || '';
-                document.getElementById('edit-estado_civil').value = '';
-                document.getElementById('edit-hijos').value = '';
-                document.getElementById('edit-nivel_educativo').value = '';
-                document.getElementById('edit-email').value = '';
-                document.getElementById('edit-eps').value = '';
-                document.getElementById('edit-arl').value = '';
-                document.getElementById('edit-pensiones').value = '';
-                document.getElementById('edit-profesion_oficio').value = '';
-                document.getElementById('edit-empresa1').value = formularioActual.empresa || '';
-                document.getElementById('edit-empresa2').value = '';
-                document.getElementById('edit-estatura').value = '';
-                document.getElementById('edit-peso').value = '';
-                document.getElementById('edit-ejercicio').value = '';
+                // Buscar formulario por numeroId si existe
+                if (orden.numeroId) {
+                    try {
+                        const formResponse = await fetch(`/api/formularios/buscar/${orden.numeroId}`);
+                        const formResult = await formResponse.json();
+                        if (formResult.success && formResult.data) {
+                            formulario = formResult.data;
+                        }
+                    } catch (e) {
+                        console.log('No se encontró formulario para este paciente');
+                    }
+                }
+
+                formularioActual = { orden, formulario };
+
+                // Fill form with formulario data (if exists) or empty
+                document.getElementById('edit-id').value = formulario?.id || '';
+                document.getElementById('edit-wix_id').value = formulario?.wix_id || orden._id || '';
+                document.getElementById('edit-genero').value = formulario?.genero || '';
+                document.getElementById('edit-edad').value = formulario?.edad || '';
+                document.getElementById('edit-fecha_nacimiento').value = formulario?.fecha_nacimiento || '';
+                document.getElementById('edit-lugar_nacimiento').value = formulario?.lugar_nacimiento || '';
+                document.getElementById('edit-ciudad_residencia').value = formulario?.ciudad_residencia || orden.ciudad || '';
+                document.getElementById('edit-estado_civil').value = formulario?.estado_civil || '';
+                document.getElementById('edit-hijos').value = formulario?.hijos || '';
+                document.getElementById('edit-nivel_educativo').value = formulario?.nivel_educativo || '';
+                document.getElementById('edit-email').value = formulario?.email || '';
+                document.getElementById('edit-eps').value = formulario?.eps || '';
+                document.getElementById('edit-arl').value = formulario?.arl || '';
+                document.getElementById('edit-pensiones').value = formulario?.pensiones || '';
+                document.getElementById('edit-profesion_oficio').value = formulario?.profesion_oficio || '';
+                document.getElementById('edit-empresa1').value = formulario?.empresa1 || orden.empresa || '';
+                document.getElementById('edit-empresa2').value = formulario?.empresa2 || '';
+                document.getElementById('edit-estatura').value = formulario?.estatura || '';
+                document.getElementById('edit-peso').value = formulario?.peso || '';
+                document.getElementById('edit-ejercicio').value = formulario?.ejercicio || '';
 
                 // Historia Clínica section - always show for orders
                 const seccionHC = document.getElementById('seccionHistoriaClinica');
                 seccionHC.style.display = 'block';
 
-                document.getElementById('edit-hc-id').value = formularioActual._id || '';
-                document.getElementById('edit-hc-tipoExamen').value = formularioActual.tipoExamen || '';
-                document.getElementById('edit-hc-cargo').value = formularioActual.cargo || '';
-                document.getElementById('edit-hc-medico').value = formularioActual.medico || '';
-                document.getElementById('edit-hc-atendido').value = formularioActual.atendido || '';
-                document.getElementById('edit-hc-pvEstado').value = formularioActual.pvEstado || '';
-                document.getElementById('edit-hc-talla').value = formularioActual.talla || '';
-                document.getElementById('edit-hc-peso').value = formularioActual.peso || '';
-                document.getElementById('edit-hc-motivoConsulta').value = formularioActual.motivoConsulta || '';
-                document.getElementById('edit-hc-diagnostico').value = formularioActual.diagnostico || '';
-                document.getElementById('edit-hc-mdDx1').value = formularioActual.mdDx1 || '';
-                document.getElementById('edit-hc-mdDx2').value = formularioActual.mdDx2 || '';
-                document.getElementById('edit-hc-tratamiento').value = formularioActual.tratamiento || '';
-                document.getElementById('edit-hc-mdConceptoFinal').value = formularioActual.mdConceptoFinal || '';
-                document.getElementById('edit-hc-mdRecomendacionesMedicasAdicionales').value = formularioActual.mdRecomendacionesMedicasAdicionales || '';
-                document.getElementById('edit-hc-mdObservacionesCertificado').value = formularioActual.mdObservacionesCertificado || '';
-                document.getElementById('edit-hc-mdAntecedentes').value = formularioActual.mdAntecedentes || '';
-                document.getElementById('edit-hc-mdObsParaMiDocYa').value = formularioActual.mdObsParaMiDocYa || '';
+                document.getElementById('edit-hc-id').value = orden._id || '';
+                document.getElementById('edit-hc-tipoExamen').value = orden.tipoExamen || '';
+                document.getElementById('edit-hc-cargo').value = orden.cargo || '';
+                document.getElementById('edit-hc-medico').value = orden.medico || '';
+                document.getElementById('edit-hc-atendido').value = orden.atendido || '';
+                document.getElementById('edit-hc-pvEstado').value = orden.pvEstado || '';
+                document.getElementById('edit-hc-talla').value = orden.talla || '';
+                document.getElementById('edit-hc-peso').value = orden.peso || '';
+                document.getElementById('edit-hc-motivoConsulta').value = orden.motivoConsulta || '';
+                document.getElementById('edit-hc-diagnostico').value = orden.diagnostico || '';
+                document.getElementById('edit-hc-mdDx1').value = orden.mdDx1 || '';
+                document.getElementById('edit-hc-mdDx2').value = orden.mdDx2 || '';
+                document.getElementById('edit-hc-tratamiento').value = orden.tratamiento || '';
+                document.getElementById('edit-hc-mdConceptoFinal').value = orden.mdConceptoFinal || '';
+                document.getElementById('edit-hc-mdRecomendacionesMedicasAdicionales').value = orden.mdRecomendacionesMedicasAdicionales || '';
+                document.getElementById('edit-hc-mdObservacionesCertificado').value = orden.mdObservacionesCertificado || '';
+                document.getElementById('edit-hc-mdAntecedentes').value = orden.mdAntecedentes || '';
+                document.getElementById('edit-hc-mdObsParaMiDocYa').value = orden.mdObsParaMiDocYa || '';
 
                 document.getElementById('modalEdicion').classList.add('active');
             } catch (error) {
@@ -1793,7 +1810,8 @@
                 const formData = new FormData(event.target);
                 const allData = Object.fromEntries(formData.entries());
 
-                // Build historia clinica data
+                // Separar datos de formularios y historia clínica
+                const formulariosData = {};
                 const historiaClinicaData = {};
 
                 for (const [key, value] of Object.entries(allData)) {
@@ -1802,27 +1820,44 @@
                         if (campo !== 'id' && value !== '') {
                             historiaClinicaData[campo] = value;
                         }
+                    } else if (key !== 'id' && value !== '') {
+                        formulariosData[key] = value;
                     }
                 }
 
-                const ordenId = allData.id || allData.hc_id;
+                const formId = allData.id;
+                const ordenId = allData.hc_id;
 
+                // Guardar datos de formularios si existe el ID
+                if (formId && Object.keys(formulariosData).length > 0) {
+                    const formResponse = await fetch(`/api/formularios/${formId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formulariosData)
+                    });
+
+                    const formResult = await formResponse.json();
+                    if (!formResult.success) {
+                        console.warn('No se pudo actualizar formularios:', formResult.error);
+                    }
+                }
+
+                // Guardar datos de historia clínica
                 if (ordenId && Object.keys(historiaClinicaData).length > 0) {
-                    const response = await fetch(`/api/historia-clinica/${ordenId}`, {
+                    const hcResponse = await fetch(`/api/historia-clinica/${ordenId}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(historiaClinicaData)
                     });
 
-                    const result = await response.json();
-
-                    if (!result.success) {
-                        alert('Error al actualizar: ' + (result.error || 'Error desconocido'));
+                    const hcResult = await hcResponse.json();
+                    if (!hcResult.success) {
+                        alert('Error al actualizar historia clínica: ' + (hcResult.error || 'Error desconocido'));
                         return;
                     }
                 }
 
-                alert('✓ Orden actualizada');
+                alert('✓ Datos actualizados');
                 cerrarModalEdicion();
                 delete detallesCache[ordenId];
                 cargarFormularios();
