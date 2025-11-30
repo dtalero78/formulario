@@ -82,8 +82,8 @@
         }
 
         .nav-item.active {
-            background: #EEF2FF;
-            color: #4F46E5;
+            background: #E6F7FA;
+            color: #0099B2;
         }
 
         .nav-icon {
@@ -174,7 +174,7 @@
 
         .search-input:focus {
             outline: none;
-            border-color: #4F46E5;
+            border-color: #0099B2;
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
@@ -235,6 +235,7 @@
         .data-table tbody tr {
             border-bottom: 1px solid #F3F4F6;
             transition: background 0.15s ease;
+            cursor: pointer;
         }
 
         .data-table tbody tr:last-child {
@@ -243,6 +244,10 @@
 
         .data-table tbody tr:hover {
             background: #F9FAFB;
+        }
+
+        .data-table tbody tr:active {
+            background: #F3F4F6;
         }
 
         .data-table td {
@@ -365,8 +370,8 @@
         }
 
         .btn-icon.view:hover {
-            background: #EEF2FF;
-            color: #4F46E5;
+            background: #E6F7FA;
+            color: #0099B2;
         }
 
         .btn-icon.disabled {
@@ -409,7 +414,7 @@
             width: 32px;
             height: 32px;
             border: 3px solid #E5E7EB;
-            border-top-color: #4F46E5;
+            border-top-color: #0099B2;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
             margin: 0 auto 16px;
@@ -581,7 +586,7 @@
 
         .detail-banner {
             padding: 12px 16px;
-            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            background: linear-gradient(135deg, #0099B2, #007A8C);
             border-radius: 8px;
             color: white;
             font-weight: 600;
@@ -623,7 +628,7 @@
 
         .form-input:focus {
             outline: none;
-            border-color: #4F46E5;
+            border-color: #0099B2;
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
@@ -657,7 +662,7 @@
         }
 
         .btn-primary {
-            background: #4F46E5;
+            background: #0099B2;
             color: white;
         }
 
@@ -876,8 +881,8 @@
             }
 
             .mobile-card-btn.primary {
-                background: #4F46E5;
-                border-color: #4F46E5;
+                background: #0099B2;
+                border-color: #0099B2;
                 color: white;
             }
 
@@ -1314,7 +1319,7 @@
                 const statusClass = getStatusClass(form.estado_atencion);
 
                 return `
-                    <tr>
+                    <tr onclick="abrirModalDetalles(${form.id})">
                         <td>
                             <div class="cell-name">
                                 <div class="avatar">${getInitials(form.primer_nombre, form.primer_apellido)}</div>
@@ -1335,7 +1340,7 @@
                         </td>
                         <td>${formatearFecha(form.fecha_consulta)}</td>
                         <td>
-                            <div class="actions-cell">
+                            <div class="actions-cell" onclick="event.stopPropagation()">
                                 <a href="https://bsl-utilidades-yp78a.ondigitalocean.app/static/solicitar-certificado.html?id=${wixId}"
                                    target="_blank"
                                    class="btn-icon whatsapp ${!hasWixId ? 'disabled' : ''}"
@@ -1344,7 +1349,6 @@
                                    target="_blank"
                                    class="btn-icon download ${!hasWixId ? 'disabled' : ''}"
                                    title="Descargar certificado">📥</a>
-                                <button class="btn-icon view" onclick="abrirModalDetalles(${form.id})" title="Ver detalles">👁️</button>
                             </div>
                         </td>
                     </tr>
