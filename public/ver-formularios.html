@@ -520,7 +520,238 @@
             border-radius: 0 0 12px 12px;
         }
 
-        /* ========== DETAIL MODAL ========== */
+        /* ========== DETAIL MODAL - Profile Style ========== */
+        .profile-header {
+            text-align: center;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #E5E7EB;
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0099B2, #007A8C);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0 auto 16px;
+            border: 3px solid #E5E7EB;
+        }
+
+        .profile-avatar.has-photo {
+            padding: 0;
+            overflow: hidden;
+            background: #F3F4F6;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .profile-subtitle {
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .profile-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .profile-status.atendido {
+            background: #ECFDF5;
+            color: #059669;
+        }
+
+        .profile-status.pendiente {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+        }
+
+        .detail-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+        }
+
+        .detail-field {
+            padding: 12px 0;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .detail-field:last-child {
+            border-bottom: none;
+        }
+
+        .detail-field-label {
+            font-size: 13px;
+            color: #6B7280;
+            margin-bottom: 4px;
+        }
+
+        .detail-field-value {
+            font-size: 15px;
+            color: #111827;
+            font-weight: 500;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0;
+        }
+
+        .detail-grid .detail-field {
+            padding: 12px 16px 12px 0;
+        }
+
+        .detail-grid .detail-field:nth-child(even) {
+            padding-left: 16px;
+            border-left: 1px solid #F3F4F6;
+        }
+
+        .detail-card {
+            background: #F9FAFB;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .detail-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .detail-card-icon.blue {
+            background: #E0F2FE;
+        }
+
+        .detail-card-icon.green {
+            background: #ECFDF5;
+        }
+
+        .detail-card-icon.yellow {
+            background: #FEF3C7;
+        }
+
+        .detail-card-icon.purple {
+            background: #F3E8FF;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 12px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+            margin-top: 20px;
+        }
+
+        .detail-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .detail-banner {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .detail-banner.success {
+            background: #ECFDF5;
+            border: 1px solid #A7F3D0;
+        }
+
+        .detail-banner.success .banner-icon {
+            background: #10B981;
+            color: white;
+        }
+
+        .detail-banner.warning {
+            background: #FEF3C7;
+            border: 1px solid #FCD34D;
+        }
+
+        .detail-banner.warning .banner-icon {
+            background: #F59E0B;
+            color: white;
+        }
+
+        .banner-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .banner-content {
+            flex: 1;
+        }
+
+        .banner-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .banner-subtitle {
+            font-size: 13px;
+            color: #6B7280;
+            margin-top: 2px;
+        }
+
+        /* Legacy support */
         .detail-photo {
             text-align: center;
             margin-bottom: 24px;
@@ -532,31 +763,6 @@
             border-radius: 12px;
             object-fit: cover;
             border: 3px solid #E5E7EB;
-        }
-
-        .detail-section {
-            margin-bottom: 24px;
-        }
-
-        .detail-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .detail-section-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: #6B7280;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #E5E7EB;
-        }
-
-        .detail-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
         }
 
         .detail-item {
@@ -582,16 +788,6 @@
             font-size: 14px;
             color: #111827;
             font-weight: 500;
-        }
-
-        .detail-banner {
-            padding: 12px 16px;
-            background: linear-gradient(135deg, #0099B2, #007A8C);
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            text-align: center;
-            margin: 24px 0;
         }
 
         /* ========== FORM STYLES ========== */
@@ -1560,8 +1756,12 @@
             const form = datos.formulario;
 
             const nombreCompleto = `${orden.primerNombre || ''} ${orden.segundoNombre || ''} ${orden.primerApellido || ''} ${orden.segundoApellido || ''}`.replace(/\s+/g, ' ').trim() || 'Sin nombre';
-            document.getElementById('modalDetallesTitulo').textContent = nombreCompleto;
-            document.getElementById('modalDetallesSubtitulo').textContent = `Cédula: ${orden.numeroId || 'N/A'} • ID: ${orden._id}`;
+            const initials = getInitials(orden.primerNombre, orden.primerApellido);
+            const isAtendido = orden.atendido && orden.atendido.toUpperCase() === 'ATENDIDO';
+
+            // Hide header titles (we'll show in body)
+            document.getElementById('modalDetallesTitulo').textContent = '';
+            document.getElementById('modalDetallesSubtitulo').textContent = '';
 
             // Configure buttons
             document.getElementById('btnEditarFromModal').onclick = () => {
@@ -1573,137 +1773,230 @@
             };
 
             const body = document.getElementById('modalDetallesBody');
-            const fechaCreacion = orden._createdDate ? new Date(orden._createdDate).toLocaleString('es-CO') : '—';
-            const fechaConsulta = orden.fechaConsulta ? new Date(orden.fechaConsulta).toLocaleString('es-CO') : '—';
 
-            // Sección de formulario (si existe)
-            let formularioHTML = '';
+            // Build formulario section
+            let formularioSection = '';
             if (form) {
-                formularioHTML = `
-                    <div class="detail-banner" style="background: linear-gradient(135deg, #10B981, #059669);">📋 Formulario Médico Diligenciado</div>
-
-                    ${form.foto ? `<div class="detail-photo"><img src="${form.foto}" alt="Foto"></div>` : ''}
-
-                    <div class="detail-section">
-                        <div class="detail-section-title">Datos Personales (Formulario)</div>
-                        <div class="detail-grid">
-                            <div class="detail-item"><div class="detail-label">Género</div><div class="detail-value">${form.genero || '—'}</div></div>
-                            <div class="detail-item"><div class="detail-label">Edad</div><div class="detail-value">${form.edad || '—'} años</div></div>
-                            <div class="detail-item"><div class="detail-label">Fecha Nacimiento</div><div class="detail-value">${form.fecha_nacimiento || '—'}</div></div>
-                            <div class="detail-item"><div class="detail-label">Lugar Nacimiento</div><div class="detail-value">${form.lugar_nacimiento || '—'}</div></div>
-                            <div class="detail-item"><div class="detail-label">Ciudad Residencia</div><div class="detail-value">${form.ciudad_residencia || '—'}</div></div>
-                            <div class="detail-item"><div class="detail-label">Estado Civil</div><div class="detail-value">${form.estado_civil || '—'}</div></div>
-                            <div class="detail-item"><div class="detail-label">Hijos</div><div class="detail-value">${form.hijos || '—'}</div></div>
-                            <div class="detail-item"><div class="detail-label">Nivel Educativo</div><div class="detail-value">${form.nivel_educativo || '—'}</div></div>
-                            <div class="detail-item full"><div class="detail-label">Email</div><div class="detail-value">${form.email || '—'}</div></div>
+                formularioSection = `
+                    <div class="detail-banner success">
+                        <div class="banner-icon">✓</div>
+                        <div class="banner-content">
+                            <div class="banner-title">Formulario Diligenciado</div>
+                            <div class="banner-subtitle">El paciente completó el formulario médico</div>
                         </div>
                     </div>
 
-                    ${form.eps || form.arl || form.pensiones ? `
-                        <div class="detail-section">
-                            <div class="detail-section-title">Seguridad Social</div>
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <div class="detail-card-icon blue">👤</div>
+                            Datos Personales
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Género</div>
+                            <div class="detail-field-value">${form.genero || '—'}</div>
+                        </div>
+                        <div class="detail-grid">
+                            <div class="detail-field">
+                                <div class="detail-field-label">Edad</div>
+                                <div class="detail-field-value">${form.edad || '—'} años</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-field-label">Fecha Nacimiento</div>
+                                <div class="detail-field-value">${form.fecha_nacimiento || '—'}</div>
+                            </div>
+                        </div>
+                        <div class="detail-grid">
+                            <div class="detail-field">
+                                <div class="detail-field-label">Estado Civil</div>
+                                <div class="detail-field-value">${form.estado_civil || '—'}</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-field-label">Hijos</div>
+                                <div class="detail-field-value">${form.hijos || '—'}</div>
+                            </div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Email</div>
+                            <div class="detail-field-value">${form.email || '—'}</div>
+                        </div>
+                    </div>
+
+                    ${form.eps || form.arl ? `
+                        <div class="detail-card">
+                            <div class="detail-card-title">
+                                <div class="detail-card-icon green">🏥</div>
+                                Seguridad Social
+                            </div>
                             <div class="detail-grid">
-                                <div class="detail-item"><div class="detail-label">EPS</div><div class="detail-value">${form.eps || '—'}</div></div>
-                                <div class="detail-item"><div class="detail-label">ARL</div><div class="detail-value">${form.arl || '—'}</div></div>
-                                <div class="detail-item full"><div class="detail-label">Fondo Pensiones</div><div class="detail-value">${form.pensiones || '—'}</div></div>
+                                <div class="detail-field">
+                                    <div class="detail-field-label">EPS</div>
+                                    <div class="detail-field-value">${form.eps || '—'}</div>
+                                </div>
+                                <div class="detail-field">
+                                    <div class="detail-field-label">ARL</div>
+                                    <div class="detail-field-value">${form.arl || '—'}</div>
+                                </div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-field-label">Fondo Pensiones</div>
+                                <div class="detail-field-value">${form.pensiones || '—'}</div>
                             </div>
                         </div>
                     ` : ''}
 
-                    <div class="detail-section">
-                        <div class="detail-section-title">Datos Laborales (Formulario)</div>
-                        <div class="detail-grid">
-                            <div class="detail-item full"><div class="detail-label">Profesión/Oficio</div><div class="detail-value">${form.profesion_oficio || '—'}</div></div>
-                            <div class="detail-item"><div class="detail-label">Empresa 1</div><div class="detail-value">${form.empresa1 || '—'}</div></div>
-                            <div class="detail-item"><div class="detail-label">Empresa 2</div><div class="detail-value">${form.empresa2 || '—'}</div></div>
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <div class="detail-card-icon yellow">📏</div>
+                            Datos Físicos
                         </div>
-                    </div>
-
-                    <div class="detail-section">
-                        <div class="detail-section-title">Datos Físicos</div>
                         <div class="detail-grid">
-                            <div class="detail-item"><div class="detail-label">Estatura</div><div class="detail-value">${form.estatura || '—'} cm</div></div>
-                            <div class="detail-item"><div class="detail-label">Peso</div><div class="detail-value">${form.peso || '—'} kg</div></div>
-                            <div class="detail-item full"><div class="detail-label">Ejercicio</div><div class="detail-value">${form.ejercicio || '—'}</div></div>
+                            <div class="detail-field">
+                                <div class="detail-field-label">Estatura</div>
+                                <div class="detail-field-value">${form.estatura || '—'} cm</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-field-label">Peso</div>
+                                <div class="detail-field-value">${form.peso || '—'} kg</div>
+                            </div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Ejercicio</div>
+                            <div class="detail-field-value">${form.ejercicio || '—'}</div>
                         </div>
                     </div>
 
                     ${form.firma ? `
-                        <div class="detail-section">
-                            <div class="detail-section-title">Firma del Paciente</div>
-                            <div style="text-align: center; padding: 16px; background: #F9FAFB; border-radius: 8px;">
-                                <img src="${form.firma}" alt="Firma" style="max-width: 200px; border-radius: 4px;">
+                        <div class="detail-card">
+                            <div class="detail-card-title">
+                                <div class="detail-card-icon purple">✍️</div>
+                                Firma del Paciente
+                            </div>
+                            <div style="text-align: center; padding: 12px;">
+                                <img src="${form.firma}" alt="Firma" style="max-width: 180px; border-radius: 8px; border: 1px solid #E5E7EB;">
                             </div>
                         </div>
                     ` : ''}
                 `;
             } else {
-                formularioHTML = `
-                    <div style="background: #FEF3C7; border: 1px solid #F59E0B; border-radius: 8px; padding: 16px; margin: 20px 0; text-align: center;">
-                        <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
-                        <div style="font-weight: 600; color: #92400E;">Formulario Pendiente</div>
-                        <div style="font-size: 13px; color: #B45309;">El paciente aún no ha diligenciado el formulario médico</div>
+                formularioSection = `
+                    <div class="detail-banner warning">
+                        <div class="banner-icon">⏳</div>
+                        <div class="banner-content">
+                            <div class="banner-title">Formulario Pendiente</div>
+                            <div class="banner-subtitle">El paciente aún no ha diligenciado el formulario</div>
+                        </div>
                     </div>
                 `;
             }
 
             body.innerHTML = `
-                <div class="detail-section">
-                    <div class="detail-section-title">Información de la Orden</div>
-                    <div class="detail-grid">
-                        <div class="detail-item"><div class="detail-label">Primer Nombre</div><div class="detail-value">${orden.primerNombre || '—'}</div></div>
-                        <div class="detail-item"><div class="detail-label">Segundo Nombre</div><div class="detail-value">${orden.segundoNombre || '—'}</div></div>
-                        <div class="detail-item"><div class="detail-label">Primer Apellido</div><div class="detail-value">${orden.primerApellido || '—'}</div></div>
-                        <div class="detail-item"><div class="detail-label">Segundo Apellido</div><div class="detail-value">${orden.segundoApellido || '—'}</div></div>
-                        <div class="detail-item"><div class="detail-label">Cédula</div><div class="detail-value">${orden.numeroId || '—'}</div></div>
-                        <div class="detail-item"><div class="detail-label">Celular</div><div class="detail-value">${orden.celular || '—'}</div></div>
-                        <div class="detail-item"><div class="detail-label">Ciudad</div><div class="detail-value">${orden.ciudad || '—'}</div></div>
-                        <div class="detail-item"><div class="detail-label">Fecha Creación</div><div class="detail-value">${fechaCreacion}</div></div>
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="profile-avatar ${form?.foto ? 'has-photo' : ''}">
+                        ${form?.foto ? `<img src="${form.foto}" alt="Foto">` : initials}
+                    </div>
+                    <div class="profile-name">${nombreCompleto}</div>
+                    <div class="profile-subtitle">${orden.cargo || 'Sin cargo'} • ${orden.codEmpresa || 'Sin empresa'}</div>
+                    <div class="profile-status ${isAtendido ? 'atendido' : 'pendiente'}">
+                        <span>${isAtendido ? '✓' : '○'}</span>
+                        ${isAtendido ? 'Atendido' : 'Pendiente'}
                     </div>
                 </div>
 
-                <div class="detail-section">
-                    <div class="detail-section-title">Información Laboral</div>
-                    <div class="detail-grid">
-                        <div class="detail-item"><div class="detail-label">Empresa</div><div class="detail-value">${orden.empresa || '—'}</div></div>
-                        <div class="detail-item"><div class="detail-label">Código Empresa</div><div class="detail-value">${orden.codEmpresa || '—'}</div></div>
-                        <div class="detail-item"><div class="detail-label">Cargo</div><div class="detail-value">${orden.cargo || '—'}</div></div>
+                <!-- Info Cards -->
+                <div class="detail-card">
+                    <div class="detail-card-title">
+                        <div class="detail-card-icon blue">📋</div>
+                        Información de la Orden
                     </div>
-                </div>
-
-                <div class="detail-section">
-                    <div class="detail-section-title">Información del Examen</div>
                     <div class="detail-grid">
-                        <div class="detail-item"><div class="detail-label">Tipo de Examen</div><div class="detail-value">${orden.tipoExamen || '—'}</div></div>
-                        <div class="detail-item"><div class="detail-label">Estado</div><div class="detail-value"><span class="status-badge ${getStatusClass(orden.atendido)}"><span class="status-dot"></span>${orden.atendido || 'PENDIENTE'}</span></div></div>
-                        <div class="detail-item"><div class="detail-label">Médico</div><div class="detail-value">${orden.medico || '—'}</div></div>
-                        <div class="detail-item"><div class="detail-label">Fecha Consulta</div><div class="detail-value">${fechaConsulta}</div></div>
-                        ${orden.examenes ? `<div class="detail-item full"><div class="detail-label">Exámenes</div><div class="detail-value">${orden.examenes}</div></div>` : ''}
+                        <div class="detail-field">
+                            <div class="detail-field-label">Cédula</div>
+                            <div class="detail-field-value">${orden.numeroId || '—'}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Celular</div>
+                            <div class="detail-field-value">${orden.celular || '—'}</div>
+                        </div>
                     </div>
+                    <div class="detail-grid">
+                        <div class="detail-field">
+                            <div class="detail-field-label">Ciudad</div>
+                            <div class="detail-field-value">${orden.ciudad || '—'}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Tipo Examen</div>
+                            <div class="detail-field-value">${orden.tipoExamen || '—'}</div>
+                        </div>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-field">
+                            <div class="detail-field-label">Empresa</div>
+                            <div class="detail-field-value">${orden.empresa || '—'}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Médico</div>
+                            <div class="detail-field-value">${orden.medico || '—'}</div>
+                        </div>
+                    </div>
+                    ${orden.examenes ? `
+                        <div class="detail-field">
+                            <div class="detail-field-label">Exámenes</div>
+                            <div class="detail-field-value">${orden.examenes}</div>
+                        </div>
+                    ` : ''}
                 </div>
 
                 ${orden.diagnostico || orden.mdDx1 || orden.mdConceptoFinal ? `
-                    <div class="detail-section">
-                        <div class="detail-section-title">Diagnóstico y Concepto</div>
-                        <div class="detail-grid">
-                            ${orden.diagnostico ? `<div class="detail-item full"><div class="detail-label">Diagnóstico</div><div class="detail-value">${orden.diagnostico}</div></div>` : ''}
-                            ${orden.mdDx1 ? `<div class="detail-item"><div class="detail-label">DX1 (CIE-10)</div><div class="detail-value">${orden.mdDx1}</div></div>` : ''}
-                            ${orden.mdDx2 ? `<div class="detail-item"><div class="detail-label">DX2 (CIE-10)</div><div class="detail-value">${orden.mdDx2}</div></div>` : ''}
-                            ${orden.mdConceptoFinal ? `<div class="detail-item full"><div class="detail-label">Concepto Final</div><div class="detail-value">${orden.mdConceptoFinal}</div></div>` : ''}
-                            ${orden.tratamiento ? `<div class="detail-item full"><div class="detail-label">Tratamiento</div><div class="detail-value">${orden.tratamiento}</div></div>` : ''}
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <div class="detail-card-icon green">🩺</div>
+                            Diagnóstico y Concepto
                         </div>
+                        ${orden.diagnostico ? `
+                            <div class="detail-field">
+                                <div class="detail-field-label">Diagnóstico</div>
+                                <div class="detail-field-value">${orden.diagnostico}</div>
+                            </div>
+                        ` : ''}
+                        ${orden.mdDx1 || orden.mdDx2 ? `
+                            <div class="detail-grid">
+                                ${orden.mdDx1 ? `
+                                    <div class="detail-field">
+                                        <div class="detail-field-label">DX1 (CIE-10)</div>
+                                        <div class="detail-field-value">${orden.mdDx1}</div>
+                                    </div>
+                                ` : ''}
+                                ${orden.mdDx2 ? `
+                                    <div class="detail-field">
+                                        <div class="detail-field-label">DX2 (CIE-10)</div>
+                                        <div class="detail-field-value">${orden.mdDx2}</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        ` : ''}
+                        ${orden.mdConceptoFinal ? `
+                            <div class="detail-field">
+                                <div class="detail-field-label">Concepto Final</div>
+                                <div class="detail-field-value">${orden.mdConceptoFinal}</div>
+                            </div>
+                        ` : ''}
+                        ${orden.tratamiento ? `
+                            <div class="detail-field">
+                                <div class="detail-field-label">Tratamiento</div>
+                                <div class="detail-field-value">${orden.tratamiento}</div>
+                            </div>
+                        ` : ''}
                     </div>
                 ` : ''}
 
-                ${formularioHTML}
+                ${formularioSection}
 
-                <div class="detail-section">
-                    <div class="detail-section-title">Acciones Rápidas</div>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <a href="/?_id=${orden._id}" target="_blank" class="btn btn-primary">📝 Abrir Formulario</a>
-                        <a href="https://bsl-utilidades-yp78a.ondigitalocean.app/static/solicitar-certificado.html?id=${orden._id}" target="_blank" class="btn btn-secondary">📱 WhatsApp</a>
-                        <a href="https://bsl-utilidades-yp78a.ondigitalocean.app/generar-certificado-desde-wix/${orden._id}" target="_blank" class="btn btn-secondary">📥 Certificado</a>
-                    </div>
+                <!-- Actions -->
+                <div class="detail-actions">
+                    <a href="/?_id=${orden._id}" target="_blank" class="btn btn-primary">📝 Formulario</a>
+                    <a href="https://bsl-utilidades-yp78a.ondigitalocean.app/static/solicitar-certificado.html?id=${orden._id}" target="_blank" class="btn btn-secondary">📱 WhatsApp</a>
+                    <a href="https://bsl-utilidades-yp78a.ondigitalocean.app/generar-certificado-desde-wix/${orden._id}" target="_blank" class="btn btn-secondary">📥 Certificado</a>
                 </div>
             `;
         }
