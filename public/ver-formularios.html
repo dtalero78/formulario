@@ -1758,6 +1758,8 @@
             const nombreCompleto = `${orden.primerNombre || ''} ${orden.segundoNombre || ''} ${orden.primerApellido || ''} ${orden.segundoApellido || ''}`.replace(/\s+/g, ' ').trim() || 'Sin nombre';
             const initials = getInitials(orden.primerNombre, orden.primerApellido);
             const isAtendido = orden.atendido && orden.atendido.toUpperCase() === 'ATENDIDO';
+            const fechaCreacion = orden._createdDate ? new Date(orden._createdDate).toLocaleString('es-CO') : '—';
+            const fechaConsulta = orden.fechaConsulta ? new Date(orden.fechaConsulta).toLocaleString('es-CO') : '—';
 
             // Hide header titles (we'll show in body)
             document.getElementById('modalDetallesTitulo').textContent = '';
@@ -1789,30 +1791,46 @@
                     <div class="detail-card">
                         <div class="detail-card-title">
                             <div class="detail-card-icon blue">👤</div>
-                            Datos Personales
-                        </div>
-                        <div class="detail-field">
-                            <div class="detail-field-label">Género</div>
-                            <div class="detail-field-value">${form.genero || '—'}</div>
+                            Datos Personales (Formulario)
                         </div>
                         <div class="detail-grid">
+                            <div class="detail-field">
+                                <div class="detail-field-label">Género</div>
+                                <div class="detail-field-value">${form.genero || '—'}</div>
+                            </div>
                             <div class="detail-field">
                                 <div class="detail-field-label">Edad</div>
                                 <div class="detail-field-value">${form.edad || '—'} años</div>
                             </div>
+                        </div>
+                        <div class="detail-grid">
                             <div class="detail-field">
                                 <div class="detail-field-label">Fecha Nacimiento</div>
                                 <div class="detail-field-value">${form.fecha_nacimiento || '—'}</div>
                             </div>
+                            <div class="detail-field">
+                                <div class="detail-field-label">Lugar Nacimiento</div>
+                                <div class="detail-field-value">${form.lugar_nacimiento || '—'}</div>
+                            </div>
                         </div>
                         <div class="detail-grid">
+                            <div class="detail-field">
+                                <div class="detail-field-label">Ciudad Residencia</div>
+                                <div class="detail-field-value">${form.ciudad_residencia || '—'}</div>
+                            </div>
                             <div class="detail-field">
                                 <div class="detail-field-label">Estado Civil</div>
                                 <div class="detail-field-value">${form.estado_civil || '—'}</div>
                             </div>
+                        </div>
+                        <div class="detail-grid">
                             <div class="detail-field">
                                 <div class="detail-field-label">Hijos</div>
                                 <div class="detail-field-value">${form.hijos || '—'}</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-field-label">Nivel Educativo</div>
+                                <div class="detail-field-value">${form.nivel_educativo || '—'}</div>
                             </div>
                         </div>
                         <div class="detail-field">
@@ -1821,7 +1839,7 @@
                         </div>
                     </div>
 
-                    ${form.eps || form.arl ? `
+                    ${form.eps || form.arl || form.pensiones ? `
                         <div class="detail-card">
                             <div class="detail-card-title">
                                 <div class="detail-card-icon green">🏥</div>
@@ -1846,7 +1864,28 @@
 
                     <div class="detail-card">
                         <div class="detail-card-title">
-                            <div class="detail-card-icon yellow">📏</div>
+                            <div class="detail-card-icon yellow">💼</div>
+                            Datos Laborales (Formulario)
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Profesión/Oficio</div>
+                            <div class="detail-field-value">${form.profesion_oficio || '—'}</div>
+                        </div>
+                        <div class="detail-grid">
+                            <div class="detail-field">
+                                <div class="detail-field-label">Empresa 1</div>
+                                <div class="detail-field-value">${form.empresa1 || '—'}</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-field-label">Empresa 2</div>
+                                <div class="detail-field-value">${form.empresa2 || '—'}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <div class="detail-card-icon purple">📏</div>
                             Datos Físicos
                         </div>
                         <div class="detail-grid">
@@ -1868,7 +1907,7 @@
                     ${form.firma ? `
                         <div class="detail-card">
                             <div class="detail-card-title">
-                                <div class="detail-card-icon purple">✍️</div>
+                                <div class="detail-card-icon blue">✍️</div>
                                 Firma del Paciente
                             </div>
                             <div style="text-align: center; padding: 12px;">
@@ -1903,11 +1942,31 @@
                     </div>
                 </div>
 
-                <!-- Info Cards -->
+                <!-- HISTORIA CLINICA: Información de la Orden -->
                 <div class="detail-card">
                     <div class="detail-card-title">
                         <div class="detail-card-icon blue">📋</div>
                         Información de la Orden
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-field">
+                            <div class="detail-field-label">Primer Nombre</div>
+                            <div class="detail-field-value">${orden.primerNombre || '—'}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Segundo Nombre</div>
+                            <div class="detail-field-value">${orden.segundoNombre || '—'}</div>
+                        </div>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-field">
+                            <div class="detail-field-label">Primer Apellido</div>
+                            <div class="detail-field-value">${orden.primerApellido || '—'}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Segundo Apellido</div>
+                            <div class="detail-field-value">${orden.segundoApellido || '—'}</div>
+                        </div>
                     </div>
                     <div class="detail-grid">
                         <div class="detail-field">
@@ -1925,9 +1984,17 @@
                             <div class="detail-field-value">${orden.ciudad || '—'}</div>
                         </div>
                         <div class="detail-field">
-                            <div class="detail-field-label">Tipo Examen</div>
-                            <div class="detail-field-value">${orden.tipoExamen || '—'}</div>
+                            <div class="detail-field-label">Fecha Creación</div>
+                            <div class="detail-field-value">${fechaCreacion}</div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- HISTORIA CLINICA: Información Laboral -->
+                <div class="detail-card">
+                    <div class="detail-card-title">
+                        <div class="detail-card-icon yellow">💼</div>
+                        Información Laboral
                     </div>
                     <div class="detail-grid">
                         <div class="detail-field">
@@ -1935,8 +2002,45 @@
                             <div class="detail-field-value">${orden.empresa || '—'}</div>
                         </div>
                         <div class="detail-field">
+                            <div class="detail-field-label">Código Empresa</div>
+                            <div class="detail-field-value">${orden.codEmpresa || '—'}</div>
+                        </div>
+                    </div>
+                    <div class="detail-field">
+                        <div class="detail-field-label">Cargo</div>
+                        <div class="detail-field-value">${orden.cargo || '—'}</div>
+                    </div>
+                </div>
+
+                <!-- HISTORIA CLINICA: Información del Examen -->
+                <div class="detail-card">
+                    <div class="detail-card-title">
+                        <div class="detail-card-icon green">🩺</div>
+                        Información del Examen
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-field">
+                            <div class="detail-field-label">Tipo de Examen</div>
+                            <div class="detail-field-value">${orden.tipoExamen || '—'}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Estado</div>
+                            <div class="detail-field-value">
+                                <span class="status-badge ${getStatusClass(orden.atendido)}">
+                                    <span class="status-dot"></span>
+                                    ${orden.atendido || 'PENDIENTE'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-field">
                             <div class="detail-field-label">Médico</div>
                             <div class="detail-field-value">${orden.medico || '—'}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Fecha Consulta</div>
+                            <div class="detail-field-value">${fechaConsulta}</div>
                         </div>
                     </div>
                     ${orden.examenes ? `
@@ -1945,12 +2049,31 @@
                             <div class="detail-field-value">${orden.examenes}</div>
                         </div>
                     ` : ''}
+                    ${orden.talla || orden.peso ? `
+                        <div class="detail-grid">
+                            <div class="detail-field">
+                                <div class="detail-field-label">Talla</div>
+                                <div class="detail-field-value">${orden.talla || '—'}</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-field-label">Peso</div>
+                                <div class="detail-field-value">${orden.peso || '—'}</div>
+                            </div>
+                        </div>
+                    ` : ''}
+                    ${orden.motivoConsulta ? `
+                        <div class="detail-field">
+                            <div class="detail-field-label">Motivo Consulta</div>
+                            <div class="detail-field-value">${orden.motivoConsulta}</div>
+                        </div>
+                    ` : ''}
                 </div>
 
-                ${orden.diagnostico || orden.mdDx1 || orden.mdConceptoFinal ? `
+                <!-- HISTORIA CLINICA: Diagnóstico y Concepto -->
+                ${orden.diagnostico || orden.mdDx1 || orden.mdConceptoFinal || orden.tratamiento ? `
                     <div class="detail-card">
                         <div class="detail-card-title">
-                            <div class="detail-card-icon green">🩺</div>
+                            <div class="detail-card-icon purple">📝</div>
                             Diagnóstico y Concepto
                         </div>
                         ${orden.diagnostico ? `
@@ -1987,9 +2110,28 @@
                                 <div class="detail-field-value">${orden.tratamiento}</div>
                             </div>
                         ` : ''}
+                        ${orden.mdRecomendacionesMedicasAdicionales ? `
+                            <div class="detail-field">
+                                <div class="detail-field-label">Recomendaciones Médicas</div>
+                                <div class="detail-field-value">${orden.mdRecomendacionesMedicasAdicionales}</div>
+                            </div>
+                        ` : ''}
+                        ${orden.mdObservacionesCertificado ? `
+                            <div class="detail-field">
+                                <div class="detail-field-label">Observaciones Certificado</div>
+                                <div class="detail-field-value">${orden.mdObservacionesCertificado}</div>
+                            </div>
+                        ` : ''}
+                        ${orden.mdAntecedentes ? `
+                            <div class="detail-field">
+                                <div class="detail-field-label">Antecedentes</div>
+                                <div class="detail-field-value">${orden.mdAntecedentes}</div>
+                            </div>
+                        ` : ''}
                     </div>
                 ` : ''}
 
+                <!-- FORMULARIO Section -->
                 ${formularioSection}
 
                 <!-- Actions -->
