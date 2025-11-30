@@ -528,6 +528,50 @@
             margin-bottom: 24px;
         }
 
+        .profile-header-horizontal {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #E5E7EB;
+            margin-bottom: 20px;
+        }
+
+        .profile-photo {
+            width: 72px;
+            height: 72px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0099B2, #007A8C);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .profile-photo.has-photo {
+            background: #F3F4F6;
+        }
+
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-photo .profile-initials {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .profile-info {
+            flex: 1;
+            min-width: 0;
+        }
+
         .profile-avatar {
             width: 80px;
             height: 80px;
@@ -556,15 +600,36 @@
         }
 
         .profile-name {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
             color: #111827;
             margin-bottom: 4px;
         }
 
+        .profile-meta {
+            font-size: 14px;
+            color: #6B7280;
+            margin-bottom: 4px;
+        }
+
+        .profile-date {
+            font-size: 13px;
+            color: #9CA3AF;
+        }
+
         .profile-subtitle {
             font-size: 14px;
             color: #6B7280;
+        }
+
+        .detail-actions-top {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .detail-actions-top .btn {
+            flex: 1;
         }
 
         .profile-status {
@@ -1781,10 +1846,7 @@
             if (form) {
                 formularioSection = `
                     <div class="detail-card">
-                        <div class="detail-card-title">
-                            <div class="detail-card-icon blue">👤</div>
-                            Datos Personales (Formulario)
-                        </div>
+                        <div class="detail-card-title">Datos Personales (Formulario)</div>
                         <div class="detail-grid">
                             <div class="detail-field">
                                 <div class="detail-field-label">Género</div>
@@ -1833,10 +1895,7 @@
 
                     ${form.eps || form.arl || form.pensiones ? `
                         <div class="detail-card">
-                            <div class="detail-card-title">
-                                <div class="detail-card-icon green">🏥</div>
-                                Seguridad Social
-                            </div>
+                            <div class="detail-card-title">Seguridad Social</div>
                             <div class="detail-grid">
                                 <div class="detail-field">
                                     <div class="detail-field-label">EPS</div>
@@ -1855,10 +1914,7 @@
                     ` : ''}
 
                     <div class="detail-card">
-                        <div class="detail-card-title">
-                            <div class="detail-card-icon yellow">💼</div>
-                            Datos Laborales (Formulario)
-                        </div>
+                        <div class="detail-card-title">Datos Laborales (Formulario)</div>
                         <div class="detail-field">
                             <div class="detail-field-label">Profesión/Oficio</div>
                             <div class="detail-field-value">${form.profesion_oficio || '—'}</div>
@@ -1876,10 +1932,7 @@
                     </div>
 
                     <div class="detail-card">
-                        <div class="detail-card-title">
-                            <div class="detail-card-icon purple">📏</div>
-                            Datos Físicos
-                        </div>
+                        <div class="detail-card-title">Datos Físicos</div>
                         <div class="detail-grid">
                             <div class="detail-field">
                                 <div class="detail-field-label">Estatura</div>
@@ -1898,10 +1951,7 @@
 
                     ${form.firma ? `
                         <div class="detail-card">
-                            <div class="detail-card-title">
-                                <div class="detail-card-icon blue">✍️</div>
-                                Firma del Paciente
-                            </div>
+                            <div class="detail-card-title">Firma del Paciente</div>
                             <div style="text-align: center; padding: 12px;">
                                 <img src="${form.firma}" alt="Firma" style="max-width: 180px; border-radius: 8px; border: 1px solid #E5E7EB;">
                             </div>
@@ -1912,24 +1962,26 @@
 
             body.innerHTML = `
                 <!-- Profile Header -->
-                <div class="profile-header">
-                    <div class="profile-avatar ${form?.foto ? 'has-photo' : ''}">
-                        ${form?.foto ? `<img src="${form.foto}" alt="Foto">` : initials}
+                <div class="profile-header-horizontal">
+                    <div class="profile-photo ${form?.foto ? 'has-photo' : ''}">
+                        ${form?.foto ? `<img src="${form.foto}" alt="Foto">` : `<span class="profile-initials">${initials}</span>`}
                     </div>
-                    <div class="profile-name">${nombreCompleto}</div>
-                    <div class="profile-subtitle">${orden.cargo || 'Sin cargo'} • ${orden.codEmpresa || 'Sin empresa'}</div>
-                    <div class="profile-status ${isAtendido ? 'atendido' : 'pendiente'}">
-                        <span>${isAtendido ? '✓' : '○'}</span>
-                        ${isAtendido ? 'Atendido' : 'Pendiente'}
+                    <div class="profile-info">
+                        <div class="profile-name">${nombreCompleto}</div>
+                        <div class="profile-meta">${orden.cargo || 'Sin cargo'} - ${orden.codEmpresa || 'Sin empresa'}</div>
+                        <div class="profile-date">${fechaCreacion}</div>
                     </div>
+                </div>
+
+                <!-- Action buttons at top -->
+                <div class="detail-actions-top">
+                    <a href="https://bsl-utilidades-yp78a.ondigitalocean.app/static/solicitar-certificado.html?id=${orden._id}" target="_blank" class="btn btn-secondary">Enviar por Whp</a>
+                    <a href="https://bsl-utilidades-yp78a.ondigitalocean.app/generar-certificado-desde-wix/${orden._id}" target="_blank" class="btn btn-secondary">Descargar</a>
                 </div>
 
                 <!-- HISTORIA CLINICA: Información de la Orden -->
                 <div class="detail-card">
-                    <div class="detail-card-title">
-                        <div class="detail-card-icon blue">📋</div>
-                        Información de la Orden
-                    </div>
+                    <div class="detail-card-title">Información de la Orden</div>
                     <div class="detail-grid">
                         <div class="detail-field">
                             <div class="detail-field-label">Primer Nombre</div>
@@ -1974,10 +2026,7 @@
 
                 <!-- HISTORIA CLINICA: Información Laboral -->
                 <div class="detail-card">
-                    <div class="detail-card-title">
-                        <div class="detail-card-icon yellow">💼</div>
-                        Información Laboral
-                    </div>
+                    <div class="detail-card-title">Información Laboral</div>
                     <div class="detail-grid">
                         <div class="detail-field">
                             <div class="detail-field-label">Empresa</div>
@@ -1996,10 +2045,7 @@
 
                 <!-- HISTORIA CLINICA: Información del Examen -->
                 <div class="detail-card">
-                    <div class="detail-card-title">
-                        <div class="detail-card-icon green">🩺</div>
-                        Información del Examen
-                    </div>
+                    <div class="detail-card-title">Información del Examen</div>
                     <div class="detail-grid">
                         <div class="detail-field">
                             <div class="detail-field-label">Tipo de Examen</div>
@@ -2054,10 +2100,7 @@
                 <!-- HISTORIA CLINICA: Diagnóstico y Concepto -->
                 ${orden.diagnostico || orden.mdDx1 || orden.mdConceptoFinal || orden.tratamiento ? `
                     <div class="detail-card">
-                        <div class="detail-card-title">
-                            <div class="detail-card-icon purple">📝</div>
-                            Diagnóstico y Concepto
-                        </div>
+                        <div class="detail-card-title">Diagnóstico y Concepto</div>
                         ${orden.diagnostico ? `
                             <div class="detail-field">
                                 <div class="detail-field-label">Diagnóstico</div>
@@ -2115,13 +2158,6 @@
 
                 <!-- FORMULARIO Section -->
                 ${formularioSection}
-
-                <!-- Actions -->
-                <div class="detail-actions">
-                    <a href="/?_id=${orden._id}" target="_blank" class="btn btn-primary">📝 Formulario</a>
-                    <a href="https://bsl-utilidades-yp78a.ondigitalocean.app/static/solicitar-certificado.html?id=${orden._id}" target="_blank" class="btn btn-secondary">📱 WhatsApp</a>
-                    <a href="https://bsl-utilidades-yp78a.ondigitalocean.app/generar-certificado-desde-wix/${orden._id}" target="_blank" class="btn btn-secondary">📥 Certificado</a>
-                </div>
             `;
         }
 
