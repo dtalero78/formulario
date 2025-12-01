@@ -1306,139 +1306,110 @@
         <div class="modal large">
             <div class="modal-header">
                 <div>
-                    <h2 class="modal-title">Editar Formulario</h2>
+                    <h2 class="modal-title">Editar Registro</h2>
                 </div>
                 <button class="btn-close" onclick="cerrarModalEdicion()">✕</button>
             </div>
             <div class="modal-body">
                 <form id="formEdicion" onsubmit="guardarCambios(event)">
                     <input type="hidden" id="edit-id" name="id">
+                    <input type="hidden" id="edit-hc-id" name="hc_id">
 
-                    <!-- Wix ID -->
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">Wix ID</label>
-                            <input type="text" class="form-input" id="edit-wix_id" name="wix_id" placeholder="ID de Wix">
-                        </div>
-                    </div>
+                    <!-- ========== HISTORIA CLINICA (Orden) ========== -->
+                    <div class="hc-section">
+                        <div class="form-section-title">Datos de la Orden (Historia Clínica)</div>
 
-                    <!-- Datos Personales -->
-                    <div class="form-section">
-                        <div class="form-section-title">Datos Personales</div>
+                        <!-- Datos Personales HC -->
                         <div class="form-grid">
                             <div class="form-group">
-                                <label class="form-label">Género</label>
-                                <input type="text" class="form-input" id="edit-genero" name="genero">
+                                <label class="form-label">Primer Nombre</label>
+                                <input type="text" class="form-input" id="edit-hc-primerNombre" name="hc_primerNombre">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Edad</label>
-                                <input type="number" class="form-input" id="edit-edad" name="edad">
+                                <label class="form-label">Segundo Nombre</label>
+                                <input type="text" class="form-input" id="edit-hc-segundoNombre" name="hc_segundoNombre">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Primer Apellido</label>
+                                <input type="text" class="form-input" id="edit-hc-primerApellido" name="hc_primerApellido">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Segundo Apellido</label>
+                                <input type="text" class="form-input" id="edit-hc-segundoApellido" name="hc_segundoApellido">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Cédula</label>
+                                <input type="text" class="form-input" id="edit-hc-numeroId" name="hc_numeroId">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Celular</label>
+                                <input type="text" class="form-input" id="edit-hc-celular" name="hc_celular">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-input" id="edit-hc-email" name="hc_email">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Ciudad</label>
+                                <input type="text" class="form-input" id="edit-hc-ciudad" name="hc_ciudad">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Fecha Nacimiento</label>
-                                <input type="date" class="form-input" id="edit-fecha_nacimiento" name="fecha_nacimiento">
+                                <input type="date" class="form-input" id="edit-hc-fechaNacimiento" name="hc_fechaNacimiento">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Lugar Nacimiento</label>
-                                <input type="text" class="form-input" id="edit-lugar_nacimiento" name="lugar_nacimiento">
+                                <label class="form-label">Edad</label>
+                                <input type="number" class="form-input" id="edit-hc-edad" name="hc_edad">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Ciudad Residencia</label>
-                                <input type="text" class="form-input" id="edit-ciudad_residencia" name="ciudad_residencia">
+                                <label class="form-label">Género</label>
+                                <select class="form-input" id="edit-hc-genero" name="hc_genero">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Estado Civil</label>
-                                <input type="text" class="form-input" id="edit-estado_civil" name="estado_civil">
+                                <input type="text" class="form-input" id="edit-hc-estadoCivil" name="hc_estadoCivil">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Hijos</label>
-                                <input type="text" class="form-input" id="edit-hijos" name="hijos">
+                                <input type="text" class="form-input" id="edit-hc-hijos" name="hc_hijos">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Nivel Educativo</label>
-                                <input type="text" class="form-input" id="edit-nivel_educativo" name="nivel_educativo">
-                            </div>
-                            <div class="form-group full">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-input" id="edit-email" name="email">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Seguridad Social -->
-                    <div class="form-section">
-                        <div class="form-section-title">Seguridad Social</div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label">EPS</label>
-                                <input type="text" class="form-input" id="edit-eps" name="eps">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">ARL</label>
-                                <input type="text" class="form-input" id="edit-arl" name="arl">
-                            </div>
-                            <div class="form-group full">
-                                <label class="form-label">Fondo de Pensiones</label>
-                                <input type="text" class="form-input" id="edit-pensiones" name="pensiones">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Datos Laborales -->
-                    <div class="form-section">
-                        <div class="form-section-title">Datos Laborales</div>
-                        <div class="form-grid">
-                            <div class="form-group full">
-                                <label class="form-label">Profesión/Oficio</label>
-                                <input type="text" class="form-input" id="edit-profesion_oficio" name="profesion_oficio">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Empresa 1</label>
-                                <input type="text" class="form-input" id="edit-empresa1" name="empresa1">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Empresa 2</label>
-                                <input type="text" class="form-input" id="edit-empresa2" name="empresa2">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Datos Físicos -->
-                    <div class="form-section">
-                        <div class="form-section-title">Datos Físicos</div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label">Estatura (cm)</label>
-                                <input type="number" class="form-input" id="edit-estatura" name="estatura">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Peso (kg)</label>
-                                <input type="number" class="form-input" id="edit-peso" name="peso">
-                            </div>
-                            <div class="form-group full">
                                 <label class="form-label">Ejercicio</label>
-                                <input type="text" class="form-input" id="edit-ejercicio" name="ejercicio">
+                                <input type="text" class="form-input" id="edit-hc-ejercicio" name="hc_ejercicio">
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Historia Clínica -->
-                    <div id="seccionHistoriaClinica" class="hc-section" style="display: none;">
-                        <div class="form-section-title">📋 Historia Clínica</div>
-                        <input type="hidden" id="edit-hc-id" name="hc_id">
-
+                        <!-- Datos Laborales HC -->
+                        <div class="form-section-title" style="margin-top: 20px;">Información Laboral</div>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label class="form-label">Tipo de Examen</label>
-                                <input type="text" class="form-input" id="edit-hc-tipoExamen" name="hc_tipoExamen">
+                                <label class="form-label">Empresa</label>
+                                <input type="text" class="form-input" id="edit-hc-empresa" name="hc_empresa">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Código Empresa</label>
+                                <input type="text" class="form-input" id="edit-hc-codEmpresa" name="hc_codEmpresa">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Cargo</label>
                                 <input type="text" class="form-input" id="edit-hc-cargo" name="hc_cargo">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Médico</label>
-                                <input type="text" class="form-input" id="edit-hc-medico" name="hc_medico">
+                                <label class="form-label">Empresa 1 (Anterior)</label>
+                                <input type="text" class="form-input" id="edit-hc-empresa1" name="hc_empresa1">
+                            </div>
+                        </div>
+
+                        <!-- Datos del Examen -->
+                        <div class="form-section-title" style="margin-top: 20px;">Información del Examen</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Tipo de Examen</label>
+                                <input type="text" class="form-input" id="edit-hc-tipoExamen" name="hc_tipoExamen">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Estado Atención</label>
@@ -1448,6 +1419,10 @@
                                     <option value="PENDIENTE">PENDIENTE</option>
                                     <option value="EN PROCESO">EN PROCESO</option>
                                 </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Médico</label>
+                                <input type="text" class="form-input" id="edit-hc-medico" name="hc_medico">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Estado PV</label>
@@ -1464,9 +1439,27 @@
                         </div>
 
                         <div class="form-group full" style="margin-top: 16px;">
+                            <label class="form-label">Exámenes</label>
+                            <textarea class="form-input" id="edit-hc-examenes" name="hc_examenes" rows="2"></textarea>
+                        </div>
+
+                        <div class="form-group full">
                             <label class="form-label">Motivo de Consulta</label>
                             <textarea class="form-input" id="edit-hc-motivoConsulta" name="hc_motivoConsulta" rows="2"></textarea>
                         </div>
+
+                        <div class="form-group full">
+                            <label class="form-label">Encuesta de Salud</label>
+                            <textarea class="form-input" id="edit-hc-encuestaSalud" name="hc_encuestaSalud" rows="2"></textarea>
+                        </div>
+
+                        <div class="form-group full">
+                            <label class="form-label">Antecedentes Familiares</label>
+                            <textarea class="form-input" id="edit-hc-antecedentesFamiliares" name="hc_antecedentesFamiliares" rows="2"></textarea>
+                        </div>
+
+                        <!-- Diagnóstico y Concepto -->
+                        <div class="form-section-title" style="margin-top: 20px;">Diagnóstico y Concepto</div>
 
                         <div class="form-group full">
                             <label class="form-label">Diagnóstico Principal</label>
@@ -1518,6 +1511,392 @@
                         <div class="form-group full">
                             <label class="form-label">Observaciones para Mi Doc Ya</label>
                             <textarea class="form-input" id="edit-hc-mdObsParaMiDocYa" name="hc_mdObsParaMiDocYa" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- ========== FORMULARIO (datos adicionales del paciente) ========== -->
+                    <div id="seccionFormulario" class="form-section" style="display: none; margin-top: 24px; padding: 20px; background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 12px;">
+                        <div class="form-section-title">Datos del Formulario del Paciente</div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Wix ID</label>
+                                <input type="text" class="form-input" id="edit-wix_id" name="wix_id" readonly style="background: #f5f5f5;">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Género</label>
+                                <input type="text" class="form-input" id="edit-genero" name="genero">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Edad</label>
+                                <input type="number" class="form-input" id="edit-edad" name="edad">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Fecha Nacimiento</label>
+                                <input type="date" class="form-input" id="edit-fecha_nacimiento" name="fecha_nacimiento">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Lugar Nacimiento</label>
+                                <input type="text" class="form-input" id="edit-lugar_nacimiento" name="lugar_nacimiento">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Ciudad Residencia</label>
+                                <input type="text" class="form-input" id="edit-ciudad_residencia" name="ciudad_residencia">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Estado Civil</label>
+                                <input type="text" class="form-input" id="edit-estado_civil" name="estado_civil">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hijos</label>
+                                <input type="text" class="form-input" id="edit-hijos" name="hijos">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Nivel Educativo</label>
+                                <input type="text" class="form-input" id="edit-nivel_educativo" name="nivel_educativo">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-input" id="edit-email" name="email">
+                            </div>
+                        </div>
+
+                        <!-- Seguridad Social -->
+                        <div class="form-section-title" style="margin-top: 16px;">Seguridad Social</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">EPS</label>
+                                <input type="text" class="form-input" id="edit-eps" name="eps">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">ARL</label>
+                                <input type="text" class="form-input" id="edit-arl" name="arl">
+                            </div>
+                            <div class="form-group full">
+                                <label class="form-label">Fondo de Pensiones</label>
+                                <input type="text" class="form-input" id="edit-pensiones" name="pensiones">
+                            </div>
+                        </div>
+
+                        <!-- Datos Laborales -->
+                        <div class="form-section-title" style="margin-top: 16px;">Datos Laborales</div>
+                        <div class="form-grid">
+                            <div class="form-group full">
+                                <label class="form-label">Profesión/Oficio</label>
+                                <input type="text" class="form-input" id="edit-profesion_oficio" name="profesion_oficio">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Empresa 1</label>
+                                <input type="text" class="form-input" id="edit-empresa1" name="empresa1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Empresa 2</label>
+                                <input type="text" class="form-input" id="edit-empresa2" name="empresa2">
+                            </div>
+                        </div>
+
+                        <!-- Datos Físicos -->
+                        <div class="form-section-title" style="margin-top: 16px;">Datos Físicos</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Estatura (cm)</label>
+                                <input type="number" class="form-input" id="edit-estatura" name="estatura">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Peso (kg)</label>
+                                <input type="number" class="form-input" id="edit-peso" name="peso">
+                            </div>
+                            <div class="form-group full">
+                                <label class="form-label">Ejercicio</label>
+                                <input type="text" class="form-input" id="edit-ejercicio" name="ejercicio">
+                            </div>
+                        </div>
+
+                        <!-- Encuesta de Salud -->
+                        <div class="form-section-title" style="margin-top: 16px;">Encuesta de Salud</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Usa Anteojos</label>
+                                <select class="form-input" id="edit-usa_anteojos" name="usa_anteojos">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Usa Lentes Contacto</label>
+                                <select class="form-input" id="edit-usa_lentes_contacto" name="usa_lentes_contacto">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Cirugía Ocular</label>
+                                <select class="form-input" id="edit-cirugia_ocular" name="cirugia_ocular">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Presión Alta</label>
+                                <select class="form-input" id="edit-presion_alta" name="presion_alta">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Problemas Cardíacos</label>
+                                <select class="form-input" id="edit-problemas_cardiacos" name="problemas_cardiacos">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Problemas Azúcar</label>
+                                <select class="form-input" id="edit-problemas_azucar" name="problemas_azucar">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Enfermedad Pulmonar</label>
+                                <select class="form-input" id="edit-enfermedad_pulmonar" name="enfermedad_pulmonar">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Enfermedad Hígado</label>
+                                <select class="form-input" id="edit-enfermedad_higado" name="enfermedad_higado">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hepatitis</label>
+                                <select class="form-input" id="edit-hepatitis" name="hepatitis">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hernias</label>
+                                <select class="form-input" id="edit-hernias" name="hernias">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Varices</label>
+                                <select class="form-input" id="edit-varices" name="varices">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Dolor Espalda</label>
+                                <select class="form-input" id="edit-dolor_espalda" name="dolor_espalda">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Dolor Cabeza</label>
+                                <select class="form-input" id="edit-dolor_cabeza" name="dolor_cabeza">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Ruido/Jaqueca</label>
+                                <select class="form-input" id="edit-ruido_jaqueca" name="ruido_jaqueca">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hormigueos</label>
+                                <select class="form-input" id="edit-hormigueos" name="hormigueos">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Problemas Sueño</label>
+                                <select class="form-input" id="edit-problemas_sueno" name="problemas_sueno">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Fuma</label>
+                                <select class="form-input" id="edit-fuma" name="fuma">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Consumo Licor</label>
+                                <input type="text" class="form-input" id="edit-consumo_licor" name="consumo_licor">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Embarazo</label>
+                                <select class="form-input" id="edit-embarazo" name="embarazo">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                    <option value="N/A">N/A</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Cirugía Programada</label>
+                                <select class="form-input" id="edit-cirugia_programada" name="cirugia_programada">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Condición Médica</label>
+                                <select class="form-input" id="edit-condicion_medica" name="condicion_medica">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Trastorno Psicológico</label>
+                                <select class="form-input" id="edit-trastorno_psicologico" name="trastorno_psicologico">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Síntomas Psicológicos</label>
+                                <select class="form-input" id="edit-sintomas_psicologicos" name="sintomas_psicologicos">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Diagnóstico Cáncer</label>
+                                <select class="form-input" id="edit-diagnostico_cancer" name="diagnostico_cancer">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Enfermedades Laborales</label>
+                                <select class="form-input" id="edit-enfermedades_laborales" name="enfermedades_laborales">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Enfermedad Osteomuscular</label>
+                                <select class="form-input" id="edit-enfermedad_osteomuscular" name="enfermedad_osteomuscular">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Enfermedad Autoinmune</label>
+                                <select class="form-input" id="edit-enfermedad_autoinmune" name="enfermedad_autoinmune">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Antecedentes Familiares -->
+                        <div class="form-section-title" style="margin-top: 16px;">Antecedentes Familiares</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Enf. Hereditarias</label>
+                                <select class="form-input" id="edit-familia_hereditarias" name="familia_hereditarias">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Enf. Genéticas</label>
+                                <select class="form-input" id="edit-familia_geneticas" name="familia_geneticas">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Diabetes</label>
+                                <select class="form-input" id="edit-familia_diabetes" name="familia_diabetes">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hipertensión</label>
+                                <select class="form-input" id="edit-familia_hipertension" name="familia_hipertension">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Infartos</label>
+                                <select class="form-input" id="edit-familia_infartos" name="familia_infartos">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Cáncer</label>
+                                <select class="form-input" id="edit-familia_cancer" name="familia_cancer">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Trastornos</label>
+                                <select class="form-input" id="edit-familia_trastornos" name="familia_trastornos">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Infecciosas</label>
+                                <select class="form-input" id="edit-familia_infecciosas" name="familia_infecciosas">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -2189,41 +2568,44 @@
 
                 formularioActual = { orden, formulario };
 
-                // Fill form with formulario data (if exists) or empty
-                document.getElementById('edit-id').value = formulario?.id || '';
-                document.getElementById('edit-wix_id').value = formulario?.wix_id || orden._id || '';
-                document.getElementById('edit-genero').value = formulario?.genero || '';
-                document.getElementById('edit-edad').value = formulario?.edad || '';
-                document.getElementById('edit-fecha_nacimiento').value = formulario?.fecha_nacimiento || '';
-                document.getElementById('edit-lugar_nacimiento').value = formulario?.lugar_nacimiento || '';
-                document.getElementById('edit-ciudad_residencia').value = formulario?.ciudad_residencia || orden.ciudad || '';
-                document.getElementById('edit-estado_civil').value = formulario?.estado_civil || '';
-                document.getElementById('edit-hijos').value = formulario?.hijos || '';
-                document.getElementById('edit-nivel_educativo').value = formulario?.nivel_educativo || '';
-                document.getElementById('edit-email').value = formulario?.email || '';
-                document.getElementById('edit-eps').value = formulario?.eps || '';
-                document.getElementById('edit-arl').value = formulario?.arl || '';
-                document.getElementById('edit-pensiones').value = formulario?.pensiones || '';
-                document.getElementById('edit-profesion_oficio').value = formulario?.profesion_oficio || '';
-                document.getElementById('edit-empresa1').value = formulario?.empresa1 || orden.empresa || '';
-                document.getElementById('edit-empresa2').value = formulario?.empresa2 || '';
-                document.getElementById('edit-estatura').value = formulario?.estatura || '';
-                document.getElementById('edit-peso').value = formulario?.peso || '';
-                document.getElementById('edit-ejercicio').value = formulario?.ejercicio || '';
-
-                // Historia Clínica section - always show for orders
-                const seccionHC = document.getElementById('seccionHistoriaClinica');
-                seccionHC.style.display = 'block';
-
+                // ========== HISTORIA CLINICA (todos los campos) ==========
                 document.getElementById('edit-hc-id').value = orden._id || '';
-                document.getElementById('edit-hc-tipoExamen').value = orden.tipoExamen || '';
+
+                // Datos personales HC
+                document.getElementById('edit-hc-primerNombre').value = orden.primerNombre || '';
+                document.getElementById('edit-hc-segundoNombre').value = orden.segundoNombre || '';
+                document.getElementById('edit-hc-primerApellido').value = orden.primerApellido || '';
+                document.getElementById('edit-hc-segundoApellido').value = orden.segundoApellido || '';
+                document.getElementById('edit-hc-numeroId').value = orden.numeroId || '';
+                document.getElementById('edit-hc-celular').value = orden.celular || '';
+                document.getElementById('edit-hc-email').value = orden.email || '';
+                document.getElementById('edit-hc-ciudad').value = orden.ciudad || '';
+                document.getElementById('edit-hc-fechaNacimiento').value = orden.fechaNacimiento ? orden.fechaNacimiento.split('T')[0] : '';
+                document.getElementById('edit-hc-edad').value = orden.edad || '';
+                document.getElementById('edit-hc-genero').value = orden.genero || '';
+                document.getElementById('edit-hc-estadoCivil').value = orden.estadoCivil || '';
+                document.getElementById('edit-hc-hijos').value = orden.hijos || '';
+                document.getElementById('edit-hc-ejercicio').value = orden.ejercicio || '';
+
+                // Datos laborales HC
+                document.getElementById('edit-hc-empresa').value = orden.empresa || '';
+                document.getElementById('edit-hc-codEmpresa').value = orden.codEmpresa || '';
                 document.getElementById('edit-hc-cargo').value = orden.cargo || '';
-                document.getElementById('edit-hc-medico').value = orden.medico || '';
+                document.getElementById('edit-hc-empresa1').value = orden.empresa1 || '';
+
+                // Datos del examen HC
+                document.getElementById('edit-hc-tipoExamen').value = orden.tipoExamen || '';
                 document.getElementById('edit-hc-atendido').value = orden.atendido || '';
+                document.getElementById('edit-hc-medico').value = orden.medico || '';
                 document.getElementById('edit-hc-pvEstado').value = orden.pvEstado || '';
                 document.getElementById('edit-hc-talla').value = orden.talla || '';
                 document.getElementById('edit-hc-peso').value = orden.peso || '';
+                document.getElementById('edit-hc-examenes').value = orden.examenes || '';
                 document.getElementById('edit-hc-motivoConsulta').value = orden.motivoConsulta || '';
+                document.getElementById('edit-hc-encuestaSalud').value = orden.encuestaSalud || '';
+                document.getElementById('edit-hc-antecedentesFamiliares').value = orden.antecedentesFamiliares || '';
+
+                // Diagnóstico y concepto HC
                 document.getElementById('edit-hc-diagnostico').value = orden.diagnostico || '';
                 document.getElementById('edit-hc-mdDx1').value = orden.mdDx1 || '';
                 document.getElementById('edit-hc-mdDx2').value = orden.mdDx2 || '';
@@ -2233,6 +2615,82 @@
                 document.getElementById('edit-hc-mdObservacionesCertificado').value = orden.mdObservacionesCertificado || '';
                 document.getElementById('edit-hc-mdAntecedentes').value = orden.mdAntecedentes || '';
                 document.getElementById('edit-hc-mdObsParaMiDocYa').value = orden.mdObsParaMiDocYa || '';
+
+                // ========== FORMULARIO (si existe) ==========
+                const seccionFormulario = document.getElementById('seccionFormulario');
+
+                if (formulario) {
+                    seccionFormulario.style.display = 'block';
+
+                    document.getElementById('edit-id').value = formulario.id || '';
+                    document.getElementById('edit-wix_id').value = formulario.wix_id || orden._id || '';
+                    document.getElementById('edit-genero').value = formulario.genero || '';
+                    document.getElementById('edit-edad').value = formulario.edad || '';
+                    document.getElementById('edit-fecha_nacimiento').value = formulario.fecha_nacimiento || '';
+                    document.getElementById('edit-lugar_nacimiento').value = formulario.lugar_nacimiento || '';
+                    document.getElementById('edit-ciudad_residencia').value = formulario.ciudad_residencia || '';
+                    document.getElementById('edit-estado_civil').value = formulario.estado_civil || '';
+                    document.getElementById('edit-hijos').value = formulario.hijos || '';
+                    document.getElementById('edit-nivel_educativo').value = formulario.nivel_educativo || '';
+                    document.getElementById('edit-email').value = formulario.email || '';
+
+                    // Seguridad social
+                    document.getElementById('edit-eps').value = formulario.eps || '';
+                    document.getElementById('edit-arl').value = formulario.arl || '';
+                    document.getElementById('edit-pensiones').value = formulario.pensiones || '';
+
+                    // Datos laborales
+                    document.getElementById('edit-profesion_oficio').value = formulario.profesion_oficio || '';
+                    document.getElementById('edit-empresa1').value = formulario.empresa1 || '';
+                    document.getElementById('edit-empresa2').value = formulario.empresa2 || '';
+
+                    // Datos físicos
+                    document.getElementById('edit-estatura').value = formulario.estatura || '';
+                    document.getElementById('edit-peso').value = formulario.peso || '';
+                    document.getElementById('edit-ejercicio').value = formulario.ejercicio || '';
+
+                    // Encuesta de salud
+                    document.getElementById('edit-usa_anteojos').value = formulario.usa_anteojos || '';
+                    document.getElementById('edit-usa_lentes_contacto').value = formulario.usa_lentes_contacto || '';
+                    document.getElementById('edit-cirugia_ocular').value = formulario.cirugia_ocular || '';
+                    document.getElementById('edit-presion_alta').value = formulario.presion_alta || '';
+                    document.getElementById('edit-problemas_cardiacos').value = formulario.problemas_cardiacos || '';
+                    document.getElementById('edit-problemas_azucar').value = formulario.problemas_azucar || '';
+                    document.getElementById('edit-enfermedad_pulmonar').value = formulario.enfermedad_pulmonar || '';
+                    document.getElementById('edit-enfermedad_higado').value = formulario.enfermedad_higado || '';
+                    document.getElementById('edit-hepatitis').value = formulario.hepatitis || '';
+                    document.getElementById('edit-hernias').value = formulario.hernias || '';
+                    document.getElementById('edit-varices').value = formulario.varices || '';
+                    document.getElementById('edit-dolor_espalda').value = formulario.dolor_espalda || '';
+                    document.getElementById('edit-dolor_cabeza').value = formulario.dolor_cabeza || '';
+                    document.getElementById('edit-ruido_jaqueca').value = formulario.ruido_jaqueca || '';
+                    document.getElementById('edit-hormigueos').value = formulario.hormigueos || '';
+                    document.getElementById('edit-problemas_sueno').value = formulario.problemas_sueno || '';
+                    document.getElementById('edit-fuma').value = formulario.fuma || '';
+                    document.getElementById('edit-consumo_licor').value = formulario.consumo_licor || '';
+                    document.getElementById('edit-embarazo').value = formulario.embarazo || '';
+                    document.getElementById('edit-cirugia_programada').value = formulario.cirugia_programada || '';
+                    document.getElementById('edit-condicion_medica').value = formulario.condicion_medica || '';
+                    document.getElementById('edit-trastorno_psicologico').value = formulario.trastorno_psicologico || '';
+                    document.getElementById('edit-sintomas_psicologicos').value = formulario.sintomas_psicologicos || '';
+                    document.getElementById('edit-diagnostico_cancer').value = formulario.diagnostico_cancer || '';
+                    document.getElementById('edit-enfermedades_laborales').value = formulario.enfermedades_laborales || '';
+                    document.getElementById('edit-enfermedad_osteomuscular').value = formulario.enfermedad_osteomuscular || '';
+                    document.getElementById('edit-enfermedad_autoinmune').value = formulario.enfermedad_autoinmune || '';
+
+                    // Antecedentes familiares
+                    document.getElementById('edit-familia_hereditarias').value = formulario.familia_hereditarias || '';
+                    document.getElementById('edit-familia_geneticas').value = formulario.familia_geneticas || '';
+                    document.getElementById('edit-familia_diabetes').value = formulario.familia_diabetes || '';
+                    document.getElementById('edit-familia_hipertension').value = formulario.familia_hipertension || '';
+                    document.getElementById('edit-familia_infartos').value = formulario.familia_infartos || '';
+                    document.getElementById('edit-familia_cancer').value = formulario.familia_cancer || '';
+                    document.getElementById('edit-familia_trastornos').value = formulario.familia_trastornos || '';
+                    document.getElementById('edit-familia_infecciosas').value = formulario.familia_infecciosas || '';
+                } else {
+                    seccionFormulario.style.display = 'none';
+                    document.getElementById('edit-id').value = '';
+                }
 
                 document.getElementById('modalEdicion').classList.add('active');
             } catch (error) {
