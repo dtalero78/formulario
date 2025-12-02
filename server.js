@@ -1256,7 +1256,7 @@ app.post('/api/marcar-atendido', async (req, res) => {
     }
 });
 
-// Endpoint para editar HistoriaClinica por _id
+// Endpoint para editar HistoriaClinica o Formulario por _id
 app.put('/api/historia-clinica/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -1264,145 +1264,209 @@ app.put('/api/historia-clinica/:id', async (req, res) => {
 
         console.log('');
         console.log('═══════════════════════════════════════════════════════════');
-        console.log('📝 Recibida solicitud de edición de HistoriaClinica');
+        console.log('📝 Recibida solicitud de edición');
         console.log('   _id:', id);
         console.log('═══════════════════════════════════════════════════════════');
 
-        // Verificar que el registro existe
-        const checkResult = await pool.query('SELECT "_id" FROM "HistoriaClinica" WHERE "_id" = $1', [id]);
-        if (checkResult.rows.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Registro no encontrado en HistoriaClinica'
-            });
-        }
+        // Primero verificar si existe en HistoriaClinica
+        const checkHistoria = await pool.query('SELECT "_id" FROM "HistoriaClinica" WHERE "_id" = $1', [id]);
 
-        // Construir query dinámico solo con los campos que vienen en el body
-        const camposPermitidos = [
-            'numeroId', 'primerNombre', 'segundoNombre', 'primerApellido', 'segundoApellido',
-            'celular', 'email', 'fechaNacimiento', 'edad', 'genero', 'estadoCivil', 'hijos',
-            'ejercicio', 'codEmpresa', 'empresa', 'cargo', 'tipoExamen', 'fechaAtencion',
-            'atendido', 'fechaConsulta', 'mdConceptoFinal', 'mdRecomendacionesMedicasAdicionales',
-            'mdObservacionesCertificado', 'mdAntecedentes', 'mdObsParaMiDocYa', 'mdDx1', 'mdDx2',
-            'talla', 'peso', 'motivoConsulta', 'diagnostico', 'tratamiento', 'pvEstado', 'medico',
-            'encuestaSalud', 'antecedentesFamiliares', 'empresa1'
-        ];
+        if (checkHistoria.rows.length > 0) {
+            // ========== ACTUALIZAR EN HISTORIA CLINICA ==========
+            const camposPermitidos = [
+                'numeroId', 'primerNombre', 'segundoNombre', 'primerApellido', 'segundoApellido',
+                'celular', 'email', 'fechaNacimiento', 'edad', 'genero', 'estadoCivil', 'hijos',
+                'ejercicio', 'codEmpresa', 'empresa', 'cargo', 'tipoExamen', 'fechaAtencion',
+                'atendido', 'fechaConsulta', 'mdConceptoFinal', 'mdRecomendacionesMedicasAdicionales',
+                'mdObservacionesCertificado', 'mdAntecedentes', 'mdObsParaMiDocYa', 'mdDx1', 'mdDx2',
+                'talla', 'peso', 'motivoConsulta', 'diagnostico', 'tratamiento', 'pvEstado', 'medico',
+                'encuestaSalud', 'antecedentesFamiliares', 'empresa1'
+            ];
 
-        const setClauses = [];
-        const values = [];
-        let paramIndex = 1;
+            const setClauses = [];
+            const values = [];
+            let paramIndex = 1;
 
-        for (const campo of camposPermitidos) {
-            if (datos[campo] !== undefined) {
-                setClauses.push(`"${campo}" = $${paramIndex}`);
-                // Convertir fechas si es necesario
-                if (['fechaNacimiento', 'fechaAtencion', 'fechaConsulta'].includes(campo) && datos[campo]) {
-                    values.push(new Date(datos[campo]));
-                } else {
-                    values.push(datos[campo] === '' ? null : datos[campo]);
+            for (const campo of camposPermitidos) {
+                if (datos[campo] !== undefined) {
+                    setClauses.push(`"${campo}" = $${paramIndex}`);
+                    if (['fechaNacimiento', 'fechaAtencion', 'fechaConsulta'].includes(campo) && datos[campo]) {
+                        values.push(new Date(datos[campo]));
+                    } else {
+                        values.push(datos[campo] === '' ? null : datos[campo]);
+                    }
+                    paramIndex++;
                 }
-                paramIndex++;
             }
-        }
 
-        if (setClauses.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'No se proporcionaron campos para actualizar'
+            if (setClauses.length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'No se proporcionaron campos para actualizar'
+                });
+            }
+
+            setClauses.push(`"_updatedDate" = NOW()`);
+            values.push(id);
+
+            const query = `
+                UPDATE "HistoriaClinica" SET
+                    ${setClauses.join(', ')}
+                WHERE "_id" = $${paramIndex}
+                RETURNING *
+            `;
+
+            const result = await pool.query(query, values);
+            const historiaActualizada = result.rows[0];
+
+            console.log('✅ POSTGRESQL: HistoriaClinica actualizada exitosamente');
+            console.log('   _id:', historiaActualizada._id);
+            console.log('   numeroId:', historiaActualizada.numeroId);
+            console.log('═══════════════════════════════════════════════════════════');
+
+            // Sincronizar con Wix
+            try {
+                const fetch = (await import('node-fetch')).default;
+                const wixPayload = { _id: id, ...datos };
+
+                console.log('📤 Sincronizando HistoriaClinica con Wix...');
+                const wixResponse = await fetch('https://www.bsl.com.co/_functions/actualizarHistoriaClinica', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(wixPayload)
+                });
+
+                if (wixResponse.ok) {
+                    console.log('✅ WIX: HistoriaClinica sincronizada exitosamente');
+                } else {
+                    console.error('❌ WIX: ERROR al sincronizar - Status:', wixResponse.status);
+                }
+            } catch (wixError) {
+                console.error('❌ WIX: EXCEPCIÓN al sincronizar:', wixError.message);
+            }
+
+            return res.json({
+                success: true,
+                message: 'HistoriaClinica actualizada correctamente',
+                data: historiaActualizada
             });
         }
 
-        // Agregar _updatedDate
-        setClauses.push(`"_updatedDate" = NOW()`);
+        // ========== SI NO ESTÁ EN HISTORIA CLINICA, BUSCAR EN FORMULARIOS ==========
+        const checkFormulario = await pool.query('SELECT id FROM formularios WHERE id = $1', [id]);
 
-        // Agregar el _id al final de los values
-        values.push(id);
-
-        const query = `
-            UPDATE "HistoriaClinica" SET
-                ${setClauses.join(', ')}
-            WHERE "_id" = $${paramIndex}
-            RETURNING *
-        `;
-
-        const result = await pool.query(query, values);
-        const historiaActualizada = result.rows[0];
-
-        console.log('✅ POSTGRESQL: HistoriaClinica actualizada exitosamente');
-        console.log('   _id:', historiaActualizada._id);
-        console.log('   numeroId:', historiaActualizada.numeroId);
-        console.log('   primerNombre:', historiaActualizada.primerNombre);
-        console.log('═══════════════════════════════════════════════════════════');
-
-        // Sincronizar con Wix
-        try {
-            const fetch = (await import('node-fetch')).default;
-
-            // Preparar payload para Wix (el _id de PostgreSQL es el mismo que el de Wix)
-            const wixPayload = {
-                _id: id,
-                ...datos
+        if (checkFormulario.rows.length > 0) {
+            // Mapeo de campos camelCase a snake_case para formularios
+            const mapeoFormularios = {
+                'primerNombre': 'primer_nombre',
+                'primerApellido': 'primer_apellido',
+                'numeroId': 'numero_id',
+                'codEmpresa': 'cod_empresa',
+                'estadoCivil': 'estado_civil',
+                'fechaNacimiento': 'fecha_nacimiento',
+                'ciudadResidencia': 'ciudad_residencia',
+                'lugarNacimiento': 'lugar_nacimiento',
+                'nivelEducativo': 'nivel_educativo',
+                'profesionOficio': 'profesion_oficio',
+                'consumoLicor': 'consumo_licor',
+                'usaAnteojos': 'usa_anteojos',
+                'usaLentesContacto': 'usa_lentes_contacto',
+                'cirugiaOcular': 'cirugia_ocular',
+                'presionAlta': 'presion_alta',
+                'problemasCardiacos': 'problemas_cardiacos',
+                'problemasAzucar': 'problemas_azucar',
+                'enfermedadPulmonar': 'enfermedad_pulmonar',
+                'enfermedadHigado': 'enfermedad_higado',
+                'dolorEspalda': 'dolor_espalda',
+                'dolorCabeza': 'dolor_cabeza',
+                'ruidoJaqueca': 'ruido_jaqueca',
+                'problemasSueno': 'problemas_sueno',
+                'cirugiaProgramada': 'cirugia_programada',
+                'condicionMedica': 'condicion_medica',
+                'trastornoPsicologico': 'trastorno_psicologico',
+                'sintomasPsicologicos': 'sintomas_psicologicos',
+                'diagnosticoCancer': 'diagnostico_cancer',
+                'enfermedadesLaborales': 'enfermedades_laborales',
+                'enfermedadOsteomuscular': 'enfermedad_osteomuscular',
+                'enfermedadAutoinmune': 'enfermedad_autoinmune',
+                'familiaHereditarias': 'familia_hereditarias',
+                'familiaGeneticas': 'familia_geneticas',
+                'familiaDiabetes': 'familia_diabetes',
+                'familiaHipertension': 'familia_hipertension',
+                'familiaInfartos': 'familia_infartos',
+                'familiaCancer': 'familia_cancer',
+                'familiaTrastornos': 'familia_trastornos',
+                'familiaInfecciosas': 'familia_infecciosas'
             };
 
-            console.log('📤 Sincronizando HistoriaClinica con Wix...');
-            console.log('📦 Payload:', JSON.stringify(wixPayload, null, 2));
+            const camposDirectos = [
+                'celular', 'email', 'edad', 'genero', 'hijos', 'ejercicio', 'empresa',
+                'eps', 'arl', 'pensiones', 'estatura', 'peso', 'fuma', 'embarazo',
+                'hepatitis', 'hernias', 'varices', 'hormigueos', 'atendido', 'ciudad'
+            ];
 
-            const wixResponse = await fetch('https://www.bsl.com.co/_functions/actualizarHistoriaClinica', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(wixPayload)
-            });
+            const setClauses = [];
+            const values = [];
+            let paramIndex = 1;
 
-            console.log('📡 Respuesta de Wix - Status:', wixResponse.status);
+            for (const [key, value] of Object.entries(datos)) {
+                let columna = null;
 
-            if (wixResponse.ok) {
-                const wixResult = await wixResponse.json();
-                console.log('');
-                console.log('═══════════════════════════════════════════════════════════');
-                console.log('✅ WIX: HistoriaClinica sincronizada exitosamente');
-                console.log('   _id:', id);
-                console.log('   Respuesta:', JSON.stringify(wixResult, null, 2));
-                console.log('═══════════════════════════════════════════════════════════');
-                console.log('');
-            } else {
-                const errorText = await wixResponse.text();
-                console.log('');
-                console.log('═══════════════════════════════════════════════════════════');
-                console.error('❌ WIX: ERROR al sincronizar HistoriaClinica');
-                console.error('   Status:', wixResponse.status);
-                console.error('   Response:', errorText);
-                console.log('═══════════════════════════════════════════════════════════');
-                console.log('');
+                if (mapeoFormularios[key]) {
+                    columna = mapeoFormularios[key];
+                } else if (camposDirectos.includes(key)) {
+                    columna = key;
+                }
+
+                if (columna && value !== undefined) {
+                    setClauses.push(`${columna} = $${paramIndex}`);
+                    values.push(value === '' ? null : value);
+                    paramIndex++;
+                }
             }
-        } catch (wixError) {
-            console.log('');
+
+            if (setClauses.length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'No se proporcionaron campos válidos para actualizar'
+                });
+            }
+
+            values.push(id);
+
+            const query = `
+                UPDATE formularios SET
+                    ${setClauses.join(', ')}
+                WHERE id = $${paramIndex}
+                RETURNING *
+            `;
+
+            const result = await pool.query(query, values);
+            const formularioActualizado = result.rows[0];
+
+            console.log('✅ POSTGRESQL: Formulario actualizado exitosamente');
+            console.log('   id:', formularioActualizado.id);
+            console.log('   numero_id:', formularioActualizado.numero_id);
             console.log('═══════════════════════════════════════════════════════════');
-            console.error('❌ WIX: EXCEPCIÓN al sincronizar HistoriaClinica');
-            console.error('   Mensaje:', wixError.message);
-            console.log('═══════════════════════════════════════════════════════════');
-            console.log('');
-            // No bloqueamos la respuesta si Wix falla
+
+            return res.json({
+                success: true,
+                message: 'Formulario actualizado correctamente',
+                data: formularioActualizado
+            });
         }
 
-        console.log('');
-        console.log('🎉 RESUMEN: Actualización de HistoriaClinica completada');
-        console.log('   ✅ PostgreSQL: OK');
-        console.log('   ✅ Wix: Sincronizado');
-        console.log('');
-
-        res.json({
-            success: true,
-            message: 'HistoriaClinica actualizada correctamente',
-            data: historiaActualizada
+        // No se encontró en ninguna tabla
+        return res.status(404).json({
+            success: false,
+            message: 'Registro no encontrado en HistoriaClinica ni en Formularios'
         });
 
     } catch (error) {
-        console.error('❌ Error al actualizar HistoriaClinica:', error);
+        console.error('❌ Error al actualizar registro:', error);
         res.status(500).json({
             success: false,
-            message: 'Error al actualizar HistoriaClinica',
+            message: 'Error al actualizar registro',
             error: error.message
         });
     }
