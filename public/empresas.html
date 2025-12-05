@@ -77,13 +77,15 @@
         }
 
         .nav-item.active {
-            background: #E6F7FA;
-            color: #0099B2;
+            background: #EFF6FF;
+            color: #2563EB;
             font-weight: 500;
         }
 
-        .nav-icon {
-            font-size: 18px;
+        .nav-item i {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
         }
 
         /* Main content */
@@ -120,12 +122,12 @@
         }
 
         .btn-primary {
-            background: #0099B2;
+            background: #2563EB;
             color: white;
         }
 
         .btn-primary:hover {
-            background: #007A8C;
+            background: #1D4ED8;
         }
 
         .btn-secondary {
@@ -406,6 +408,7 @@
             }
         }
     </style>
+    <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
     <div class="app-container">
@@ -417,27 +420,27 @@
             </div>
             <nav class="sidebar-nav">
                 <a href="/" class="nav-item">
-                    <span class="nav-icon">📝</span>
+                    <i data-feather="file-text"></i>
                     Formulario Médico
                 </a>
                 <a href="/ordenes.html" class="nav-item">
-                    <span class="nav-icon">📋</span>
+                    <i data-feather="clipboard-list"></i>
                     Ordenes
                 </a>
                 <a href="/nueva-orden.html" class="nav-item">
-                    <span class="nav-icon">➕</span>
+                    <i data-feather="plus-circle"></i>
                     Nueva Orden
                 </a>
                 <a href="/calendario.html" class="nav-item">
-                    <span class="nav-icon">📅</span>
+                    <i data-feather="calendar"></i>
                     Calendario
                 </a>
                 <a href="/medicos.html" class="nav-item">
-                    <span class="nav-icon">👨‍⚕️</span>
+                    <i data-feather="users"></i>
                     Médicos
                 </a>
                 <a href="/empresas.html" class="nav-item active">
-                    <span class="nav-icon">🏢</span>
+                    <i data-feather="briefcase"></i>
                     Empresas
                 </a>
             </nav>
@@ -448,7 +451,7 @@
             <div class="page-header">
                 <h1 class="page-title">Gestión de Empresas</h1>
                 <button class="btn btn-primary" onclick="abrirModalNuevo()">
-                    <span>➕</span> Nueva Empresa
+                    <i data-feather="plus"></i> Nueva Empresa
                 </button>
             </div>
 
@@ -458,11 +461,11 @@
             </div>
 
             <div id="emptyState" class="empty-state" style="display: none;">
-                <div class="empty-state-icon">🏢</div>
+                <div class="empty-state-icon"><i data-feather="briefcase" style="width:48px;height:48px;stroke:#9CA3AF;"></i></div>
                 <h3 class="empty-state-title">No hay empresas registradas</h3>
                 <p class="empty-state-text">Agrega la primera empresa para comenzar</p>
                 <button class="btn btn-primary" onclick="abrirModalNuevo()">
-                    <span>➕</span> Nueva Empresa
+                    <i data-feather="plus"></i> Nueva Empresa
                 </button>
             </div>
 
@@ -524,7 +527,10 @@
         let empresaEditando = null;
 
         // Cargar empresas al iniciar
-        document.addEventListener('DOMContentLoaded', cargarEmpresas);
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+            cargarEmpresas();
+        });
 
         async function cargarEmpresas() {
             try {

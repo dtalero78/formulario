@@ -82,14 +82,14 @@
         }
 
         .nav-item.active {
-            background: #E6F7FA;
-            color: #0099B2;
+            background: #EFF6FF;
+            color: #2563EB;
         }
 
-        .nav-icon {
-            font-size: 18px;
-            width: 24px;
-            text-align: center;
+        .nav-item i {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
         }
 
         /* Main Content */
@@ -141,12 +141,12 @@
         }
 
         .btn-primary {
-            background: #0099B2;
+            background: #2563EB;
             color: white;
         }
 
         .btn-primary:hover {
-            background: #007A8C;
+            background: #1D4ED8;
         }
 
         .btn-secondary {
@@ -1218,6 +1218,7 @@
             }
         }
     </style>
+    <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
     <div class="app-container">
@@ -1229,27 +1230,27 @@
             </div>
             <nav class="sidebar-nav">
                 <a href="/" class="nav-item">
-                    <span class="nav-icon">📝</span>
+                    <i data-feather="file-text"></i>
                     Formulario Médico
                 </a>
                 <a href="/ordenes.html" class="nav-item active">
-                    <span class="nav-icon">📋</span>
+                    <i data-feather="clipboard-list"></i>
                     Ordenes
                 </a>
                 <a href="/nueva-orden.html" class="nav-item">
-                    <span class="nav-icon">➕</span>
+                    <i data-feather="plus-circle"></i>
                     Nueva Orden
                 </a>
                 <a href="/calendario.html" class="nav-item">
-                    <span class="nav-icon">📅</span>
+                    <i data-feather="calendar"></i>
                     Calendario
                 </a>
                 <a href="/medicos.html" class="nav-item">
-                    <span class="nav-icon">👨‍⚕️</span>
+                    <i data-feather="users"></i>
                     Médicos
                 </a>
                 <a href="/empresas.html" class="nav-item">
-                    <span class="nav-icon">🏢</span>
+                    <i data-feather="briefcase"></i>
                     Empresas
                 </a>
             </nav>
@@ -1263,9 +1264,9 @@
                     <p class="page-subtitle">Gestiona las órdenes y pacientes del sistema</p>
                 </div>
                 <div class="header-actions">
-                    <a href="/nueva-orden.html" class="btn btn-primary">➕ Nueva Orden</a>
-                    <a href="/medicos.html" class="btn btn-secondary">👨‍⚕️ Médicos</a>
-                    <a href="/empresas.html" class="btn btn-secondary">🏢 Empresas</a>
+                    <a href="/nueva-orden.html" class="btn btn-primary"><i data-feather="plus"></i> Nueva Orden</a>
+                    <a href="/medicos.html" class="btn btn-secondary"><i data-feather="users"></i> Médicos</a>
+                    <a href="/empresas.html" class="btn btn-secondary"><i data-feather="briefcase"></i> Empresas</a>
                 </div>
             </div>
 
@@ -1277,7 +1278,7 @@
                     <button class="tab" data-filter="pendiente">Pendientes</button>
                 </div>
                 <div class="search-box">
-                    <span class="search-icon">🔍</span>
+                    <i data-feather="search" class="search-icon" style="width:18px;height:18px;stroke:#9CA3AF;"></i>
                     <input type="text" class="search-input" id="searchInput" placeholder="Buscar por nombre, cédula o empresa...">
                 </div>
                 <div class="stats-badge" id="statsCounter">
@@ -1319,7 +1320,7 @@
 
             <!-- Empty State -->
             <div id="emptyState" class="empty-state" style="display: none;">
-                <div class="empty-state-icon">📋</div>
+                <div class="empty-state-icon"><i data-feather="clipboard" style="width:48px;height:48px;stroke:#9CA3AF;"></i></div>
                 <p class="empty-state-title">No hay órdenes</p>
                 <p class="empty-state-text">Aún no se han registrado órdenes</p>
             </div>
@@ -2859,6 +2860,9 @@
 
         // ========== EVENT LISTENERS ==========
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Feather Icons
+            feather.replace();
+
             // Load data
             cargarFormularios();
 

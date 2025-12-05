@@ -77,13 +77,15 @@
         }
 
         .nav-item.active {
-            background: #E6F7FA;
-            color: #0099B2;
+            background: #EFF6FF;
+            color: #2563EB;
             font-weight: 500;
         }
 
-        .nav-icon {
-            font-size: 18px;
+        .nav-item i {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
         }
 
         /* Main content */
@@ -342,6 +344,7 @@
             }
         }
     </style>
+    <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
     <div class="app-container">
@@ -353,27 +356,27 @@
             </div>
             <nav class="sidebar-nav">
                 <a href="/" class="nav-item">
-                    <span class="nav-icon">📝</span>
+                    <i data-feather="file-text"></i>
                     Formulario Médico
                 </a>
                 <a href="/ordenes.html" class="nav-item">
-                    <span class="nav-icon">📋</span>
+                    <i data-feather="clipboard-list"></i>
                     Ordenes
                 </a>
                 <a href="/nueva-orden.html" class="nav-item active">
-                    <span class="nav-icon">➕</span>
+                    <i data-feather="plus-circle"></i>
                     Nueva Orden
                 </a>
                 <a href="/calendario.html" class="nav-item">
-                    <span class="nav-icon">📅</span>
+                    <i data-feather="calendar"></i>
                     Calendario
                 </a>
                 <a href="/medicos.html" class="nav-item">
-                    <span class="nav-icon">👨‍⚕️</span>
+                    <i data-feather="users"></i>
                     Médicos
                 </a>
                 <a href="/empresas.html" class="nav-item">
-                    <span class="nav-icon">🏢</span>
+                    <i data-feather="briefcase"></i>
                     Empresas
                 </a>
             </nav>
@@ -515,6 +518,7 @@
 
         // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
             cargarMedicos();
             cargarEmpresas();
         });
