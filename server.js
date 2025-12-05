@@ -128,6 +128,7 @@ const initDB = async () => {
                 empresa VARCHAR(100),
                 cod_empresa VARCHAR(50),
                 fecha_atencion VARCHAR(50),
+                hora_atencion VARCHAR(10),
                 genero VARCHAR(20),
                 edad INTEGER,
                 fecha_nacimiento VARCHAR(20),
@@ -195,6 +196,7 @@ const initDB = async () => {
             'empresa VARCHAR(100)',
             'cod_empresa VARCHAR(50)',
             'fecha_atencion VARCHAR(50)',
+            'hora_atencion VARCHAR(10)',
             // Nuevas preguntas de salud personal
             'trastorno_psicologico VARCHAR(10)',
             'sintomas_psicologicos VARCHAR(10)',
@@ -224,6 +226,16 @@ const initDB = async () => {
             `);
         } catch (err) {
             // Si falla, es porque la columna no existe o ya tiene el tipo correcto
+        }
+
+        // Agregar columna horaAtencion a HistoriaClinica si no existe
+        try {
+            await pool.query(`
+                ALTER TABLE "HistoriaClinica"
+                ADD COLUMN IF NOT EXISTS "horaAtencion" VARCHAR(10)
+            `);
+        } catch (err) {
+            // Columna ya existe o tabla no existe
         }
 
         console.log('✅ Base de datos inicializada correctamente');
@@ -970,6 +982,7 @@ app.post('/api/ordenes', async (req, res) => {
             tipoExamen,
             medico,
             fechaAtencion,
+            horaAtencion,
             atendido,
             examenes,
             empresa
@@ -1000,9 +1013,9 @@ app.post('/api/ordenes', async (req, res) => {
             INSERT INTO "HistoriaClinica" (
                 "_id", "numeroId", "primerNombre", "segundoNombre", "primerApellido", "segundoApellido",
                 "celular", "codEmpresa", "empresa", "cargo", "ciudad", "tipoExamen", "medico",
-                "fechaAtencion", "atendido", "examenes", "_createdDate", "_updatedDate"
+                "fechaAtencion", "horaAtencion", "atendido", "examenes", "_createdDate", "_updatedDate"
             ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW()
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, NOW(), NOW()
             )
             RETURNING "_id", "numeroId", "primerNombre", "primerApellido"
         `;
@@ -1022,6 +1035,7 @@ app.post('/api/ordenes', async (req, res) => {
             tipoExamen || null,
             medico || null,
             fechaAtencion ? new Date(fechaAtencion) : null,
+            horaAtencion || null,
             atendido || 'PENDIENTE',
             examenes || null
         ];
@@ -2421,7 +2435,7 @@ app.get('/api/calendario/dia', async (req, res) => {
                 "tipoExamen",
                 "medico",
                 "fechaAtencion" as fecha_atencion,
-                NULL as hora,
+                "horaAtencion" as hora,
                 "empresa",
                 "atendido"
             FROM "HistoriaClinica"

@@ -88,11 +88,65 @@
             stroke-width: 2;
         }
 
+        /* Top Bar Fijo */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 240px;
+            right: 0;
+            height: 64px;
+            background: white;
+            border-bottom: 1px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+            z-index: 100;
+        }
+
+        .top-bar-search {
+            position: relative;
+            width: 400px;
+        }
+
+        .top-bar-search input {
+            width: 100%;
+            padding: 10px 16px 10px 42px;
+            border: 1px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #F9FAFB;
+            transition: all 0.2s ease;
+        }
+
+        .top-bar-search input:focus {
+            outline: none;
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background: white;
+        }
+
+        .top-bar-search input::placeholder {
+            color: #9CA3AF;
+        }
+
+        .top-bar-search svg {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9CA3AF;
+            width: 18px;
+            height: 18px;
+            pointer-events: none;
+        }
+
         /* Main content */
         .main-content {
             flex: 1;
             margin-left: 240px;
             padding: 32px;
+            padding-top: 96px;
         }
 
         .page-header {
@@ -112,44 +166,6 @@
         .page-subtitle {
             font-size: 14px;
             color: #6B7280;
-        }
-
-        /* Global Search */
-        .global-search {
-            position: relative;
-            width: 320px;
-        }
-
-        .global-search input {
-            width: 100%;
-            padding: 10px 16px 10px 42px;
-            border: 1px solid #E5E7EB;
-            border-radius: 10px;
-            font-size: 14px;
-            font-family: inherit;
-            background: white;
-            transition: all 0.2s ease;
-        }
-
-        .global-search input:focus {
-            outline: none;
-            border-color: #2563EB;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .global-search input::placeholder {
-            color: #9CA3AF;
-        }
-
-        .global-search svg {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9CA3AF;
-            width: 18px;
-            height: 18px;
-            pointer-events: none;
         }
 
         /* Form Card */
@@ -423,16 +439,20 @@
             </nav>
         </aside>
 
+        <!-- Top Bar con buscador global -->
+        <div class="top-bar">
+            <div class="top-bar-search">
+                <i data-feather="search"></i>
+                <input type="text" id="globalSearchInput" placeholder="Buscar órdenes por nombre, cédula o empresa..." onkeypress="buscarGlobal(event)">
+            </div>
+        </div>
+
         <!-- Main Content -->
         <main class="main-content">
             <div class="page-header">
                 <div>
                     <h1 class="page-title">Nueva Orden</h1>
                     <p class="page-subtitle">Crear una nueva orden para examen médico ocupacional</p>
-                </div>
-                <div class="global-search">
-                    <i data-feather="search"></i>
-                    <input type="text" placeholder="Buscar por nombre, cédula o empresa..." onkeypress="buscarGlobal(event)">
                 </div>
             </div>
 
@@ -534,6 +554,12 @@
                                 <input type="date" class="form-input" name="fechaAtencion">
                             </div>
                             <div class="form-group">
+                                <label class="form-label">Hora de Atención</label>
+                                <select class="form-select" name="horaAtencion" id="selectHora">
+                                    <option value="">Seleccionar hora...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label class="form-label">Estado</label>
                                 <select class="form-select" name="atendido">
                                     <option value="PENDIENTE">Pendiente</option>
@@ -578,7 +604,30 @@
             feather.replace();
             cargarMedicos();
             cargarEmpresas();
+            generarOpcionesHora();
         });
+
+        function generarOpcionesHora() {
+            const select = document.getElementById('selectHora');
+            // Desde las 6:00 AM (6) hasta las 11:00 PM (23)
+            for (let hora = 6; hora <= 23; hora++) {
+                for (let minuto = 0; minuto < 60; minuto += 10) {
+                    const horaStr = String(hora).padStart(2, '0');
+                    const minutoStr = String(minuto).padStart(2, '0');
+                    const valor = `${horaStr}:${minutoStr}`;
+
+                    // Formato 12 horas para mostrar
+                    const hora12 = hora > 12 ? hora - 12 : (hora === 0 ? 12 : hora);
+                    const ampm = hora >= 12 ? 'PM' : 'AM';
+                    const texto = `${hora12}:${minutoStr} ${ampm}`;
+
+                    const option = document.createElement('option');
+                    option.value = valor;
+                    option.textContent = texto;
+                    select.appendChild(option);
+                }
+            }
+        }
 
         async function cargarMedicos() {
             try {
