@@ -2300,6 +2300,73 @@ app.get('/api/calendario/mes', async (req, res) => {
     }
 });
 
+// GET /api/calendario/mes-detalle - Obtener citas agrupadas por médico para cada día del mes
+app.get('/api/calendario/mes-detalle', async (req, res) => {
+    try {
+        const { year, month } = req.query;
+
+        if (!year || !month) {
+            return res.status(400).json({
+                success: false,
+                message: 'Se requiere year y month'
+            });
+        }
+
+        // Calcular primer y último día del mes
+        const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+        const endDate = new Date(year, month, 0).getDate();
+        const endDateStr = `${year}-${String(month).padStart(2, '0')}-${endDate}`;
+
+        const query = `
+            SELECT
+                fecha_atencion,
+                COALESCE(medico, 'Sin asignar') as medico,
+                COUNT(*) as total
+            FROM formularios
+            WHERE fecha_atencion IS NOT NULL
+              AND fecha_atencion >= $1
+              AND fecha_atencion <= $2
+            GROUP BY fecha_atencion, medico
+            ORDER BY fecha_atencion, total DESC
+        `;
+
+        const result = await pool.query(query, [startDate, endDateStr]);
+
+        // Convertir a objeto {fecha: {medico: count, ...}}
+        const citasPorDia = {};
+        result.rows.forEach(row => {
+            if (row.fecha_atencion) {
+                // Normalizar formato de fecha
+                let fecha = row.fecha_atencion;
+                if (fecha instanceof Date) {
+                    fecha = fecha.toISOString().split('T')[0];
+                } else if (typeof fecha === 'string' && fecha.includes('T')) {
+                    fecha = fecha.split('T')[0];
+                }
+
+                if (!citasPorDia[fecha]) {
+                    citasPorDia[fecha] = {};
+                }
+                citasPorDia[fecha][row.medico] = parseInt(row.total);
+            }
+        });
+
+        res.json({
+            success: true,
+            data: citasPorDia,
+            year: parseInt(year),
+            month: parseInt(month)
+        });
+    } catch (error) {
+        console.error('❌ Error al obtener detalle de citas del mes:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener detalle de citas del mes',
+            error: error.message
+        });
+    }
+});
+
 // GET /api/calendario/dia - Obtener citas de un día específico
 app.get('/api/calendario/dia', async (req, res) => {
     try {

@@ -110,7 +110,7 @@
         .calendar-nav {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
 
         .calendar-nav button {
@@ -147,25 +147,14 @@
             background: #007A8C !important;
         }
 
-        /* Filter */
-        .filter-section {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 24px;
-            align-items: center;
+        .btn-back {
+            background: #6B7280 !important;
+            color: white !important;
+            border-color: #6B7280 !important;
         }
 
-        .filter-section label {
-            font-size: 14px;
-            color: #6B7280;
-        }
-
-        .filter-section select {
-            padding: 8px 12px;
-            border: 1px solid #D1D5DB;
-            border-radius: 8px;
-            font-size: 14px;
-            min-width: 200px;
+        .btn-back:hover {
+            background: #4B5563 !important;
         }
 
         /* Calendar Grid */
@@ -198,12 +187,14 @@
         }
 
         .calendar-cell {
-            min-height: 100px;
+            min-height: 120px;
             border-right: 1px solid #E5E7EB;
             border-bottom: 1px solid #E5E7EB;
             padding: 8px;
             cursor: pointer;
             transition: background 0.15s;
+            display: flex;
+            flex-direction: column;
         }
 
         .calendar-cell:nth-child(7n) {
@@ -226,83 +217,143 @@
             background: #E6F7FA;
         }
 
-        .calendar-cell.selected {
-            background: #DBEAFE;
+        .calendar-cell.today .day-number {
+            background: #0099B2;
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .day-number {
             font-size: 14px;
             font-weight: 500;
             color: #111827;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
-        .day-count {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: #0099B2;
-            color: white;
-            font-size: 11px;
-            font-weight: 500;
-            padding: 2px 8px;
-            border-radius: 12px;
-            margin-top: 4px;
-        }
-
-        .day-count.empty {
-            background: #E5E7EB;
-            color: #6B7280;
-        }
-
-        /* Day Detail Panel */
-        .day-detail {
-            display: none;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-top: 24px;
+        .day-doctors {
+            flex: 1;
             overflow: hidden;
         }
 
-        .day-detail.active {
+        .doctor-badge {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #F0F9FF;
+            border-left: 3px solid #0099B2;
+            border-radius: 4px;
+            padding: 4px 8px;
+            margin-bottom: 4px;
+            font-size: 11px;
+        }
+
+        .doctor-badge .doctor-name {
+            color: #0369A1;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80px;
+        }
+
+        .doctor-badge .citas-count {
+            background: #0099B2;
+            color: white;
+            border-radius: 10px;
+            padding: 1px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .more-doctors {
+            font-size: 10px;
+            color: #6B7280;
+            text-align: center;
+            padding: 2px;
+        }
+
+        /* ========== VISTA AGENDA DEL DIA ========== */
+        .day-view {
+            display: none;
+        }
+
+        .day-view.active {
             display: block;
         }
 
-        .day-detail-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #E5E7EB;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .calendar-view {
+            display: block;
         }
 
-        .day-detail-title {
-            font-size: 18px;
-            font-weight: 600;
+        .calendar-view.hidden {
+            display: none;
+        }
+
+        .day-view-header {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .day-view-title {
+            font-size: 28px;
+            font-weight: 700;
             color: #111827;
+            margin-bottom: 4px;
         }
 
-        .day-detail-subtitle {
+        .day-view-subtitle {
+            font-size: 16px;
+            color: #6B7280;
+        }
+
+        .day-view-stats {
+            display: flex;
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0099B2;
+        }
+
+        .stat-label {
             font-size: 14px;
             color: #6B7280;
-            margin-top: 4px;
-        }
-
-        .day-detail-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #9CA3AF;
-            cursor: pointer;
-            padding: 4px;
-        }
-
-        .day-detail-close:hover {
-            color: #111827;
         }
 
         /* Timeline */
+        .timeline-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .timeline-header {
+            background: #F9FAFB;
+            padding: 16px 24px;
+            border-bottom: 1px solid #E5E7EB;
+            font-weight: 600;
+            color: #374151;
+        }
+
         .timeline {
             padding: 0;
         }
@@ -310,7 +361,7 @@
         .timeline-hour {
             display: grid;
             grid-template-columns: 80px 1fr;
-            min-height: 60px;
+            min-height: 80px;
             border-bottom: 1px solid #F3F4F6;
         }
 
@@ -319,66 +370,100 @@
         }
 
         .timeline-hour-label {
-            padding: 12px 16px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #6B7280;
+            padding: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
             border-right: 1px solid #E5E7EB;
             background: #FAFAFA;
+            display: flex;
+            align-items: flex-start;
         }
 
         .timeline-hour-content {
-            padding: 8px 16px;
+            padding: 12px 16px;
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 12px;
             align-items: flex-start;
         }
 
         .appointment-card {
-            background: #E6F7FA;
-            border-left: 3px solid #0099B2;
-            border-radius: 4px;
-            padding: 8px 12px;
-            font-size: 13px;
-            flex: 1;
-            min-width: 200px;
-            max-width: 300px;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-left: 4px solid #0099B2;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 14px;
+            min-width: 280px;
+            max-width: 350px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: box-shadow 0.15s;
+        }
+
+        .appointment-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .appointment-card .patient-name {
             font-weight: 600;
             color: #111827;
-            margin-bottom: 2px;
+            font-size: 15px;
+            margin-bottom: 4px;
         }
 
         .appointment-card .patient-info {
             color: #6B7280;
-            font-size: 12px;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .appointment-card .appointment-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 8px;
+            border-top: 1px solid #F3F4F6;
         }
 
         .appointment-card .doctor-name {
             color: #0099B2;
-            font-size: 12px;
-            margin-top: 4px;
+            font-weight: 500;
+            font-size: 13px;
         }
 
-        /* Empty state */
+        .appointment-card .exam-type {
+            background: #E6F7FA;
+            color: #0099B2;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Empty states */
         .empty-hour {
             color: #D1D5DB;
-            font-size: 13px;
-            padding: 8px 0;
+            font-size: 14px;
+            padding: 12px 0;
+            font-style: italic;
         }
 
         .no-appointments {
             text-align: center;
-            padding: 40px;
+            padding: 60px 40px;
             color: #6B7280;
         }
 
         .no-appointments-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .no-appointments h3 {
+            font-size: 18px;
+            color: #374151;
+            margin-bottom: 8px;
         }
 
         /* Loading */
@@ -419,7 +504,7 @@
             }
 
             .calendar-cell {
-                min-height: 70px;
+                min-height: 80px;
                 padding: 4px;
             }
 
@@ -427,9 +512,21 @@
                 font-size: 12px;
             }
 
-            .filter-section {
+            .doctor-badge {
+                display: none;
+            }
+
+            .calendar-nav {
+                flex-wrap: wrap;
+            }
+
+            .day-view-stats {
                 flex-direction: column;
-                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .appointment-card {
+                min-width: 100%;
             }
         }
     </style>
@@ -472,48 +569,66 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <div class="page-header">
-                <h1 class="page-title">Calendario de Citas</h1>
-                <div class="calendar-nav">
-                    <button onclick="cambiarMes(-1)">← Anterior</button>
-                    <span class="month-year" id="monthYear"></span>
-                    <button onclick="cambiarMes(1)">Siguiente →</button>
-                    <button class="btn-today" onclick="irAHoy()">Hoy</button>
-                </div>
-            </div>
-
-            <div class="filter-section">
-                <label>Filtrar por médico:</label>
-                <select id="filterMedico" onchange="cargarCitas()">
-                    <option value="">Todos los médicos</option>
-                </select>
-            </div>
-
-            <div class="calendar-container">
-                <div class="calendar-header">
-                    <div class="calendar-header-cell">Dom</div>
-                    <div class="calendar-header-cell">Lun</div>
-                    <div class="calendar-header-cell">Mar</div>
-                    <div class="calendar-header-cell">Mié</div>
-                    <div class="calendar-header-cell">Jue</div>
-                    <div class="calendar-header-cell">Vie</div>
-                    <div class="calendar-header-cell">Sáb</div>
-                </div>
-                <div class="calendar-grid" id="calendarGrid">
-                    <!-- Días del calendario -->
-                </div>
-            </div>
-
-            <div class="day-detail" id="dayDetail">
-                <div class="day-detail-header">
-                    <div>
-                        <div class="day-detail-title" id="dayDetailTitle">Agenda del día</div>
-                        <div class="day-detail-subtitle" id="dayDetailSubtitle">0 citas programadas</div>
+            <!-- VISTA CALENDARIO MENSUAL -->
+            <div class="calendar-view" id="calendarView">
+                <div class="page-header">
+                    <h1 class="page-title">Calendario de Citas</h1>
+                    <div class="calendar-nav">
+                        <button onclick="cambiarMes(-1)">← Anterior</button>
+                        <span class="month-year" id="monthYear"></span>
+                        <button onclick="cambiarMes(1)">Siguiente →</button>
+                        <button class="btn-today" onclick="irAHoy()">Hoy</button>
                     </div>
-                    <button class="day-detail-close" onclick="cerrarDetalle()">×</button>
                 </div>
-                <div class="timeline" id="timeline">
-                    <!-- Horas del día -->
+
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <div class="calendar-header-cell">Dom</div>
+                        <div class="calendar-header-cell">Lun</div>
+                        <div class="calendar-header-cell">Mar</div>
+                        <div class="calendar-header-cell">Mié</div>
+                        <div class="calendar-header-cell">Jue</div>
+                        <div class="calendar-header-cell">Vie</div>
+                        <div class="calendar-header-cell">Sáb</div>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Días del calendario -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA AGENDA DEL DIA -->
+            <div class="day-view" id="dayView">
+                <div class="page-header">
+                    <h1 class="page-title" id="dayViewPageTitle">Agenda del Día</h1>
+                    <div class="calendar-nav">
+                        <button class="btn-back" onclick="volverACalendario()">← Volver al Calendario</button>
+                        <button onclick="cambiarDia(-1)">← Día Anterior</button>
+                        <button onclick="cambiarDia(1)">Día Siguiente →</button>
+                        <button class="btn-today" onclick="irAHoyAgenda()">Hoy</button>
+                    </div>
+                </div>
+
+                <div class="day-view-header">
+                    <div class="day-view-title" id="dayViewTitle">Lunes 9 de Diciembre</div>
+                    <div class="day-view-subtitle" id="dayViewSubtitle">Agenda médica del día</div>
+                    <div class="day-view-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="statTotalCitas">0</span>
+                            <span class="stat-label">citas programadas</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="statMedicos">0</span>
+                            <span class="stat-label">médicos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-container">
+                    <div class="timeline-header">Agenda por Horas</div>
+                    <div class="timeline" id="timeline">
+                        <!-- Horas del día -->
+                    </div>
                 </div>
             </div>
         </main>
@@ -522,58 +637,45 @@
     <script>
         let currentDate = new Date();
         let selectedDate = null;
-        let citasDelMes = {};
+        let citasDelMes = {}; // {fecha: {medico: count, ...}}
         let medicos = [];
 
         const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
                        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+        const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
         document.addEventListener('DOMContentLoaded', () => {
             cargarMedicos();
             renderCalendario();
-            cargarCitas();
+            cargarCitasMes();
         });
 
         async function cargarMedicos() {
             try {
                 const response = await fetch('/api/medicos');
                 const result = await response.json();
-
                 if (result.success && result.data) {
                     medicos = result.data;
-                    const select = document.getElementById('filterMedico');
-                    medicos.forEach(medico => {
-                        const option = document.createElement('option');
-                        option.value = `${medico.primer_nombre} ${medico.primer_apellido}`;
-                        option.textContent = `${medico.primer_nombre} ${medico.primer_apellido}`;
-                        select.appendChild(option);
-                    });
                 }
             } catch (error) {
                 console.error('Error al cargar médicos:', error);
             }
         }
 
-        async function cargarCitas() {
+        async function cargarCitasMes() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth() + 1;
-            const medicoFilter = document.getElementById('filterMedico').value;
 
             try {
-                let url = `/api/calendario/mes?year=${year}&month=${month}`;
-                if (medicoFilter) {
-                    url += `&medico=${encodeURIComponent(medicoFilter)}`;
-                }
-
-                const response = await fetch(url);
+                const response = await fetch(`/api/calendario/mes-detalle?year=${year}&month=${month}`);
                 const result = await response.json();
 
                 if (result.success) {
                     citasDelMes = result.data;
-                    actualizarContadores();
+                    actualizarCeldasCalendario();
                 }
             } catch (error) {
-                console.error('Error al cargar citas:', error);
+                console.error('Error al cargar citas del mes:', error);
             }
         }
 
@@ -633,12 +735,10 @@
 
             cell.innerHTML = `
                 <div class="day-number">${day}</div>
-                <div class="day-count empty" id="count-${dateStr}" style="display: none;">
-                    <span>0</span> citas
-                </div>
+                <div class="day-doctors" id="doctors-${dateStr}"></div>
             `;
 
-            cell.onclick = () => seleccionarDia(date, cell);
+            cell.onclick = () => abrirVistaAgenda(date);
 
             return cell;
         }
@@ -650,83 +750,116 @@
             return `${year}-${month}-${day}`;
         }
 
-        function actualizarContadores() {
-            // Reset all counters
-            document.querySelectorAll('.day-count').forEach(el => {
-                el.style.display = 'none';
-                el.classList.add('empty');
-                el.classList.remove('has-appointments');
-            });
+        function actualizarCeldasCalendario() {
+            Object.entries(citasDelMes).forEach(([fecha, doctores]) => {
+                const container = document.getElementById(`doctors-${fecha}`);
+                if (!container) return;
 
-            // Update counters with data
-            Object.entries(citasDelMes).forEach(([fecha, count]) => {
-                const countEl = document.getElementById(`count-${fecha}`);
-                if (countEl) {
-                    countEl.innerHTML = `<span>${count}</span> cita${count !== 1 ? 's' : ''}`;
-                    countEl.style.display = 'inline-flex';
-                    if (count > 0) {
-                        countEl.classList.remove('empty');
-                    }
+                const doctorEntries = Object.entries(doctores);
+                if (doctorEntries.length === 0) return;
+
+                // Mostrar máximo 3 médicos
+                const maxShow = 3;
+                let html = '';
+
+                doctorEntries.slice(0, maxShow).forEach(([medico, count]) => {
+                    const nombreCorto = medico.split(' ')[0]; // Solo primer nombre
+                    html += `
+                        <div class="doctor-badge">
+                            <span class="doctor-name">${nombreCorto}</span>
+                            <span class="citas-count">${count}</span>
+                        </div>
+                    `;
+                });
+
+                if (doctorEntries.length > maxShow) {
+                    html += `<div class="more-doctors">+${doctorEntries.length - maxShow} más</div>`;
                 }
+
+                container.innerHTML = html;
             });
         }
 
         function cambiarMes(delta) {
             currentDate.setMonth(currentDate.getMonth() + delta);
             renderCalendario();
-            cargarCitas();
-            cerrarDetalle();
+            cargarCitasMes();
         }
 
         function irAHoy() {
             currentDate = new Date();
             renderCalendario();
-            cargarCitas();
-            cerrarDetalle();
+            cargarCitasMes();
         }
 
-        async function seleccionarDia(date, cell) {
-            // Remove previous selection
-            document.querySelectorAll('.calendar-cell.selected').forEach(el => {
-                el.classList.remove('selected');
-            });
+        // ========== VISTA AGENDA DEL DIA ==========
 
-            cell.classList.add('selected');
+        function abrirVistaAgenda(date) {
             selectedDate = date;
 
-            await cargarDetalleDia(date);
+            // Cambiar vista
+            document.getElementById('calendarView').classList.add('hidden');
+            document.getElementById('dayView').classList.add('active');
+
+            // Actualizar títulos
+            actualizarTitulosAgenda(date);
+
+            // Cargar citas del día
+            cargarCitasDia(date);
         }
 
-        async function cargarDetalleDia(date) {
+        function volverACalendario() {
+            document.getElementById('dayView').classList.remove('active');
+            document.getElementById('calendarView').classList.remove('hidden');
+            selectedDate = null;
+        }
+
+        function cambiarDia(delta) {
+            selectedDate.setDate(selectedDate.getDate() + delta);
+            actualizarTitulosAgenda(selectedDate);
+            cargarCitasDia(selectedDate);
+        }
+
+        function irAHoyAgenda() {
+            selectedDate = new Date();
+            actualizarTitulosAgenda(selectedDate);
+            cargarCitasDia(selectedDate);
+        }
+
+        function actualizarTitulosAgenda(date) {
+            const diaSemana = diasSemana[date.getDay()];
+            const dia = date.getDate();
+            const mes = meses[date.getMonth()];
+            const year = date.getFullYear();
+
+            document.getElementById('dayViewPageTitle').textContent = `Agenda - ${dia} de ${mes}`;
+            document.getElementById('dayViewTitle').textContent = `${diaSemana} ${dia} de ${mes} de ${year}`;
+        }
+
+        async function cargarCitasDia(date) {
             const dateStr = formatDate(date);
-            const medicoFilter = document.getElementById('filterMedico').value;
+            const timeline = document.getElementById('timeline');
 
-            const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-            const dayName = dayNames[date.getDay()];
-            const monthName = meses[date.getMonth()];
-
-            document.getElementById('dayDetailTitle').textContent =
-                `Agenda del ${dayName} ${date.getDate()} de ${monthName}`;
+            timeline.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>Cargando agenda...</p></div>';
 
             try {
-                let url = `/api/calendario/dia?fecha=${dateStr}`;
-                if (medicoFilter) {
-                    url += `&medico=${encodeURIComponent(medicoFilter)}`;
-                }
-
-                const response = await fetch(url);
+                const response = await fetch(`/api/calendario/dia?fecha=${dateStr}`);
                 const result = await response.json();
 
                 if (result.success) {
                     renderTimeline(result.data);
-                    document.getElementById('dayDetailSubtitle').textContent =
-                        `${result.total} cita${result.total !== 1 ? 's' : ''} programada${result.total !== 1 ? 's' : ''}`;
+
+                    // Actualizar stats
+                    document.getElementById('statTotalCitas').textContent = result.total;
+
+                    // Contar médicos únicos
+                    const medicosUnicos = new Set(result.data.map(c => c.medico).filter(m => m));
+                    document.getElementById('statMedicos').textContent = medicosUnicos.size;
                 }
             } catch (error) {
-                console.error('Error al cargar detalle del día:', error);
+                console.error('Error al cargar citas del día:', error);
+                timeline.innerHTML = '<div class="no-appointments"><div class="no-appointments-icon">⚠️</div><h3>Error al cargar</h3><p>No se pudieron cargar las citas</p></div>';
             }
-
-            document.getElementById('dayDetail').classList.add('active');
         }
 
         function renderTimeline(citas) {
@@ -736,7 +869,8 @@
                 timeline.innerHTML = `
                     <div class="no-appointments">
                         <div class="no-appointments-icon">📅</div>
-                        <p>No hay citas programadas para este día</p>
+                        <h3>Sin citas programadas</h3>
+                        <p>No hay citas médicas programadas para este día</p>
                     </div>
                 `;
                 return;
@@ -766,11 +900,16 @@
                                 citasHora.map(cita => `
                                     <div class="appointment-card">
                                         <div class="patient-name">${cita.nombre}</div>
-                                        <div class="patient-info">${cita.cedula} · ${cita.tipoExamen || 'Examen'}</div>
-                                        <div class="doctor-name">${cita.medico || 'Sin médico asignado'}</div>
+                                        <div class="patient-info">
+                                            CC: ${cita.cedula} ${cita.empresa ? `· ${cita.empresa}` : ''}
+                                        </div>
+                                        <div class="appointment-meta">
+                                            <span class="doctor-name">${cita.medico || 'Sin médico'}</span>
+                                            <span class="exam-type">${cita.tipoExamen || 'Examen'}</span>
+                                        </div>
                                     </div>
                                 `).join('') :
-                                '<div class="empty-hour">—</div>'
+                                '<div class="empty-hour">Sin citas</div>'
                             }
                         </div>
                     </div>
@@ -787,8 +926,13 @@
                             ${sinHora.map(cita => `
                                 <div class="appointment-card">
                                     <div class="patient-name">${cita.nombre}</div>
-                                    <div class="patient-info">${cita.cedula} · ${cita.tipoExamen || 'Examen'}</div>
-                                    <div class="doctor-name">${cita.medico || 'Sin médico asignado'}</div>
+                                    <div class="patient-info">
+                                        CC: ${cita.cedula} ${cita.empresa ? `· ${cita.empresa}` : ''}
+                                    </div>
+                                    <div class="appointment-meta">
+                                        <span class="doctor-name">${cita.medico || 'Sin médico'}</span>
+                                        <span class="exam-type">${cita.tipoExamen || 'Examen'}</span>
+                                    </div>
                                 </div>
                             `).join('')}
                         </div>
@@ -797,14 +941,6 @@
             }
 
             timeline.innerHTML = html;
-        }
-
-        function cerrarDetalle() {
-            document.getElementById('dayDetail').classList.remove('active');
-            document.querySelectorAll('.calendar-cell.selected').forEach(el => {
-                el.classList.remove('selected');
-            });
-            selectedDate = null;
         }
     </script>
 </body>
