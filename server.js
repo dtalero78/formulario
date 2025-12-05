@@ -2553,8 +2553,12 @@ app.get('/api/calendario/dia', async (req, res) => {
         const params = [fecha];
 
         if (medico) {
-            query += ` AND "medico" = $2`;
-            params.push(medico);
+            if (medico === 'Sin asignar') {
+                query += ` AND "medico" IS NULL`;
+            } else {
+                query += ` AND "medico" = $2`;
+                params.push(medico);
+            }
         }
 
         query += ` ORDER BY "fechaAtencion" ASC, "_createdDate" ASC`;
