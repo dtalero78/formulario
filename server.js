@@ -2056,6 +2056,180 @@ app.delete('/api/medicos/:id', async (req, res) => {
     }
 });
 
+// ============================================
+// ENDPOINTS PARA EMPRESAS
+// ============================================
+
+// Listar todas las empresas activas
+app.get('/api/empresas', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT id, cod_empresa, empresa, nit, profesiograma, activo, created_at
+            FROM empresas
+            WHERE activo = true
+            ORDER BY empresa
+        `);
+
+        res.json({
+            success: true,
+            total: result.rows.length,
+            data: result.rows
+        });
+    } catch (error) {
+        console.error('❌ Error al listar empresas:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al listar empresas',
+            error: error.message
+        });
+    }
+});
+
+// Obtener una empresa por ID
+app.get('/api/empresas/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query('SELECT * FROM empresas WHERE id = $1', [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Empresa no encontrada'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: result.rows[0]
+        });
+    } catch (error) {
+        console.error('❌ Error al obtener empresa:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener empresa',
+            error: error.message
+        });
+    }
+});
+
+// Crear una nueva empresa
+app.post('/api/empresas', async (req, res) => {
+    try {
+        const { codEmpresa, empresa, nit, profesiograma } = req.body;
+
+        if (!codEmpresa || !empresa) {
+            return res.status(400).json({
+                success: false,
+                message: 'Campos requeridos: codEmpresa, empresa'
+            });
+        }
+
+        const result = await pool.query(`
+            INSERT INTO empresas (cod_empresa, empresa, nit, profesiograma)
+            VALUES ($1, $2, $3, $4)
+            RETURNING *
+        `, [codEmpresa, empresa, nit || null, profesiograma || null]);
+
+        console.log(`✅ Empresa creada: ${empresa} (${codEmpresa})`);
+
+        res.json({
+            success: true,
+            message: 'Empresa creada exitosamente',
+            data: result.rows[0]
+        });
+    } catch (error) {
+        if (error.code === '23505') {
+            return res.status(400).json({
+                success: false,
+                message: 'Ya existe una empresa con ese código'
+            });
+        }
+        console.error('❌ Error al crear empresa:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al crear empresa',
+            error: error.message
+        });
+    }
+});
+
+// Actualizar una empresa
+app.put('/api/empresas/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { codEmpresa, empresa, nit, profesiograma, activo } = req.body;
+
+        const result = await pool.query(`
+            UPDATE empresas SET
+                cod_empresa = COALESCE($1, cod_empresa),
+                empresa = COALESCE($2, empresa),
+                nit = COALESCE($3, nit),
+                profesiograma = COALESCE($4, profesiograma),
+                activo = COALESCE($5, activo),
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = $6
+            RETURNING *
+        `, [codEmpresa, empresa, nit, profesiograma, activo, id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Empresa no encontrada'
+            });
+        }
+
+        console.log(`✅ Empresa actualizada: ID ${id}`);
+
+        res.json({
+            success: true,
+            message: 'Empresa actualizada exitosamente',
+            data: result.rows[0]
+        });
+    } catch (error) {
+        console.error('❌ Error al actualizar empresa:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al actualizar empresa',
+            error: error.message
+        });
+    }
+});
+
+// Eliminar (desactivar) una empresa
+app.delete('/api/empresas/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const result = await pool.query(`
+            UPDATE empresas SET activo = false, updated_at = CURRENT_TIMESTAMP
+            WHERE id = $1
+            RETURNING id, cod_empresa, empresa
+        `, [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Empresa no encontrada'
+            });
+        }
+
+        console.log(`✅ Empresa desactivada: ID ${id}`);
+
+        res.json({
+            success: true,
+            message: 'Empresa desactivada exitosamente',
+            data: result.rows[0]
+        });
+    } catch (error) {
+        console.error('❌ Error al desactivar empresa:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al desactivar empresa',
+            error: error.message
+        });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
     console.log(`📊 Base de datos: PostgreSQL en Digital Ocean`);

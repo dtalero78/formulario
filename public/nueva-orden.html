@@ -368,6 +368,10 @@
                     <span class="nav-icon">👨‍⚕️</span>
                     Médicos
                 </a>
+                <a href="/empresas.html" class="nav-item">
+                    <span class="nav-icon">🏢</span>
+                    Empresas
+                </a>
             </nav>
         </aside>
 
@@ -396,11 +400,13 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label class="form-label">Código Empresa <span class="required">*</span></label>
-                                <input type="text" class="form-input" name="codEmpresa" required placeholder="Ej: SIIGO">
+                                <select class="form-select" name="codEmpresa" id="selectEmpresa" required>
+                                    <option value="">Seleccionar empresa...</option>
+                                </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Nombre Empresa <span class="required">*</span></label>
-                                <input type="text" class="form-input" name="empresa" required placeholder="Nombre de la empresa">
+                                <label class="form-label">Nombre Empresa</label>
+                                <input type="text" class="form-input" name="empresa" id="inputEmpresa" readonly placeholder="Se llena automáticamente">
                             </div>
                         </div>
                     </div>
@@ -501,8 +507,13 @@
         const successText = document.getElementById('successText');
         const errorText = document.getElementById('errorText');
 
-        // Cargar médicos al iniciar
-        document.addEventListener('DOMContentLoaded', cargarMedicos);
+        let empresasData = [];
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarMedicos();
+            cargarEmpresas();
+        });
 
         async function cargarMedicos() {
             try {
@@ -523,6 +534,39 @@
                 console.error('Error al cargar médicos:', error);
             }
         }
+
+        async function cargarEmpresas() {
+            try {
+                const response = await fetch('/api/empresas');
+                const result = await response.json();
+
+                if (result.success && result.data.length > 0) {
+                    empresasData = result.data;
+                    const select = document.getElementById('selectEmpresa');
+                    result.data.forEach(empresa => {
+                        const option = document.createElement('option');
+                        option.value = empresa.cod_empresa;
+                        option.textContent = `${empresa.cod_empresa} - ${empresa.empresa}`;
+                        option.dataset.empresa = empresa.empresa;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error al cargar empresas:', error);
+            }
+        }
+
+        // Actualizar nombre de empresa cuando se selecciona código
+        document.getElementById('selectEmpresa').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const inputEmpresa = document.getElementById('inputEmpresa');
+
+            if (selectedOption.dataset.empresa) {
+                inputEmpresa.value = selectedOption.dataset.empresa;
+            } else {
+                inputEmpresa.value = '';
+            }
+        });
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
