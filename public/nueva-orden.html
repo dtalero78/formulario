@@ -530,7 +530,7 @@
                         const nombreCompleto = `${medico.primer_nombre} ${medico.primer_apellido}`;
                         const option = document.createElement('option');
                         option.value = nombreCompleto;
-                        option.textContent = `${nombreCompleto} - ${medico.numero_licencia}`;
+                        option.textContent = nombreCompleto;
                         select.appendChild(option);
                     });
                 }

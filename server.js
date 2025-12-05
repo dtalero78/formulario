@@ -2383,12 +2383,11 @@ app.get('/api/calendario/dia', async (req, res) => {
             SELECT
                 id,
                 numero_id as cedula,
-                CONCAT(primer_nombre, ' ', COALESCE(segundo_nombre, ''), ' ', primer_apellido, ' ', COALESCE(segundo_apellido, '')) as nombre,
-                tipo_examen as "tipoExamen",
+                CONCAT(COALESCE(primer_nombre, ''), ' ', COALESCE(primer_apellido, '')) as nombre,
+                atendido as "tipoExamen",
                 medico,
                 fecha_atencion,
                 hora_atencion as hora,
-                cargo,
                 empresa,
                 atendido
             FROM formularios
