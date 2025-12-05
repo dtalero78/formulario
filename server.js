@@ -2230,6 +2230,130 @@ app.delete('/api/empresas/:id', async (req, res) => {
     }
 });
 
+// ==================== CALENDARIO ENDPOINTS ====================
+
+// GET /api/calendario/mes - Obtener conteo de citas por día del mes
+app.get('/api/calendario/mes', async (req, res) => {
+    try {
+        const { year, month, medico } = req.query;
+
+        if (!year || !month) {
+            return res.status(400).json({
+                success: false,
+                message: 'Se requiere year y month'
+            });
+        }
+
+        // Calcular primer y último día del mes
+        const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+        const endDate = new Date(year, month, 0).getDate();
+        const endDateStr = `${year}-${String(month).padStart(2, '0')}-${endDate}`;
+
+        let query = `
+            SELECT
+                fecha_atencion,
+                COUNT(*) as total
+            FROM formularios
+            WHERE fecha_atencion IS NOT NULL
+              AND fecha_atencion >= $1
+              AND fecha_atencion <= $2
+        `;
+        const params = [startDate, endDateStr];
+
+        if (medico) {
+            query += ` AND medico = $3`;
+            params.push(medico);
+        }
+
+        query += ` GROUP BY fecha_atencion ORDER BY fecha_atencion`;
+
+        const result = await pool.query(query, params);
+
+        // Convertir a objeto {fecha: count}
+        const citasPorDia = {};
+        result.rows.forEach(row => {
+            if (row.fecha_atencion) {
+                // Normalizar formato de fecha
+                let fecha = row.fecha_atencion;
+                if (fecha instanceof Date) {
+                    fecha = fecha.toISOString().split('T')[0];
+                } else if (typeof fecha === 'string' && fecha.includes('T')) {
+                    fecha = fecha.split('T')[0];
+                }
+                citasPorDia[fecha] = parseInt(row.total);
+            }
+        });
+
+        res.json({
+            success: true,
+            data: citasPorDia,
+            year: parseInt(year),
+            month: parseInt(month)
+        });
+    } catch (error) {
+        console.error('❌ Error al obtener citas del mes:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener citas del mes',
+            error: error.message
+        });
+    }
+});
+
+// GET /api/calendario/dia - Obtener citas de un día específico
+app.get('/api/calendario/dia', async (req, res) => {
+    try {
+        const { fecha, medico } = req.query;
+
+        if (!fecha) {
+            return res.status(400).json({
+                success: false,
+                message: 'Se requiere fecha (YYYY-MM-DD)'
+            });
+        }
+
+        let query = `
+            SELECT
+                id,
+                numero_id as cedula,
+                CONCAT(primer_nombre, ' ', COALESCE(segundo_nombre, ''), ' ', primer_apellido, ' ', COALESCE(segundo_apellido, '')) as nombre,
+                tipo_examen as "tipoExamen",
+                medico,
+                fecha_atencion,
+                hora_atencion as hora,
+                cargo,
+                empresa,
+                atendido
+            FROM formularios
+            WHERE fecha_atencion = $1
+        `;
+        const params = [fecha];
+
+        if (medico) {
+            query += ` AND medico = $2`;
+            params.push(medico);
+        }
+
+        query += ` ORDER BY hora_atencion ASC NULLS LAST, id ASC`;
+
+        const result = await pool.query(query, params);
+
+        res.json({
+            success: true,
+            data: result.rows,
+            total: result.rows.length,
+            fecha
+        });
+    } catch (error) {
+        console.error('❌ Error al obtener citas del día:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener citas del día',
+            error: error.message
+        });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
     console.log(`📊 Base de datos: PostgreSQL en Digital Ocean`);

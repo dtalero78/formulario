@@ -149,7 +149,7 @@
         /* Cards grid */
         .medicos-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
             gap: 20px;
         }
 
@@ -159,64 +159,86 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             padding: 24px;
             transition: box-shadow 0.2s;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 24px;
+            align-items: start;
         }
 
         .medico-card:hover {
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
+        .medico-content {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
         .medico-header {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .medico-name {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             color: #111827;
         }
 
         .medico-specialty {
-            font-size: 13px;
-            color: #6B7280;
-            margin-top: 4px;
+            font-size: 14px;
+            color: #0099B2;
+            font-weight: 500;
         }
 
         .medico-info {
-            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px 24px;
         }
 
-        .medico-info-row {
+        .medico-info-item {
             display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #F3F4F6;
-            font-size: 13px;
+            flex-direction: column;
+            gap: 2px;
         }
 
-        .medico-info-row:last-child {
-            border-bottom: none;
+        .medico-info-item.full-width {
+            grid-column: 1 / -1;
         }
 
         .medico-info-label {
-            color: #6B7280;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #9CA3AF;
+            font-weight: 500;
         }
 
         .medico-info-value {
+            font-size: 14px;
             color: #111827;
             font-weight: 500;
         }
 
+        .medico-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            min-width: 160px;
+        }
+
         .medico-firma {
-            margin-top: 16px;
             text-align: center;
         }
 
         .medico-firma img {
-            max-width: 150px;
-            max-height: 80px;
+            width: 140px;
+            height: 70px;
+            object-fit: contain;
             border: 1px solid #E5E7EB;
             border-radius: 8px;
             padding: 8px;
@@ -224,9 +246,13 @@
         }
 
         .medico-firma-placeholder {
+            width: 140px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: #9CA3AF;
             font-size: 12px;
-            padding: 20px;
             background: #F9FAFB;
             border-radius: 8px;
             border: 1px dashed #D1D5DB;
@@ -235,9 +261,7 @@
         .medico-actions {
             display: flex;
             gap: 8px;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #E5E7EB;
+            width: 100%;
         }
 
         .medico-actions .btn {
@@ -245,6 +269,24 @@
             justify-content: center;
             padding: 8px 12px;
             font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            .medico-card {
+                grid-template-columns: 1fr;
+            }
+
+            .medico-right {
+                flex-direction: row;
+                width: 100%;
+                justify-content: space-between;
+                padding-top: 16px;
+                border-top: 1px solid #E5E7EB;
+            }
+
+            .medico-info {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Modal */
@@ -502,6 +544,10 @@
                     <span class="nav-icon">➕</span>
                     Nueva Orden
                 </a>
+                <a href="/calendario.html" class="nav-item">
+                    <span class="nav-icon">📅</span>
+                    Calendario
+                </a>
                 <a href="/medicos.html" class="nav-item active">
                     <span class="nav-icon">👨‍⚕️</span>
                     Médicos
@@ -650,37 +696,39 @@
 
             grid.innerHTML = medicos.map(medico => `
                 <div class="medico-card">
-                    <div class="medico-header">
-                        <div>
+                    <div class="medico-content">
+                        <div class="medico-header">
                             <div class="medico-name">
                                 ${medico.primer_nombre} ${medico.segundo_nombre || ''} ${medico.primer_apellido} ${medico.segundo_apellido || ''}
                             </div>
                             <div class="medico-specialty">${medico.especialidad || 'Sin especialidad'}</div>
                         </div>
-                    </div>
-                    <div class="medico-info">
-                        <div class="medico-info-row">
-                            <span class="medico-info-label">Licencia</span>
-                            <span class="medico-info-value">${medico.numero_licencia}</span>
+                        <div class="medico-info">
+                            <div class="medico-info-item">
+                                <span class="medico-info-label">Licencia</span>
+                                <span class="medico-info-value">${medico.numero_licencia}</span>
+                            </div>
+                            <div class="medico-info-item">
+                                <span class="medico-info-label">Tipo</span>
+                                <span class="medico-info-value">${medico.tipo_licencia || '—'}</span>
+                            </div>
+                            <div class="medico-info-item full-width">
+                                <span class="medico-info-label">Vencimiento</span>
+                                <span class="medico-info-value">${medico.fecha_vencimiento_licencia ? new Date(medico.fecha_vencimiento_licencia).toLocaleDateString('es-CO') : '—'}</span>
+                            </div>
                         </div>
-                        <div class="medico-info-row">
-                            <span class="medico-info-label">Tipo</span>
-                            <span class="medico-info-value">${medico.tipo_licencia || '—'}</span>
-                        </div>
-                        <div class="medico-info-row">
-                            <span class="medico-info-label">Vencimiento</span>
-                            <span class="medico-info-value">${medico.fecha_vencimiento_licencia ? new Date(medico.fecha_vencimiento_licencia).toLocaleDateString('es-CO') : '—'}</span>
-                        </div>
                     </div>
-                    <div class="medico-firma">
-                        ${medico.firma ?
-                            `<img src="${medico.firma}" alt="Firma" class="firma-preview">` :
-                            `<div class="medico-firma-placeholder">Sin firma registrada</div>`
-                        }
-                    </div>
-                    <div class="medico-actions">
-                        <button class="btn btn-secondary" onclick="editarMedico(${medico.id})">✏️ Editar</button>
-                        <button class="btn btn-danger" onclick="eliminarMedico(${medico.id}, '${medico.primer_nombre} ${medico.primer_apellido}')">🗑️ Eliminar</button>
+                    <div class="medico-right">
+                        <div class="medico-firma">
+                            ${medico.firma ?
+                                `<img src="${medico.firma}" alt="Firma">` :
+                                `<div class="medico-firma-placeholder">Sin firma</div>`
+                            }
+                        </div>
+                        <div class="medico-actions">
+                            <button class="btn btn-secondary" onclick="editarMedico(${medico.id})">Editar</button>
+                            <button class="btn btn-danger" onclick="eliminarMedico(${medico.id}, '${medico.primer_nombre} ${medico.primer_apellido}')">Eliminar</button>
+                        </div>
                     </div>
                 </div>
             `).join('');

@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de Citas - BSL Sistema Médico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #FAFAFA;
+            color: #1F2937;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: white;
+            border-right: 1px solid #E5E7EB;
+            padding: 24px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            padding: 0 24px 24px;
+            border-bottom: 1px solid #E5E7EB;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .sidebar-logo img {
+            max-width: 140px;
+            height: auto;
+        }
+
+        .sidebar-logo span {
+            display: block;
+            font-size: 11px;
+            color: #6B7280;
+            font-weight: 400;
+            margin-top: 8px;
+        }
+
+        .sidebar-nav {
+            padding: 0 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #4B5563;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: all 0.15s ease;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: #F3F4F6;
+            color: #111827;
+        }
+
+        .nav-item.active {
+            background: #E6F7FA;
+            color: #0099B2;
+            font-weight: 500;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            margin-left: 240px;
+            padding: 32px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        /* Calendar Navigation */
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .calendar-nav button {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            transition: all 0.15s;
+        }
+
+        .calendar-nav button:hover {
+            background: #F3F4F6;
+            border-color: #D1D5DB;
+        }
+
+        .calendar-nav .month-year {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .btn-today {
+            background: #0099B2 !important;
+            color: white !important;
+            border-color: #0099B2 !important;
+        }
+
+        .btn-today:hover {
+            background: #007A8C !important;
+        }
+
+        /* Filter */
+        .filter-section {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            align-items: center;
+        }
+
+        .filter-section label {
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .filter-section select {
+            padding: 8px 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+
+        /* Calendar Grid */
+        .calendar-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .calendar-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background: #F9FAFB;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .calendar-header-cell {
+            padding: 12px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6B7280;
+            text-transform: uppercase;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .calendar-cell {
+            min-height: 100px;
+            border-right: 1px solid #E5E7EB;
+            border-bottom: 1px solid #E5E7EB;
+            padding: 8px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .calendar-cell:nth-child(7n) {
+            border-right: none;
+        }
+
+        .calendar-cell:hover {
+            background: #F9FAFB;
+        }
+
+        .calendar-cell.other-month {
+            background: #FAFAFA;
+        }
+
+        .calendar-cell.other-month .day-number {
+            color: #D1D5DB;
+        }
+
+        .calendar-cell.today {
+            background: #E6F7FA;
+        }
+
+        .calendar-cell.selected {
+            background: #DBEAFE;
+        }
+
+        .day-number {
+            font-size: 14px;
+            font-weight: 500;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .day-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #0099B2;
+            color: white;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-top: 4px;
+        }
+
+        .day-count.empty {
+            background: #E5E7EB;
+            color: #6B7280;
+        }
+
+        /* Day Detail Panel */
+        .day-detail {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-top: 24px;
+            overflow: hidden;
+        }
+
+        .day-detail.active {
+            display: block;
+        }
+
+        .day-detail-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #E5E7EB;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .day-detail-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .day-detail-subtitle {
+            font-size: 14px;
+            color: #6B7280;
+            margin-top: 4px;
+        }
+
+        .day-detail-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #9CA3AF;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .day-detail-close:hover {
+            color: #111827;
+        }
+
+        /* Timeline */
+        .timeline {
+            padding: 0;
+        }
+
+        .timeline-hour {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            min-height: 60px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .timeline-hour:last-child {
+            border-bottom: none;
+        }
+
+        .timeline-hour-label {
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #6B7280;
+            border-right: 1px solid #E5E7EB;
+            background: #FAFAFA;
+        }
+
+        .timeline-hour-content {
+            padding: 8px 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .appointment-card {
+            background: #E6F7FA;
+            border-left: 3px solid #0099B2;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 13px;
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+        }
+
+        .appointment-card .patient-name {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 2px;
+        }
+
+        .appointment-card .patient-info {
+            color: #6B7280;
+            font-size: 12px;
+        }
+
+        .appointment-card .doctor-name {
+            color: #0099B2;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* Empty state */
+        .empty-hour {
+            color: #D1D5DB;
+            font-size: 13px;
+            padding: 8px 0;
+        }
+
+        .no-appointments {
+            text-align: center;
+            padding: 40px;
+            color: #6B7280;
+        }
+
+        .no-appointments-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        /* Loading */
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #E5E7EB;
+            border-top-color: #0099B2;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 16px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .calendar-cell {
+                min-height: 70px;
+                padding: 4px;
+            }
+
+            .day-number {
+                font-size: 12px;
+            }
+
+            .filter-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="/bsl-logo.png" alt="BSL - Bienestar & Salud Laboral">
+                <span>Sistema Médico</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/" class="nav-item">
+                    <span class="nav-icon">📝</span>
+                    Formulario Médico
+                </a>
+                <a href="/ordenes.html" class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    Ordenes
+                </a>
+                <a href="/nueva-orden.html" class="nav-item">
+                    <span class="nav-icon">➕</span>
+                    Nueva Orden
+                </a>
+                <a href="/calendario.html" class="nav-item active">
+                    <span class="nav-icon">📅</span>
+                    Calendario
+                </a>
+                <a href="/medicos.html" class="nav-item">
+                    <span class="nav-icon">👨‍⚕️</span>
+                    Médicos
+                </a>
+                <a href="/empresas.html" class="nav-item">
+                    <span class="nav-icon">🏢</span>
+                    Empresas
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">Calendario de Citas</h1>
+                <div class="calendar-nav">
+                    <button onclick="cambiarMes(-1)">← Anterior</button>
+                    <span class="month-year" id="monthYear"></span>
+                    <button onclick="cambiarMes(1)">Siguiente →</button>
+                    <button class="btn-today" onclick="irAHoy()">Hoy</button>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <label>Filtrar por médico:</label>
+                <select id="filterMedico" onchange="cargarCitas()">
+                    <option value="">Todos los médicos</option>
+                </select>
+            </div>
+
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <div class="calendar-header-cell">Dom</div>
+                    <div class="calendar-header-cell">Lun</div>
+                    <div class="calendar-header-cell">Mar</div>
+                    <div class="calendar-header-cell">Mié</div>
+                    <div class="calendar-header-cell">Jue</div>
+                    <div class="calendar-header-cell">Vie</div>
+                    <div class="calendar-header-cell">Sáb</div>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Días del calendario -->
+                </div>
+            </div>
+
+            <div class="day-detail" id="dayDetail">
+                <div class="day-detail-header">
+                    <div>
+                        <div class="day-detail-title" id="dayDetailTitle">Agenda del día</div>
+                        <div class="day-detail-subtitle" id="dayDetailSubtitle">0 citas programadas</div>
+                    </div>
+                    <button class="day-detail-close" onclick="cerrarDetalle()">×</button>
+                </div>
+                <div class="timeline" id="timeline">
+                    <!-- Horas del día -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentDate = new Date();
+        let selectedDate = null;
+        let citasDelMes = {};
+        let medicos = [];
+
+        const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+                       'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarMedicos();
+            renderCalendario();
+            cargarCitas();
+        });
+
+        async function cargarMedicos() {
+            try {
+                const response = await fetch('/api/medicos');
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    medicos = result.data;
+                    const select = document.getElementById('filterMedico');
+                    medicos.forEach(medico => {
+                        const option = document.createElement('option');
+                        option.value = `${medico.primer_nombre} ${medico.primer_apellido}`;
+                        option.textContent = `${medico.primer_nombre} ${medico.primer_apellido}`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error al cargar médicos:', error);
+            }
+        }
+
+        async function cargarCitas() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth() + 1;
+            const medicoFilter = document.getElementById('filterMedico').value;
+
+            try {
+                let url = `/api/calendario/mes?year=${year}&month=${month}`;
+                if (medicoFilter) {
+                    url += `&medico=${encodeURIComponent(medicoFilter)}`;
+                }
+
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.success) {
+                    citasDelMes = result.data;
+                    actualizarContadores();
+                }
+            } catch (error) {
+                console.error('Error al cargar citas:', error);
+            }
+        }
+
+        function renderCalendario() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            document.getElementById('monthYear').textContent =
+                `${meses[month].charAt(0).toUpperCase() + meses[month].slice(1)} ${year}`;
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDay = firstDay.getDay();
+            const daysInMonth = lastDay.getDate();
+
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+
+            // Días del mes anterior
+            const prevMonth = new Date(year, month, 0);
+            const prevDays = prevMonth.getDate();
+
+            for (let i = startDay - 1; i >= 0; i--) {
+                const day = prevDays - i;
+                const cell = crearCelda(day, true, new Date(year, month - 1, day));
+                grid.appendChild(cell);
+            }
+
+            // Días del mes actual
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const isToday = date.toDateString() === today.toDateString();
+                const cell = crearCelda(day, false, date, isToday);
+                grid.appendChild(cell);
+            }
+
+            // Días del mes siguiente
+            const totalCells = startDay + daysInMonth;
+            const remainingCells = 7 - (totalCells % 7);
+            if (remainingCells < 7) {
+                for (let day = 1; day <= remainingCells; day++) {
+                    const cell = crearCelda(day, true, new Date(year, month + 1, day));
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function crearCelda(day, isOtherMonth, date, isToday = false) {
+            const cell = document.createElement('div');
+            cell.className = 'calendar-cell';
+            if (isOtherMonth) cell.classList.add('other-month');
+            if (isToday) cell.classList.add('today');
+
+            const dateStr = formatDate(date);
+            cell.dataset.date = dateStr;
+
+            cell.innerHTML = `
+                <div class="day-number">${day}</div>
+                <div class="day-count empty" id="count-${dateStr}" style="display: none;">
+                    <span>0</span> citas
+                </div>
+            `;
+
+            cell.onclick = () => seleccionarDia(date, cell);
+
+            return cell;
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function actualizarContadores() {
+            // Reset all counters
+            document.querySelectorAll('.day-count').forEach(el => {
+                el.style.display = 'none';
+                el.classList.add('empty');
+                el.classList.remove('has-appointments');
+            });
+
+            // Update counters with data
+            Object.entries(citasDelMes).forEach(([fecha, count]) => {
+                const countEl = document.getElementById(`count-${fecha}`);
+                if (countEl) {
+                    countEl.innerHTML = `<span>${count}</span> cita${count !== 1 ? 's' : ''}`;
+                    countEl.style.display = 'inline-flex';
+                    if (count > 0) {
+                        countEl.classList.remove('empty');
+                    }
+                }
+            });
+        }
+
+        function cambiarMes(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            renderCalendario();
+            cargarCitas();
+            cerrarDetalle();
+        }
+
+        function irAHoy() {
+            currentDate = new Date();
+            renderCalendario();
+            cargarCitas();
+            cerrarDetalle();
+        }
+
+        async function seleccionarDia(date, cell) {
+            // Remove previous selection
+            document.querySelectorAll('.calendar-cell.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            cell.classList.add('selected');
+            selectedDate = date;
+
+            await cargarDetalleDia(date);
+        }
+
+        async function cargarDetalleDia(date) {
+            const dateStr = formatDate(date);
+            const medicoFilter = document.getElementById('filterMedico').value;
+
+            const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+            const dayName = dayNames[date.getDay()];
+            const monthName = meses[date.getMonth()];
+
+            document.getElementById('dayDetailTitle').textContent =
+                `Agenda del ${dayName} ${date.getDate()} de ${monthName}`;
+
+            try {
+                let url = `/api/calendario/dia?fecha=${dateStr}`;
+                if (medicoFilter) {
+                    url += `&medico=${encodeURIComponent(medicoFilter)}`;
+                }
+
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.success) {
+                    renderTimeline(result.data);
+                    document.getElementById('dayDetailSubtitle').textContent =
+                        `${result.total} cita${result.total !== 1 ? 's' : ''} programada${result.total !== 1 ? 's' : ''}`;
+                }
+            } catch (error) {
+                console.error('Error al cargar detalle del día:', error);
+            }
+
+            document.getElementById('dayDetail').classList.add('active');
+        }
+
+        function renderTimeline(citas) {
+            const timeline = document.getElementById('timeline');
+
+            if (citas.length === 0) {
+                timeline.innerHTML = `
+                    <div class="no-appointments">
+                        <div class="no-appointments-icon">📅</div>
+                        <p>No hay citas programadas para este día</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Agrupar citas por hora
+            const citasPorHora = {};
+            citas.forEach(cita => {
+                const hora = cita.hora || 'Sin hora';
+                if (!citasPorHora[hora]) {
+                    citasPorHora[hora] = [];
+                }
+                citasPorHora[hora].push(cita);
+            });
+
+            // Generar timeline de 6:00 a 18:00
+            let html = '';
+            for (let h = 6; h <= 18; h++) {
+                const horaStr = `${String(h).padStart(2, '0')}:00`;
+                const citasHora = citasPorHora[horaStr] || [];
+
+                html += `
+                    <div class="timeline-hour">
+                        <div class="timeline-hour-label">${horaStr}</div>
+                        <div class="timeline-hour-content">
+                            ${citasHora.length > 0 ?
+                                citasHora.map(cita => `
+                                    <div class="appointment-card">
+                                        <div class="patient-name">${cita.nombre}</div>
+                                        <div class="patient-info">${cita.cedula} · ${cita.tipoExamen || 'Examen'}</div>
+                                        <div class="doctor-name">${cita.medico || 'Sin médico asignado'}</div>
+                                    </div>
+                                `).join('') :
+                                '<div class="empty-hour">—</div>'
+                            }
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Agregar citas sin hora al final
+            const sinHora = citasPorHora['Sin hora'] || [];
+            if (sinHora.length > 0) {
+                html += `
+                    <div class="timeline-hour">
+                        <div class="timeline-hour-label">Sin hora</div>
+                        <div class="timeline-hour-content">
+                            ${sinHora.map(cita => `
+                                <div class="appointment-card">
+                                    <div class="patient-name">${cita.nombre}</div>
+                                    <div class="patient-info">${cita.cedula} · ${cita.tipoExamen || 'Examen'}</div>
+                                    <div class="doctor-name">${cita.medico || 'Sin médico asignado'}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            timeline.innerHTML = html;
+        }
+
+        function cerrarDetalle() {
+            document.getElementById('dayDetail').classList.remove('active');
+            document.querySelectorAll('.calendar-cell.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+            selectedDate = null;
+        }
+    </script>
+</body>
+</html>
