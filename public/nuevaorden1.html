@@ -885,30 +885,30 @@
         }
 
 
-        async function cargarExamenes() {
-            try {
-                const response = await fetch('/api/examenes');
-                const data = await response.json();
-                examenesData = data.filter(e => e.activo !== false);
-                renderExamenes();
-            } catch (error) {
-                console.error('Error al cargar exámenes:', error);
-            }
+        // Exámenes permitidos en este endpoint (nombres exactos de la BD)
+        const examenesPermitidos = [
+            'Examen Médico Ocupacional Osteomuscular',
+            'Audiometría',
+            'Optometría',
+            'Visiometría'
+        ];
+
+        function cargarExamenes() {
+            // Usar lista fija de exámenes permitidos
+            examenesData = examenesPermitidos.map((nombre, index) => ({
+                id: index + 1,
+                nombre: nombre
+            }));
+            renderExamenes();
         }
 
         function renderExamenes() {
             const grid = document.getElementById('examenesGrid');
 
-            const examenesComunes = ['Examen Médico Ocupacional Osteomuscular', 'Audiometría', 'Optometría'];
-            const ordenados = examenesData.sort((a, b) => {
-                const aComun = examenesComunes.includes(a.nombre) ? 0 : 1;
-                const bComun = examenesComunes.includes(b.nombre) ? 0 : 1;
-                return aComun - bComun;
-            });
-
-            grid.innerHTML = ordenados.map(examen => `
+            grid.innerHTML = examenesData.map(examen => `
                 <div class="examen-option ${examenesSeleccionados.includes(examen.nombre) ? 'selected' : ''}"
-                     onclick="toggleExamen('${examen.nombre.replace(/'/g, "\\'")}', this)">
+                     onclick="toggleExamen('${examen.nombre.replace(/'/g, "\\'")}', this)"
+                     data-examen="${examen.nombre}">
                     <input type="checkbox" ${examenesSeleccionados.includes(examen.nombre) ? 'checked' : ''}>
                     <span>${examen.nombre}</span>
                 </div>
@@ -917,15 +917,28 @@
 
         function toggleExamen(nombre, element) {
             const index = examenesSeleccionados.indexOf(nombre);
+
             if (index === -1) {
+                // Si selecciona Optometría, deseleccionar Visiometría y viceversa
+                if (nombre === 'Optometría') {
+                    const visioIndex = examenesSeleccionados.indexOf('Visiometría');
+                    if (visioIndex !== -1) {
+                        examenesSeleccionados.splice(visioIndex, 1);
+                    }
+                } else if (nombre === 'Visiometría') {
+                    const optoIndex = examenesSeleccionados.indexOf('Optometría');
+                    if (optoIndex !== -1) {
+                        examenesSeleccionados.splice(optoIndex, 1);
+                    }
+                }
+
                 examenesSeleccionados.push(nombre);
-                element.classList.add('selected');
-                element.querySelector('input').checked = true;
             } else {
                 examenesSeleccionados.splice(index, 1);
-                element.classList.remove('selected');
-                element.querySelector('input').checked = false;
             }
+
+            // Re-renderizar para actualizar estado visual
+            renderExamenes();
         }
 
         function toggleEmpresa() {
