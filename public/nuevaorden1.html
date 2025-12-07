@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programar Cita - BSL Bienestar & Salud Laboral</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .logo-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .logo-header img {
+            max-width: 180px;
+            height: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .logo-header h1 {
+            color: white;
+            font-size: 20px;
+            font-weight: 500;
+            margin-top: 12px;
+            opacity: 0.9;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            display: flex;
+            background: #F3F4F6;
+            padding: 0;
+        }
+
+        .progress-step {
+            flex: 1;
+            padding: 16px 12px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+            color: #9CA3AF;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            background: #2563EB;
+            color: white;
+        }
+
+        .progress-step.completed {
+            background: #10B981;
+            color: white;
+        }
+
+        .progress-step .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #E5E7EB;
+            color: #6B7280;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .progress-step.active .step-number,
+        .progress-step.completed .step-number {
+            background: rgba(255,255,255,0.3);
+            color: white;
+        }
+
+        .form-content {
+            padding: 32px;
+        }
+
+        .step-container {
+            display: none;
+        }
+
+        .step-container.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            font-size: 14px;
+            color: #6B7280;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .form-label .required {
+            color: #EF4444;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #D1D5DB;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #9CA3AF;
+        }
+
+        .form-input.error, .form-select.error {
+            border-color: #EF4444;
+        }
+
+        .error-message {
+            font-size: 12px;
+            color: #EF4444;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Tipo de consulta cards */
+        .tipo-consulta-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .tipo-card {
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tipo-card:hover {
+            border-color: #2563EB;
+            background: #F8FAFF;
+        }
+
+        .tipo-card.selected {
+            border-color: #2563EB;
+            background: #EFF6FF;
+        }
+
+        .tipo-card i {
+            width: 32px;
+            height: 32px;
+            color: #6B7280;
+            margin-bottom: 8px;
+        }
+
+        .tipo-card.selected i {
+            color: #2563EB;
+        }
+
+        .tipo-card .tipo-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .tipo-card.selected .tipo-label {
+            color: #2563EB;
+        }
+
+        /* Exámenes checkboxes */
+        .examenes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .examen-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            border: 1px solid #E5E7EB;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .examen-option:hover {
+            border-color: #2563EB;
+            background: #F8FAFF;
+        }
+
+        .examen-option.selected {
+            border-color: #2563EB;
+            background: #EFF6FF;
+        }
+
+        .examen-option input {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: #2563EB;
+        }
+
+        .examen-option label {
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        /* Fecha y hora */
+        .fecha-hora-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .horas-disponibles {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .hora-slot {
+            padding: 10px;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .hora-slot:hover {
+            border-color: #2563EB;
+            background: #F8FAFF;
+        }
+
+        .hora-slot.selected {
+            background: #2563EB;
+            border-color: #2563EB;
+            color: white;
+        }
+
+        .hora-slot.disabled {
+            background: #F3F4F6;
+            color: #9CA3AF;
+            cursor: not-allowed;
+        }
+
+        .no-horas {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            color: #6B7280;
+            font-size: 14px;
+        }
+
+        /* Botones */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: #F3F4F6;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #E5E7EB;
+        }
+
+        .btn-primary {
+            background: #2563EB;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1D4ED8;
+        }
+
+        .btn-primary:disabled {
+            background: #93C5FD;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: #10B981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        /* Loading */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #E5E7EB;
+            border-top-color: #2563EB;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success step */
+        .success-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #D1FAE5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .success-icon i {
+            width: 40px;
+            height: 40px;
+            color: #10B981;
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+
+        .success-message {
+            font-size: 15px;
+            color: #6B7280;
+            margin-bottom: 24px;
+        }
+
+        .cita-details {
+            background: #F9FAFB;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 24px;
+        }
+
+        .cita-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .cita-detail:last-child {
+            border-bottom: none;
+        }
+
+        .cita-detail-label {
+            color: #6B7280;
+            font-size: 14px;
+        }
+
+        .cita-detail-value {
+            color: #111827;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-error {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+
+        .alert-warning {
+            background: #FEF3C7;
+            color: #92400E;
+            border: 1px solid #FDE68A;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .tipo-consulta-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .examenes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .fecha-hora-container {
+                grid-template-columns: 1fr;
+            }
+
+            .horas-disponibles {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .progress-step span {
+                display: none;
+            }
+
+            .progress-step .step-number {
+                margin-right: 0;
+            }
+
+            .form-content {
+                padding: 24px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-header">
+            <img src="/bsl-logo.png" alt="BSL - Bienestar & Salud Laboral">
+            <h1>Programa tu Cita Médica</h1>
+        </div>
+
+        <div class="form-card">
+            <div class="progress-bar">
+                <div class="progress-step active" data-step="1">
+                    <span class="step-number">1</span>
+                    <span>Datos Personales</span>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <span class="step-number">2</span>
+                    <span>Cita</span>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <span class="step-number">3</span>
+                    <span>Exámenes</span>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <span class="step-number">4</span>
+                    <span>Confirmación</span>
+                </div>
+            </div>
+
+            <div class="form-content">
+                <div id="alertContainer" class="alert alert-error"></div>
+
+                <!-- Step 1: Datos Personales -->
+                <div class="step-container active" data-step="1">
+                    <h2 class="step-title">Datos Personales</h2>
+                    <p class="step-description">Ingresa tu información personal</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Primer Nombre <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="primerNombre" placeholder="Ej: Juan" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Segundo Nombre</label>
+                            <input type="text" class="form-input" id="segundoNombre" placeholder="Ej: Carlos">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Primer Apellido <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="primerApellido" placeholder="Ej: García" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Segundo Apellido</label>
+                            <input type="text" class="form-input" id="segundoApellido" placeholder="Ej: López">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Número de Cédula <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="numeroId" placeholder="Ej: 1234567890" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Celular <span class="required">*</span></label>
+                            <input type="tel" class="form-input" id="celular" placeholder="Ej: 3001234567" required>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="siguientePaso()">
+                            Continuar <i data-feather="arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Tipo de Consulta y Fecha -->
+                <div class="step-container" data-step="2">
+                    <h2 class="step-title">Programa tu Cita</h2>
+                    <p class="step-description">Selecciona el tipo de consulta y la fecha/hora</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Consulta <span class="required">*</span></label>
+                        <div class="tipo-consulta-cards">
+                            <div class="tipo-card" onclick="seleccionarTipoConsulta('Telemedicina')">
+                                <i data-feather="video"></i>
+                                <div class="tipo-label">Telemedicina</div>
+                            </div>
+                            <div class="tipo-card" onclick="seleccionarTipoConsulta('Presencial')">
+                                <i data-feather="map-pin"></i>
+                                <div class="tipo-label">Presencial</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="tipoConsulta" value="">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">A nombre de <span class="required">*</span></label>
+                        <select class="form-select" id="aNombreDe" onchange="toggleEmpresa()">
+                            <option value="">Seleccionar...</option>
+                            <option value="PARTICULAR">Particular</option>
+                            <option value="EMPRESA">Empresa</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="empresaContainer" style="display: none;">
+                        <label class="form-label">Empresa <span class="required">*</span></label>
+                        <select class="form-select" id="empresa">
+                            <option value="">Seleccionar empresa...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Cargo</label>
+                        <input type="text" class="form-input" id="cargo" placeholder="Ej: Analista, Operario, etc.">
+                    </div>
+
+                    <div class="fecha-hora-container">
+                        <div class="form-group">
+                            <label class="form-label">Mes <span class="required">*</span></label>
+                            <select class="form-select" id="mes" onchange="actualizarDias()">
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Día <span class="required">*</span></label>
+                            <select class="form-select" id="dia" onchange="actualizarHoras()">
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Hora <span class="required">*</span></label>
+                            <select class="form-select" id="horaSelect">
+                                <option value="">Primero selecciona día</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="pasoAnterior()">
+                            <i data-feather="arrow-left"></i> Atrás
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="siguientePaso()">
+                            Continuar <i data-feather="arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Exámenes -->
+                <div class="step-container" data-step="3">
+                    <h2 class="step-title">Selecciona los Exámenes</h2>
+                    <p class="step-description">Elige los exámenes que necesitas realizarte</p>
+
+                    <div class="form-group">
+                        <div class="examenes-grid" id="examenesGrid">
+                            <!-- Se llenan dinámicamente -->
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="pasoAnterior()">
+                            <i data-feather="arrow-left"></i> Atrás
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="siguientePaso()">
+                            Continuar <i data-feather="arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Confirmación -->
+                <div class="step-container" data-step="4">
+                    <h2 class="step-title">Confirma tu Cita</h2>
+                    <p class="step-description">Revisa los datos antes de confirmar</p>
+
+                    <div class="cita-details" id="resumenCita">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="pasoAnterior()">
+                            <i data-feather="arrow-left"></i> Atrás
+                        </button>
+                        <button type="button" class="btn btn-success" id="btnConfirmar" onclick="confirmarCita()">
+                            <i data-feather="check"></i> Confirmar Cita
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 5: Éxito -->
+                <div class="step-container" data-step="5">
+                    <div class="success-container">
+                        <div class="success-icon">
+                            <i data-feather="check"></i>
+                        </div>
+                        <h2 class="success-title">¡Cita Programada!</h2>
+                        <p class="success-message">Tu cita ha sido registrada exitosamente. Recibirás un recordatorio antes de tu cita.</p>
+
+                        <div class="cita-details" id="citaFinal">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+
+                        <a href="/" class="btn btn-primary" style="text-decoration: none;">
+                            <i data-feather="home"></i> Ir al Inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Registrando tu cita...</p>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let pasoActual = 1;
+        let tipoConsultaSeleccionado = '';
+        let examenesSeleccionados = [];
+        let empresasData = [];
+        let examenesData = [];
+        let horasOcupadas = [];
+
+        // Obtener parámetros de URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const refEmpresa = urlParams.get('ref');
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+            cargarMeses();
+            cargarEmpresas();
+            cargarExamenes();
+
+            // Si viene con referencia de empresa, pre-configurar
+            if (refEmpresa) {
+                configurarPorReferencia(refEmpresa);
+            }
+        });
+
+        // Configurar según referencia de empresa
+        function configurarPorReferencia(ref) {
+            const empresasEspeciales = {
+                'DeStori': { codEmpresa: 'STORI', empresa: 'Stori Card', tipoExamen: 'Ingreso' },
+                'EVERTEC': { codEmpresa: 'EVERTEC', empresa: 'EVERTEC', tipoExamen: 'Ingreso' },
+                'EVERTECPERIODICO': { codEmpresa: 'EVERTEC', empresa: 'EVERTEC', tipoExamen: 'Periódico' },
+                'EVERTECEGRESO': { codEmpresa: 'EVERTEC', empresa: 'EVERTEC', tipoExamen: 'Egreso' },
+                'rippling': { codEmpresa: 'RIPPLING', empresa: 'Rippling', tipoExamen: 'Ingreso' },
+                'ripplingperiodico': { codEmpresa: 'RIPPLING', empresa: 'Rippling', tipoExamen: 'Periódico' },
+                'ripplingegreso': { codEmpresa: 'RIPPLING', empresa: 'Rippling', tipoExamen: 'Egreso' },
+                'ATR': { codEmpresa: 'ATR', empresa: 'ATR', tipoExamen: 'Ingreso' }
+            };
+
+            if (empresasEspeciales[ref]) {
+                // Pre-seleccionar datos
+                document.getElementById('aNombreDe').value = 'EMPRESA';
+                // Ocultar selector de empresa ya que viene predefinido
+            }
+        }
+
+        // Cargar meses disponibles
+        function cargarMeses() {
+            const select = document.getElementById('mes');
+            const hoy = new Date();
+            const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+            select.innerHTML = '<option value="">Seleccionar...</option>';
+
+            for (let i = 0; i < 3; i++) {
+                const fecha = new Date(hoy.getFullYear(), hoy.getMonth() + i, 1);
+                const mesIndex = fecha.getMonth();
+                const year = fecha.getFullYear();
+                select.innerHTML += `<option value="${mesIndex + 1}-${year}">${meses[mesIndex]} ${year}</option>`;
+            }
+        }
+
+        // Actualizar días disponibles
+        function actualizarDias() {
+            const mesValue = document.getElementById('mes').value;
+            if (!mesValue) return;
+
+            const [mes, year] = mesValue.split('-').map(Number);
+            const select = document.getElementById('dia');
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+
+            const primerDia = new Date(year, mes - 1, 1);
+            const ultimoDia = new Date(year, mes, 0);
+
+            // Si es el mes actual, empezar desde hoy
+            let diaInicio = primerDia;
+            if (mes - 1 === hoy.getMonth() && year === hoy.getFullYear()) {
+                diaInicio = hoy;
+            }
+
+            const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            select.innerHTML = '<option value="">Seleccionar...</option>';
+
+            let diaActual = new Date(diaInicio);
+            while (diaActual <= ultimoDia) {
+                const diaSemana = diasSemana[diaActual.getDay()];
+                const diaNum = diaActual.getDate();
+                const esHoy = diaActual.getTime() === hoy.getTime();
+                const fechaISO = diaActual.toISOString().split('T')[0];
+
+                select.innerHTML += `<option value="${fechaISO}">${esHoy ? 'Hoy' : diaSemana + ' ' + diaNum}</option>`;
+                diaActual.setDate(diaActual.getDate() + 1);
+            }
+
+            // Resetear hora
+            document.getElementById('horaSelect').innerHTML = '<option value="">Primero selecciona día</option>';
+        }
+
+        // Actualizar horas disponibles
+        async function actualizarHoras() {
+            const fecha = document.getElementById('dia').value;
+            if (!fecha) return;
+
+            const select = document.getElementById('horaSelect');
+            select.innerHTML = '<option value="">Cargando...</option>';
+
+            try {
+                // Obtener citas ocupadas para ese día
+                const response = await fetch(`/api/calendario/dia?fecha=${fecha}`);
+                const result = await response.json();
+
+                const citasOcupadas = result.success ? result.data : [];
+                const horasOcupadas = citasOcupadas.map(c => c.hora).filter(h => h);
+
+                generarHorasDisponibles(fecha, horasOcupadas);
+            } catch (error) {
+                console.error('Error al cargar horas:', error);
+                generarHorasDisponibles(fecha, []);
+            }
+        }
+
+        function generarHorasDisponibles(fecha, horasOcupadas) {
+            const select = document.getElementById('horaSelect');
+            const ahora = new Date();
+            const fechaSeleccionada = new Date(fecha + 'T00:00:00');
+            const esHoy = fechaSeleccionada.toDateString() === ahora.toDateString();
+            const tipoConsulta = document.getElementById('tipoConsulta').value;
+
+            let horaInicio = 8;
+            let horaFin = tipoConsulta === 'Presencial' ? 17 : 21;
+
+            // Si es hoy, empezar desde 1 hora después de la actual
+            if (esHoy) {
+                horaInicio = Math.max(horaInicio, ahora.getHours() + 1);
+            }
+
+            select.innerHTML = '<option value="">Seleccionar hora...</option>';
+            let hayHoras = false;
+
+            for (let hora = horaInicio; hora < horaFin; hora++) {
+                for (let minuto = 0; minuto < 60; minuto += 10) {
+                    const horaStr = String(hora).padStart(2, '0');
+                    const minutoStr = String(minuto).padStart(2, '0');
+                    const horaCompleta = `${horaStr}:${minutoStr}`;
+
+                    // Verificar si está ocupada
+                    if (!horasOcupadas.includes(horaCompleta)) {
+                        const hora12 = hora > 12 ? hora - 12 : (hora === 0 ? 12 : hora);
+                        const ampm = hora >= 12 ? 'PM' : 'AM';
+                        select.innerHTML += `<option value="${horaCompleta}">${hora12}:${minutoStr} ${ampm}</option>`;
+                        hayHoras = true;
+                    }
+                }
+            }
+
+            if (!hayHoras) {
+                select.innerHTML = '<option value="">No hay horas disponibles</option>';
+            }
+        }
+
+        // Cargar empresas
+        async function cargarEmpresas() {
+            try {
+                const response = await fetch('/api/empresas');
+                empresasData = await response.json();
+
+                const select = document.getElementById('empresa');
+                select.innerHTML = '<option value="">Seleccionar empresa...</option>';
+                empresasData.forEach(emp => {
+                    select.innerHTML += `<option value="${emp.nombre}">${emp.nombre}</option>`;
+                });
+            } catch (error) {
+                console.error('Error al cargar empresas:', error);
+            }
+        }
+
+        // Cargar exámenes
+        async function cargarExamenes() {
+            try {
+                const response = await fetch('/api/examenes');
+                const data = await response.json();
+                examenesData = data.filter(e => e.activo !== false);
+                renderExamenes();
+            } catch (error) {
+                console.error('Error al cargar exámenes:', error);
+            }
+        }
+
+        function renderExamenes() {
+            const grid = document.getElementById('examenesGrid');
+
+            // Exámenes más comunes primero
+            const examenesComunes = ['Examen Médico Ocupacional Osteomuscular', 'Audiometría', 'Optometría'];
+            const ordenados = examenesData.sort((a, b) => {
+                const aComun = examenesComunes.includes(a.nombre) ? 0 : 1;
+                const bComun = examenesComunes.includes(b.nombre) ? 0 : 1;
+                return aComun - bComun;
+            });
+
+            grid.innerHTML = ordenados.map(examen => `
+                <div class="examen-option ${examenesSeleccionados.includes(examen.nombre) ? 'selected' : ''}"
+                     onclick="toggleExamen('${examen.nombre.replace(/'/g, "\\'")}')">
+                    <input type="checkbox" ${examenesSeleccionados.includes(examen.nombre) ? 'checked' : ''}>
+                    <label>${examen.nombre}</label>
+                </div>
+            `).join('');
+        }
+
+        function toggleExamen(nombre) {
+            const index = examenesSeleccionados.indexOf(nombre);
+            if (index === -1) {
+                examenesSeleccionados.push(nombre);
+            } else {
+                examenesSeleccionados.splice(index, 1);
+            }
+            renderExamenes();
+        }
+
+        // Toggle empresa container
+        function toggleEmpresa() {
+            const valor = document.getElementById('aNombreDe').value;
+            document.getElementById('empresaContainer').style.display = valor === 'EMPRESA' ? 'block' : 'none';
+        }
+
+        // Seleccionar tipo de consulta
+        function seleccionarTipoConsulta(tipo) {
+            tipoConsultaSeleccionado = tipo;
+            document.getElementById('tipoConsulta').value = tipo;
+
+            document.querySelectorAll('.tipo-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+
+            // Actualizar horas si ya hay día seleccionado
+            const dia = document.getElementById('dia').value;
+            if (dia) {
+                actualizarHoras();
+            }
+
+            feather.replace();
+        }
+
+        // Navegación entre pasos
+        function siguientePaso() {
+            if (!validarPasoActual()) return;
+
+            const pasos = document.querySelectorAll('.progress-step');
+            const containers = document.querySelectorAll('.step-container');
+
+            // Marcar paso actual como completado
+            pasos[pasoActual - 1].classList.remove('active');
+            pasos[pasoActual - 1].classList.add('completed');
+
+            pasoActual++;
+
+            // Si es el paso de confirmación, generar resumen
+            if (pasoActual === 4) {
+                generarResumen();
+            }
+
+            // Activar nuevo paso
+            if (pasoActual <= 4) {
+                pasos[pasoActual - 1].classList.add('active');
+            }
+
+            // Mostrar container correspondiente
+            containers.forEach(c => c.classList.remove('active'));
+            document.querySelector(`.step-container[data-step="${pasoActual}"]`).classList.add('active');
+
+            ocultarAlerta();
+            feather.replace();
+        }
+
+        function pasoAnterior() {
+            const pasos = document.querySelectorAll('.progress-step');
+            const containers = document.querySelectorAll('.step-container');
+
+            pasos[pasoActual - 1].classList.remove('active', 'completed');
+            pasoActual--;
+            pasos[pasoActual - 1].classList.remove('completed');
+            pasos[pasoActual - 1].classList.add('active');
+
+            containers.forEach(c => c.classList.remove('active'));
+            document.querySelector(`.step-container[data-step="${pasoActual}"]`).classList.add('active');
+
+            ocultarAlerta();
+            feather.replace();
+        }
+
+        function validarPasoActual() {
+            let camposFaltantes = [];
+
+            if (pasoActual === 1) {
+                if (!document.getElementById('primerNombre').value.trim()) camposFaltantes.push('Primer Nombre');
+                if (!document.getElementById('primerApellido').value.trim()) camposFaltantes.push('Primer Apellido');
+                if (!document.getElementById('numeroId').value.trim()) camposFaltantes.push('Número de Cédula');
+                if (!document.getElementById('celular').value.trim()) camposFaltantes.push('Celular');
+            } else if (pasoActual === 2) {
+                if (!document.getElementById('tipoConsulta').value) camposFaltantes.push('Tipo de Consulta');
+                if (!document.getElementById('aNombreDe').value) camposFaltantes.push('A nombre de');
+                if (document.getElementById('aNombreDe').value === 'EMPRESA' && !document.getElementById('empresa').value) {
+                    camposFaltantes.push('Empresa');
+                }
+                if (!document.getElementById('mes').value) camposFaltantes.push('Mes');
+                if (!document.getElementById('dia').value) camposFaltantes.push('Día');
+                if (!document.getElementById('horaSelect').value) camposFaltantes.push('Hora');
+            } else if (pasoActual === 3) {
+                if (examenesSeleccionados.length === 0) camposFaltantes.push('Al menos un examen');
+            }
+
+            if (camposFaltantes.length > 0) {
+                mostrarAlerta(`Por favor complete: ${camposFaltantes.join(', ')}`);
+                return false;
+            }
+
+            return true;
+        }
+
+        function mostrarAlerta(mensaje) {
+            const alert = document.getElementById('alertContainer');
+            alert.textContent = mensaje;
+            alert.classList.add('show');
+        }
+
+        function ocultarAlerta() {
+            document.getElementById('alertContainer').classList.remove('show');
+        }
+
+        // Generar resumen
+        function generarResumen() {
+            const fecha = document.getElementById('dia').value;
+            const hora = document.getElementById('horaSelect').value;
+            const fechaObj = new Date(fecha + 'T' + hora);
+
+            const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const fechaFormateada = fechaObj.toLocaleDateString('es-CO', opciones);
+
+            const hora12 = parseInt(hora.split(':')[0]) > 12 ?
+                (parseInt(hora.split(':')[0]) - 12) + ':' + hora.split(':')[1] + ' PM' :
+                hora + ' AM';
+
+            const aNombreDe = document.getElementById('aNombreDe').value;
+            const empresaNombre = aNombreDe === 'EMPRESA' ? document.getElementById('empresa').value : 'Particular';
+
+            const resumen = `
+                <div class="cita-detail">
+                    <span class="cita-detail-label">Paciente</span>
+                    <span class="cita-detail-value">${document.getElementById('primerNombre').value} ${document.getElementById('primerApellido').value}</span>
+                </div>
+                <div class="cita-detail">
+                    <span class="cita-detail-label">Cédula</span>
+                    <span class="cita-detail-value">${document.getElementById('numeroId').value}</span>
+                </div>
+                <div class="cita-detail">
+                    <span class="cita-detail-label">Celular</span>
+                    <span class="cita-detail-value">${document.getElementById('celular').value}</span>
+                </div>
+                <div class="cita-detail">
+                    <span class="cita-detail-label">Tipo</span>
+                    <span class="cita-detail-value">${document.getElementById('tipoConsulta').value}</span>
+                </div>
+                <div class="cita-detail">
+                    <span class="cita-detail-label">A nombre de</span>
+                    <span class="cita-detail-value">${empresaNombre}</span>
+                </div>
+                <div class="cita-detail">
+                    <span class="cita-detail-label">Fecha</span>
+                    <span class="cita-detail-value">${fechaFormateada}</span>
+                </div>
+                <div class="cita-detail">
+                    <span class="cita-detail-label">Hora</span>
+                    <span class="cita-detail-value">${hora12}</span>
+                </div>
+                <div class="cita-detail">
+                    <span class="cita-detail-label">Exámenes</span>
+                    <span class="cita-detail-value">${examenesSeleccionados.join(', ')}</span>
+                </div>
+            `;
+
+            document.getElementById('resumenCita').innerHTML = resumen;
+        }
+
+        // Confirmar cita
+        async function confirmarCita() {
+            const btnConfirmar = document.getElementById('btnConfirmar');
+            btnConfirmar.disabled = true;
+
+            document.getElementById('loadingOverlay').classList.add('show');
+
+            const fecha = document.getElementById('dia').value;
+            const hora = document.getElementById('horaSelect').value;
+
+            // Crear fecha y hora combinadas
+            const fechaHora = new Date(fecha + 'T' + hora + ':00');
+
+            const aNombreDe = document.getElementById('aNombreDe').value;
+            let codEmpresa = 'PARTICULAR';
+            let empresaNombre = 'PARTICULAR';
+
+            if (aNombreDe === 'EMPRESA') {
+                empresaNombre = document.getElementById('empresa').value;
+                const empresaEncontrada = empresasData.find(e => e.nombre === empresaNombre);
+                codEmpresa = empresaEncontrada?.codigo || empresaNombre.toUpperCase();
+            }
+
+            // Si viene con referencia especial
+            if (refEmpresa) {
+                const empresasEspeciales = {
+                    'DeStori': { codEmpresa: 'STORI', empresa: 'Stori Card' },
+                    'EVERTEC': { codEmpresa: 'EVERTEC', empresa: 'EVERTEC' },
+                    'rippling': { codEmpresa: 'RIPPLING', empresa: 'Rippling' }
+                };
+                if (empresasEspeciales[refEmpresa]) {
+                    codEmpresa = empresasEspeciales[refEmpresa].codEmpresa;
+                    empresaNombre = empresasEspeciales[refEmpresa].empresa;
+                }
+            }
+
+            const datos = {
+                primerNombre: document.getElementById('primerNombre').value.trim(),
+                segundoNombre: document.getElementById('segundoNombre').value.trim() || null,
+                primerApellido: document.getElementById('primerApellido').value.trim(),
+                segundoApellido: document.getElementById('segundoApellido').value.trim() || null,
+                numeroId: document.getElementById('numeroId').value.replace(/\D/g, ''),
+                celular: document.getElementById('celular').value.replace(/\D/g, ''),
+                tipoConsulta: document.getElementById('tipoConsulta').value,
+                codEmpresa: codEmpresa,
+                empresa: empresaNombre,
+                cargo: document.getElementById('cargo').value.trim() || null,
+                fechaAtencion: fechaHora.toISOString(),
+                horaAtencion: hora,
+                examenes: examenesSeleccionados.join(', '),
+                tipoExamen: 'Ingreso',
+                atendido: 'PENDIENTE',
+                ciudad: 'Bogotá',
+                medico: document.getElementById('tipoConsulta').value === 'Presencial' ? 'PRESENCIAL' : null
+            };
+
+            try {
+                const response = await fetch('/api/ordenes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Mostrar paso de éxito
+                    mostrarExito(datos, result.data);
+                } else {
+                    throw new Error(result.message || 'Error al registrar la cita');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loadingOverlay').classList.remove('show');
+                mostrarAlerta('Error al registrar la cita. Por favor intenta de nuevo.');
+                btnConfirmar.disabled = false;
+            }
+        }
+
+        function mostrarExito(datos, ordenCreada) {
+            document.getElementById('loadingOverlay').classList.remove('show');
+
+            // Ir al paso 5
+            const pasos = document.querySelectorAll('.progress-step');
+            const containers = document.querySelectorAll('.step-container');
+
+            pasos.forEach(p => {
+                p.classList.remove('active');
+                p.classList.add('completed');
+            });
+
+            containers.forEach(c => c.classList.remove('active'));
+            document.querySelector('.step-container[data-step="5"]').classList.add('active');
+
+            // Formatear fecha
+            const fecha = new Date(datos.fechaAtencion);
+            const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const fechaFormateada = fecha.toLocaleDateString('es-CO', opciones);
+
+            const hora = datos.horaAtencion;
+            const hora12 = parseInt(hora.split(':')[0]) > 12 ?
+                (parseInt(hora.split(':')[0]) - 12) + ':' + hora.split(':')[1] + ' PM' :
+                hora + ' AM';
+
+            document.getElementById('citaFinal').innerHTML = `
+                <div class="cita-detail">
+                    <span class="cita-detail-label">Paciente</span>
+                    <span class="cita-detail-value">${datos.primerNombre} ${datos.primerApellido}</span>
+                </div>
+                <div class="cita-detail">
+                    <span class="cita-detail-label">Fecha</span>
+                    <span class="cita-detail-value">${fechaFormateada}</span>
+                </div>
+                <div class="cita-detail">
+                    <span class="cita-detail-label">Hora</span>
+                    <span class="cita-detail-value">${hora12}</span>
+                </div>
+                <div class="cita-detail">
+                    <span class="cita-detail-label">Tipo</span>
+                    <span class="cita-detail-value">${datos.tipoConsulta}</span>
+                </div>
+                <div class="cita-detail">
+                    <span class="cita-detail-label">Exámenes</span>
+                    <span class="cita-detail-value">${datos.examenes}</span>
+                </div>
+            `;
+
+            feather.replace();
+        }
+    </script>
+</body>
+</html>
