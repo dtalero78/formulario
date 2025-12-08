@@ -609,6 +609,60 @@ app.get('/api/formulario/:id', async (req, res) => {
     }
 });
 
+// Endpoint de búsqueda server-side para formularios (escala a 100,000+ registros)
+app.get('/api/formularios/search', async (req, res) => {
+    try {
+        const { q } = req.query;
+
+        // Requiere al menos 2 caracteres para buscar
+        if (!q || q.length < 2) {
+            return res.json({ success: true, data: [] });
+        }
+
+        console.log(`🔍 Buscando en formularios: "${q}"`);
+
+        const searchTerm = `%${q}%`;
+        const result = await pool.query(`
+            SELECT
+                f.id,
+                f.numero_id,
+                f.celular,
+                f.primer_nombre,
+                f.primer_apellido,
+                f.cod_empresa,
+                f.wix_id,
+                f.fecha_registro,
+                hc."fechaConsulta" as fecha_consulta,
+                hc."atendido" as estado_atencion
+            FROM formularios f
+            LEFT JOIN "HistoriaClinica" hc ON f.wix_id = hc."_id"
+            WHERE f.numero_id ILIKE $1
+               OR f.primer_nombre ILIKE $1
+               OR f.primer_apellido ILIKE $1
+               OR f.cod_empresa ILIKE $1
+               OR f.celular ILIKE $1
+            ORDER BY f.fecha_registro DESC
+            LIMIT 100
+        `, [searchTerm]);
+
+        console.log(`✅ Encontrados ${result.rows.length} formularios para "${q}"`);
+
+        res.json({
+            success: true,
+            total: result.rows.length,
+            data: result.rows
+        });
+
+    } catch (error) {
+        console.error('❌ Error en búsqueda de formularios:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error en la búsqueda',
+            error: error.message
+        });
+    }
+});
+
 // Buscar formulario por numeroId (cédula)
 app.get('/api/formularios/buscar/:numeroId', async (req, res) => {
     try {

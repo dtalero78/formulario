@@ -28,7 +28,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            background: linear-gradient(135deg, #0099B2 0%, #00B8E6 100%);
+            background: white;
         }
 
         .login-card {
@@ -1338,6 +1338,8 @@
         let filteredData = [];
         let currentPage = 0;
         const pageSize = 10;
+        let searchTimeout = null;
+        let busquedaActual = '';
 
         // Elementos del DOM
         const loginScreen = document.getElementById('loginScreen');
@@ -1483,37 +1485,68 @@
             document.getElementById('statTotalOrdenes').textContent = allData.length;
         }
 
-        // Búsqueda
-        btnSearch.addEventListener('click', buscar);
+        // Búsqueda server-side con debounce
+        btnSearch.addEventListener('click', buscarServerSide);
         searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') buscar();
+            if (e.key === 'Enter') buscarServerSide();
+        });
+
+        // Búsqueda automática mientras escribe (debounce)
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            busquedaActual = e.target.value.trim();
+
+            if (busquedaActual.length < 2) {
+                // Si es muy corto, filtrar localmente
+                if (busquedaActual.length === 0) {
+                    filteredData = [...allData];
+                    btnClear.classList.remove('show');
+                    currentPage = 0;
+                    renderTabla();
+                }
+                return;
+            }
+
+            searchTimeout = setTimeout(() => buscarServerSide(), 300);
         });
 
         btnClear.addEventListener('click', () => {
             searchInput.value = '';
+            busquedaActual = '';
             filteredData = [...allData];
             currentPage = 0;
             btnClear.classList.remove('show');
             renderTabla();
         });
 
-        function buscar() {
-            const query = searchInput.value.trim().toLowerCase();
+        async function buscarServerSide() {
+            const query = searchInput.value.trim();
 
             if (!query) {
                 filteredData = [...allData];
                 btnClear.classList.remove('show');
-            } else {
-                filteredData = allData.filter(orden => {
-                    const nombre = `${orden.primerNombre || ''} ${orden.primerApellido || ''}`.toLowerCase();
-                    const cedula = (orden.numeroId || '').toLowerCase();
-                    return nombre.includes(query) || cedula.includes(query);
-                });
-                btnClear.classList.add('show');
+                currentPage = 0;
+                renderTabla();
+                return;
             }
 
-            currentPage = 0;
-            renderTabla();
+            btnClear.classList.add('show');
+            tableCount.textContent = 'Buscando...';
+
+            try {
+                const response = await fetch(`/api/ordenes?codEmpresa=${encodeURIComponent(codEmpresa)}&buscar=${encodeURIComponent(query)}&limit=500`);
+                const result = await response.json();
+
+                if (result.success) {
+                    filteredData = result.data || [];
+                    currentPage = 0;
+                    renderTabla();
+                    tableCount.textContent = `${filteredData.length} resultados (búsqueda global)`;
+                }
+            } catch (error) {
+                console.error('Error en búsqueda:', error);
+                tableCount.textContent = 'Error en búsqueda';
+            }
         }
 
         // Paginación
