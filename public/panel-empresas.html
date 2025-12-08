@@ -1347,7 +1347,7 @@
         </div>
     </div>
 
-    <!-- Modal de orden duplicada -->
+    <!-- Modal de orden duplicada (PENDIENTE) -->
     <div class="modal-overlay" id="modalDuplicado">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
@@ -1383,6 +1383,45 @@
                     Crear nueva de todos modos
                 </button>
                 <button type="button" class="btn-modal btn-modal-secondary" onclick="cerrarModalDuplicado()" style="width: 100%;">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de certificado existente (ATENDIDO) -->
+    <div class="modal-overlay" id="modalAtendido">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2 class="modal-title" style="display: flex; align-items: center; gap: 12px;">
+                    <span style="width: 40px; height: 40px; background: #DBEAFE; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" width="20" height="20">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                    </span>
+                    Certificado existente
+                </h2>
+                <button class="modal-close" onclick="cerrarModalAtendido()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="color: #4B5563; margin-bottom: 16px;">Ya existe un <strong>certificado médico</strong> para este número de documento.</p>
+                <div id="ordenAtendidaInfo" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 16px;">
+                    <!-- Se llena dinámicamente -->
+                </div>
+                <p style="margin-top: 12px; font-size: 14px; color: #64748B;">Si necesita crear una nueva orden, puede continuar.</p>
+            </div>
+            <div class="modal-footer" style="flex-direction: column; gap: 8px;">
+                <button type="button" class="btn-modal" id="btnCrearNuevaAtendido" style="width: 100%; background: #F59E0B; color: white;">
+                    Crear nueva orden
+                </button>
+                <button type="button" class="btn-modal btn-modal-secondary" onclick="cerrarModalAtendido()" style="width: 100%;">
                     Cancelar
                 </button>
             </div>
@@ -2000,10 +2039,16 @@
                 const result = await response.json();
 
                 if (result.success && result.hayDuplicado) {
-                    // Hay duplicado, mostrar modal de duplicados
                     btn.disabled = false;
                     btn.textContent = 'Verificar y Continuar';
-                    mostrarModalDuplicado(result.ordenExistente);
+
+                    if (result.tipo === 'atendido') {
+                        // Mostrar modal de certificado existente
+                        mostrarModalAtendido(result.ordenExistente);
+                    } else {
+                        // Mostrar modal de orden pendiente
+                        mostrarModalDuplicado(result.ordenExistente);
+                    }
                 } else {
                     // No hay duplicado, pasar al paso 2
                     mostrarPaso2Modal();
@@ -2060,6 +2105,35 @@
             document.getElementById('modalDuplicado').classList.remove('active');
         }
 
+        // Función para mostrar modal de ATENDIDO
+        function mostrarModalAtendido(ordenExistente) {
+            ordenExistenteActual = ordenExistente;
+
+            let fechaAtencionStr = 'No disponible';
+            if (ordenExistente.fechaAtencion) {
+                fechaAtencionStr = new Date(ordenExistente.fechaAtencion).toLocaleDateString('es-CO', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+            } else if (ordenExistente.fechaCreacion) {
+                fechaAtencionStr = new Date(ordenExistente.fechaCreacion).toLocaleDateString('es-CO', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+            }
+
+            document.getElementById('ordenAtendidaInfo').innerHTML = `
+                <p style="margin: 4px 0;"><strong>Nombre:</strong> ${ordenExistente.nombre}</p>
+                <p style="margin: 4px 0;"><strong>Empresa:</strong> ${ordenExistente.empresa}</p>
+                <p style="margin: 4px 0;"><strong>Tipo examen:</strong> ${ordenExistente.tipoExamen || 'No especificado'}</p>
+                <p style="margin: 4px 0;"><strong>Fecha de consulta:</strong> ${fechaAtencionStr}</p>
+            `;
+
+            document.getElementById('modalAtendido').classList.add('active');
+        }
+
+        function cerrarModalAtendido() {
+            document.getElementById('modalAtendido').classList.remove('active');
+        }
+
         // Event listeners para botones del modal de duplicados
         document.getElementById('btnUsarExistente').addEventListener('click', () => {
             if (ordenExistenteActual) {
@@ -2081,6 +2155,18 @@
         document.getElementById('modalDuplicado').addEventListener('click', function(e) {
             if (e.target === this) {
                 cerrarModalDuplicado();
+            }
+        });
+
+        // Event listeners para modal de ATENDIDO
+        document.getElementById('btnCrearNuevaAtendido').addEventListener('click', () => {
+            cerrarModalAtendido();
+            mostrarPaso2Modal();
+        });
+
+        document.getElementById('modalAtendido').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarModalAtendido();
             }
         });
     </script>

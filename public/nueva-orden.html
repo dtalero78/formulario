@@ -796,7 +796,7 @@
         </main>
     </div>
 
-    <!-- Modal de orden duplicada -->
+    <!-- Modal de orden duplicada (PENDIENTE) -->
     <div class="modal-overlay" id="modalDuplicado">
         <div class="modal-content">
             <div class="modal-header">
@@ -820,6 +820,33 @@
                     Crear nueva de todos modos
                 </button>
                 <button type="button" class="btn btn-cancelar" id="btnCancelarModal">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de certificado existente (ATENDIDO) -->
+    <div class="modal-overlay" id="modalAtendido">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-warning" style="background: #DBEAFE; color: #2563EB;">
+                    <i data-feather="info"></i>
+                </div>
+                <h3>Certificado existente</h3>
+            </div>
+            <div class="modal-body">
+                <p>Ya existe un <strong>certificado médico</strong> para este número de documento.</p>
+                <div class="orden-info" id="ordenAtendidaInfo">
+                    <!-- Se llena dinámicamente -->
+                </div>
+                <p style="margin-top: 12px; color: #4B5563;">Si necesita crear una nueva orden, puede continuar.</p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-crear-nueva" id="btnCrearNuevaAtendido">
+                    Crear nueva orden
+                </button>
+                <button type="button" class="btn btn-cancelar" id="btnCancelarAtendido">
                     Cancelar
                 </button>
             </div>
@@ -1131,10 +1158,16 @@
                 const checkResult = await checkResponse.json();
 
                 if (checkResult.success && checkResult.hayDuplicado) {
-                    // Hay duplicado, mostrar modal
                     btn.classList.remove('btn-loading');
                     btn.disabled = false;
-                    mostrarModalDuplicado(checkResult.ordenExistente);
+
+                    if (checkResult.tipo === 'atendido') {
+                        // Mostrar modal de certificado existente
+                        mostrarModalAtendido(checkResult.ordenExistente);
+                    } else {
+                        // Mostrar modal de orden pendiente
+                        mostrarModalDuplicado(checkResult.ordenExistente);
+                    }
                 } else {
                     // No hay duplicado, pasar al paso 2
                     mostrarPaso2();
@@ -1201,7 +1234,7 @@
             }
         }
 
-        // Función para mostrar modal de duplicado
+        // Función para mostrar modal de duplicado (PENDIENTE)
         function mostrarModalDuplicado(ordenExistente) {
             ordenExistenteActual = ordenExistente;
             const fechaCreacion = new Date(ordenExistente.fechaCreacion).toLocaleDateString('es-CO', {
@@ -1226,9 +1259,40 @@
             feather.replace();
         }
 
+        // Función para mostrar modal de ATENDIDO
+        function mostrarModalAtendido(ordenExistente) {
+            ordenExistenteActual = ordenExistente;
+
+            let fechaAtencionStr = 'No disponible';
+            if (ordenExistente.fechaAtencion) {
+                fechaAtencionStr = new Date(ordenExistente.fechaAtencion).toLocaleDateString('es-CO', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+            } else if (ordenExistente.fechaCreacion) {
+                fechaAtencionStr = new Date(ordenExistente.fechaCreacion).toLocaleDateString('es-CO', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+            }
+
+            document.getElementById('ordenAtendidaInfo').innerHTML = `
+                <p><strong>Nombre:</strong> ${ordenExistente.nombre}</p>
+                <p><strong>Empresa:</strong> ${ordenExistente.empresa}</p>
+                <p><strong>Tipo examen:</strong> ${ordenExistente.tipoExamen || 'No especificado'}</p>
+                <p><strong>Fecha de consulta:</strong> ${fechaAtencionStr}</p>
+            `;
+
+            document.getElementById('modalAtendido').classList.add('show');
+            feather.replace();
+        }
+
         function cerrarModalDuplicado() {
             document.getElementById('modalDuplicado').classList.remove('show');
             datosFormularioActual = null;
+            ordenExistenteActual = null;
+        }
+
+        function cerrarModalAtendido() {
+            document.getElementById('modalAtendido').classList.remove('show');
             ordenExistenteActual = null;
         }
 
@@ -1256,6 +1320,16 @@
             cerrarModalDuplicado();
             submitBtn.classList.remove('btn-loading');
             submitBtn.disabled = false;
+        });
+
+        // Event listeners para modal de ATENDIDO
+        document.getElementById('btnCrearNuevaAtendido').addEventListener('click', () => {
+            cerrarModalAtendido();
+            mostrarPaso2();
+        });
+
+        document.getElementById('btnCancelarAtendido').addEventListener('click', () => {
+            cerrarModalAtendido();
         });
 
         form.addEventListener('submit', async (e) => {

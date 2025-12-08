@@ -1249,10 +1249,16 @@
                 const result = await response.json();
 
                 if (result.success && result.hayDuplicado) {
-                    // Hay una orden existente
                     btn.disabled = false;
                     btn.textContent = 'Continuar →';
-                    mostrarModalDuplicado(result.ordenExistente);
+
+                    if (result.tipo === 'atendido') {
+                        // Mostrar modal de certificado existente
+                        mostrarModalAtendido(result.ordenExistente);
+                    } else {
+                        // Mostrar modal de orden pendiente
+                        mostrarModalDuplicado(result.ordenExistente);
+                    }
                 } else {
                     // No hay duplicado, pasar al paso 1b
                     mostrarPaso1b();
@@ -1324,6 +1330,49 @@
             ordenExistenteActual = null;
         }
 
+        // Función para mostrar modal de ATENDIDO
+        function mostrarModalAtendido(ordenExistente) {
+            ordenExistenteActual = ordenExistente;
+
+            let fechaAtencionStr = 'No disponible';
+            if (ordenExistente.fechaAtencion) {
+                fechaAtencionStr = new Date(ordenExistente.fechaAtencion).toLocaleDateString('es-CO', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+            } else if (ordenExistente.fechaCreacion) {
+                fechaAtencionStr = new Date(ordenExistente.fechaCreacion).toLocaleDateString('es-CO', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+            }
+
+            document.getElementById('ordenAtendidaInfo').innerHTML = `
+                <div class="resumen-item">
+                    <span class="resumen-label">Nombre</span>
+                    <span class="resumen-value">${ordenExistente.nombre}</span>
+                </div>
+                <div class="resumen-item">
+                    <span class="resumen-label">Empresa</span>
+                    <span class="resumen-value">${ordenExistente.empresa || 'No especificada'}</span>
+                </div>
+                <div class="resumen-item">
+                    <span class="resumen-label">Fecha de consulta</span>
+                    <span class="resumen-value">${fechaAtencionStr}</span>
+                </div>
+            `;
+
+            document.getElementById('modalAtendido').classList.add('show');
+        }
+
+        function cerrarModalAtendido() {
+            document.getElementById('modalAtendido').classList.remove('show');
+            ordenExistenteActual = null;
+        }
+
+        function crearNuevaOrdenAtendido() {
+            cerrarModalAtendido();
+            mostrarPaso1b();
+        }
+
         function usarOrdenExistente() {
             if (ordenExistenteActual) {
                 window.location.href = `/?_id=${ordenExistenteActual._id}`;
@@ -1336,7 +1385,7 @@
         }
     </script>
 
-    <!-- Modal de orden duplicada -->
+    <!-- Modal de orden duplicada (PENDIENTE) -->
     <div class="modal-overlay" id="modalDuplicado" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
         <div style="background: white; border-radius: 16px; max-width: 450px; width: 90%; padding: 32px; margin: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
             <div style="text-align: center; margin-bottom: 24px;">
@@ -1371,8 +1420,43 @@
         </div>
     </div>
 
+    <!-- Modal de certificado existente (ATENDIDO) -->
+    <div class="modal-overlay" id="modalAtendido" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 16px; max-width: 450px; width: 90%; padding: 32px; margin: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="width: 64px; height: 64px; background: #DBEAFE; border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" width="32" height="32">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                </div>
+                <h3 style="font-size: 20px; font-weight: 600; color: #1F2937; margin-bottom: 8px;">Ya tienes un certificado</h3>
+                <p style="color: #6B7280; font-size: 14px;">Ya existe un certificado médico con tu número de cédula.</p>
+            </div>
+
+            <div class="resumen-container" id="ordenAtendidaInfo" style="background: #F9FAFB; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                <!-- Se llena dinámicamente -->
+            </div>
+
+            <p style="text-align: center; font-size: 14px; color: #64748B; margin-bottom: 24px;">Si necesitas agendar una nueva cita, puedes continuar.</p>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button type="button" class="nav-btn prev-btn" onclick="crearNuevaOrdenAtendido()" style="width: 100%; background: #F59E0B; color: white; border-color: #F59E0B;">
+                    Crear nueva cita
+                </button>
+                <button type="button" class="nav-btn prev-btn" onclick="cerrarModalAtendido()" style="width: 100%;">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <style>
         #modalDuplicado.show {
+            display: flex !important;
+        }
+        #modalAtendido.show {
             display: flex !important;
         }
     </style>

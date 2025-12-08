@@ -1052,11 +1052,11 @@ app.get('/api/ordenes/verificar-duplicado/:numeroId', async (req, res) => {
         const { numeroId } = req.params;
 
         if (!numeroId) {
-            return res.json({ success: true, hayDuplicado: false });
+            return res.json({ success: true, hayDuplicado: false, tipo: null });
         }
 
-        // Buscar órdenes existentes con el mismo numeroId que estén pendientes
-        const result = await pool.query(`
+        // Primero buscar órdenes PENDIENTES
+        const resultPendiente = await pool.query(`
             SELECT "_id", "numeroId", "primerNombre", "primerApellido",
                    "codEmpresa", "empresa", "tipoExamen", "atendido",
                    "_createdDate"
@@ -1067,8 +1067,8 @@ app.get('/api/ordenes/verificar-duplicado/:numeroId', async (req, res) => {
             LIMIT 1
         `, [numeroId]);
 
-        if (result.rows.length > 0) {
-            const ordenExistente = result.rows[0];
+        if (resultPendiente.rows.length > 0) {
+            const ordenExistente = resultPendiente.rows[0];
 
             // Verificar si tiene formulario asociado
             const formResult = await pool.query(`
@@ -1079,9 +1079,10 @@ app.get('/api/ordenes/verificar-duplicado/:numeroId', async (req, res) => {
 
             const tieneFormulario = formResult.rows.length > 0;
 
-            res.json({
+            return res.json({
                 success: true,
                 hayDuplicado: true,
+                tipo: 'pendiente',
                 ordenExistente: {
                     _id: ordenExistente._id,
                     numeroId: ordenExistente.numeroId,
@@ -1092,9 +1093,41 @@ app.get('/api/ordenes/verificar-duplicado/:numeroId', async (req, res) => {
                     tieneFormulario
                 }
             });
-        } else {
-            res.json({ success: true, hayDuplicado: false });
         }
+
+        // Si no hay PENDIENTE, buscar ATENDIDO
+        const resultAtendido = await pool.query(`
+            SELECT "_id", "numeroId", "primerNombre", "primerApellido",
+                   "codEmpresa", "empresa", "tipoExamen", "atendido",
+                   "_createdDate", "fechaAtencion"
+            FROM "HistoriaClinica"
+            WHERE "numeroId" = $1
+              AND "atendido" = 'ATENDIDO'
+            ORDER BY "_createdDate" DESC
+            LIMIT 1
+        `, [numeroId]);
+
+        if (resultAtendido.rows.length > 0) {
+            const ordenAtendida = resultAtendido.rows[0];
+
+            return res.json({
+                success: true,
+                hayDuplicado: true,
+                tipo: 'atendido',
+                ordenExistente: {
+                    _id: ordenAtendida._id,
+                    numeroId: ordenAtendida.numeroId,
+                    nombre: `${ordenAtendida.primerNombre} ${ordenAtendida.primerApellido}`,
+                    empresa: ordenAtendida.empresa || ordenAtendida.codEmpresa,
+                    tipoExamen: ordenAtendida.tipoExamen,
+                    fechaCreacion: ordenAtendida._createdDate,
+                    fechaAtencion: ordenAtendida.fechaAtencion
+                }
+            });
+        }
+
+        // No hay ningún registro
+        res.json({ success: true, hayDuplicado: false, tipo: null });
     } catch (error) {
         console.error('❌ Error al verificar duplicado:', error);
         res.status(500).json({
