@@ -1982,6 +1982,8 @@
         let busquedaActual = '';
         const detallesCache = {};
         let formularioActual = null;
+        let searchTimeout = null;
+        let buscandoEnServidor = false;
 
         // ========== UTILITY FUNCTIONS ==========
         function formatearFecha(fecha) {
@@ -2887,10 +2889,61 @@
             // Load data
             cargarFormularios();
 
-            // Search
-            document.getElementById('searchInput').addEventListener('input', function(e) {
+            // Search - Búsqueda server-side con debounce
+            document.getElementById('searchInput').addEventListener('input', async function(e) {
                 busquedaActual = e.target.value.trim();
-                actualizarVista();
+
+                // Cancelar búsqueda anterior
+                clearTimeout(searchTimeout);
+
+                // Si tiene menos de 2 caracteres, filtrar localmente
+                if (busquedaActual.length < 2) {
+                    buscandoEnServidor = false;
+                    actualizarVista();
+                    return;
+                }
+
+                // Búsqueda server-side con debounce de 300ms
+                searchTimeout = setTimeout(async () => {
+                    try {
+                        buscandoEnServidor = true;
+                        document.getElementById('statsCounter').innerHTML = '<strong>Buscando...</strong>';
+
+                        const response = await fetch(`/api/historia-clinica/buscar?q=${encodeURIComponent(busquedaActual)}`);
+                        const result = await response.json();
+
+                        if (result.success) {
+                            formulariosFiltrados = result.data;
+
+                            // Aplicar filtro de estado si está activo
+                            if (filtroActual === 'atendido') {
+                                formulariosFiltrados = formulariosFiltrados.filter(f => f.atendido && f.atendido.toUpperCase() === 'ATENDIDO');
+                            } else if (filtroActual === 'pendiente') {
+                                formulariosFiltrados = formulariosFiltrados.filter(f => !f.atendido || f.atendido.toUpperCase() !== 'ATENDIDO');
+                            }
+
+                            // Actualizar UI
+                            const tableContainer = document.getElementById('tableContainer');
+                            const emptyState = document.getElementById('emptyState');
+
+                            if (formulariosFiltrados.length === 0) {
+                                tableContainer.style.display = 'none';
+                                emptyState.style.display = 'block';
+                            } else {
+                                tableContainer.style.display = 'block';
+                                emptyState.style.display = 'none';
+                            }
+
+                            renderTable(formulariosFiltrados);
+                            renderMobileCards(formulariosFiltrados);
+                            document.getElementById('statsCounter').innerHTML =
+                                `<strong>${formulariosFiltrados.length}</strong> resultados (búsqueda global)`;
+                        }
+                    } catch (error) {
+                        console.error('Error en búsqueda:', error);
+                        document.getElementById('statsCounter').innerHTML = '<strong>Error en búsqueda</strong>';
+                    }
+                }, 300);
             });
 
             // Tabs

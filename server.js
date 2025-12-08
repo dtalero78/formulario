@@ -1883,6 +1883,53 @@ app.get('/api/historia-clinica/list', async (req, res) => {
     }
 });
 
+// Endpoint de búsqueda server-side para HistoriaClinica (escala a 100,000+ registros)
+app.get('/api/historia-clinica/buscar', async (req, res) => {
+    try {
+        const { q } = req.query;
+
+        // Requiere al menos 2 caracteres para buscar
+        if (!q || q.length < 2) {
+            return res.json({ success: true, data: [] });
+        }
+
+        console.log(`🔍 Buscando en HistoriaClinica: "${q}"`);
+
+        const searchTerm = `%${q}%`;
+        const result = await pool.query(`
+            SELECT "_id", "numeroId", "primerNombre", "segundoNombre",
+                   "primerApellido", "segundoApellido", "celular", "cargo",
+                   "ciudad", "tipoExamen", "codEmpresa", "empresa", "medico",
+                   "atendido", "examenes", "_createdDate", "fechaConsulta",
+                   'historia' as origen
+            FROM "HistoriaClinica"
+            WHERE "numeroId" ILIKE $1
+               OR "primerNombre" ILIKE $1
+               OR "primerApellido" ILIKE $1
+               OR "codEmpresa" ILIKE $1
+               OR "celular" ILIKE $1
+            ORDER BY "_createdDate" DESC
+            LIMIT 100
+        `, [searchTerm]);
+
+        console.log(`✅ Encontrados ${result.rows.length} registros para "${q}"`);
+
+        res.json({
+            success: true,
+            total: result.rows.length,
+            data: result.rows
+        });
+
+    } catch (error) {
+        console.error('❌ Error en búsqueda:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error en la búsqueda',
+            error: error.message
+        });
+    }
+});
+
 // Endpoint para obtener HistoriaClinica o Formulario por _id
 app.get('/api/historia-clinica/:id', async (req, res) => {
     try {
