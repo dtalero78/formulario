@@ -1364,7 +1364,6 @@
                             <th>Tipo Examen</th>
                             <th>Estado</th>
                             <th>Fecha</th>
-                            <th style="text-align: right;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -2077,8 +2076,6 @@
             }
 
             tbody.innerHTML = ordenes.map(orden => {
-                const wixId = orden._id || '';
-                const hasWixId = wixId && wixId.trim() !== '';
                 const statusClass = getStatusClass(orden.atendido);
 
                 return `
@@ -2103,22 +2100,6 @@
                             </span>
                         </td>
                         <td>${formatearFecha(orden._createdDate)}</td>
-                        <td>
-                            <div class="actions-cell" onclick="event.stopPropagation()">
-                                <a href="/?_id=${wixId}"
-                                   target="_blank"
-                                   class="btn-icon view ${!hasWixId ? 'disabled' : ''}"
-                                   title="Abrir formulario">📝</a>
-                                <a href="https://bsl-utilidades-yp78a.ondigitalocean.app/static/solicitar-certificado.html?id=${wixId}"
-                                   target="_blank"
-                                   class="btn-icon whatsapp ${!hasWixId ? 'disabled' : ''}"
-                                   title="Enviar por WhatsApp">📱</a>
-                                <a href="https://bsl-utilidades-yp78a.ondigitalocean.app/generar-certificado-desde-wix/${wixId}"
-                                   target="_blank"
-                                   class="btn-icon download ${!hasWixId ? 'disabled' : ''}"
-                                   title="Descargar certificado">📥</a>
-                            </div>
-                        </td>
                     </tr>
                 `;
             }).join('');
