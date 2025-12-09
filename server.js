@@ -7,6 +7,19 @@ const cron = require('node-cron');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// ========== SERVER-SENT EVENTS (SSE) ==========
+// Clientes conectados para notificaciones en tiempo real
+let sseClients = [];
+
+// Función para notificar a todos los clientes SSE
+function notificarNuevaOrden(orden) {
+    const data = JSON.stringify({ type: 'nueva-orden', orden });
+    sseClients.forEach(client => {
+        client.res.write(`data: ${data}\n\n`);
+    });
+    console.log(`📡 Notificación SSE enviada a ${sseClients.length} clientes`);
+}
+
 // Función para enviar mensajes de WhatsApp via Whapi Cloud
 function sendWhatsAppMessage(toNumber, messageBody) {
     const url = "https://gate.whapi.cloud/messages/text";
@@ -302,6 +315,29 @@ app.use(express.static('public'));
 // Ruta principal - servir el formulario
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// ========== ENDPOINT SSE PARA NOTIFICACIONES EN TIEMPO REAL ==========
+app.get('/api/events', (req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Enviar heartbeat inicial
+    res.write('data: {"type":"connected"}\n\n');
+
+    // Agregar cliente a la lista
+    const clientId = Date.now();
+    const newClient = { id: clientId, res };
+    sseClients.push(newClient);
+    console.log(`📡 Cliente SSE conectado: ${clientId}. Total: ${sseClients.length}`);
+
+    // Remover cliente cuando se desconecta
+    req.on('close', () => {
+        sseClients = sseClients.filter(client => client.id !== clientId);
+        console.log(`📡 Cliente SSE desconectado: ${clientId}. Total: ${sseClients.length}`);
+    });
 });
 
 // Ruta para obtener datos de Wix por ID
@@ -1434,6 +1470,15 @@ app.post('/api/ordenes', async (req, res) => {
         console.log('   Cédula:', numeroId);
         console.log('═══════════════════════════════════════════════════════════');
         console.log('');
+
+        // Notificar a clientes SSE sobre la nueva orden
+        notificarNuevaOrden({
+            _id: wixId,
+            numeroId,
+            primerNombre,
+            primerApellido,
+            medico: req.body.medico
+        });
 
         res.json({
             success: true,

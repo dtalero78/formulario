@@ -1313,8 +1313,20 @@
 
         cargarPacientes();
 
-        // Auto-refresh cada 60 segundos
-        setInterval(cargarPacientes, 60000);
+        // Conexión SSE para recibir notificaciones de nuevas órdenes en tiempo real
+        const eventSource = new EventSource('/api/events');
+
+        eventSource.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.type === 'nueva-orden' && data.orden.medico === 'NUBIA') {
+                console.log('📡 Nueva orden recibida para NUBIA:', data.orden);
+                cargarPacientes();
+            }
+        };
+
+        eventSource.onerror = function(error) {
+            console.error('Error en conexión SSE:', error);
+        };
     </script>
 </body>
 </html>
