@@ -1119,8 +1119,9 @@
             const fechaHora = new Date(fecha + 'T' + hora + ':00');
 
             const aNombreDe = document.getElementById('aNombreDe').value;
-            let codEmpresa = 'PARTICULAR';
-            let empresaNombre = 'PARTICULAR';
+            // Por defecto para NUBIA usar SANITHELP-JJ
+            let codEmpresa = 'SANITHELP-JJ';
+            let empresaNombre = 'SANITHELP-JJ';
 
             if (aNombreDe === 'EMPRESA') {
                 empresaNombre = document.getElementById('empresa').value.trim();
