@@ -1352,6 +1352,78 @@
                 display: none;
             }
         }
+
+        /* ========== SELECTOR DE EXÁMENES ========== */
+        .examenes-container {
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            background: white;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .examen-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-bottom: 1px solid #F3F4F6;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .examen-checkbox:last-child {
+            border-bottom: none;
+        }
+
+        .examen-checkbox:hover {
+            background: #F9FAFB;
+        }
+
+        .examen-checkbox input {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            accent-color: #2563EB;
+        }
+
+        .examen-checkbox label {
+            font-size: 13px;
+            color: #1F2937;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .examenes-selected {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .examen-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #DBEAFE;
+            color: #1E40AF;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 12px;
+        }
+
+        .examen-tag button {
+            background: none;
+            border: none;
+            color: #1E40AF;
+            cursor: pointer;
+            padding: 0;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .examen-tag button:hover {
+            color: #1E3A8A;
+        }
     </style>
     <script src="https://unpkg.com/feather-icons"></script>
 </head>
@@ -1646,7 +1718,11 @@
 
                         <div class="form-group full" style="margin-top: 16px;">
                             <label class="form-label">Exámenes</label>
-                            <textarea class="form-input" id="edit-hc-examenes" name="hc_examenes" rows="2"></textarea>
+                            <input type="hidden" id="edit-hc-examenes" name="hc_examenes">
+                            <div class="examenes-container" id="editExamenesContainer">
+                                <div style="padding: 12px; color: #9CA3AF; font-size: 13px;">Cargando exámenes...</div>
+                            </div>
+                            <div class="examenes-selected" id="editExamenesSelected"></div>
                         </div>
 
                         <div class="form-group full">
@@ -2126,6 +2202,10 @@
         let formularioActual = null;
         let searchTimeout = null;
         let buscandoEnServidor = false;
+
+        // ========== EXÁMENES STATE ==========
+        let examenesData = [];
+        let editExamenesSeleccionados = [];
 
         // ========== UTILITY FUNCTIONS ==========
         function formatearFecha(fecha) {
@@ -2750,6 +2830,73 @@
             document.getElementById('modalDetalles').classList.remove('active');
         }
 
+        // ========== EXÁMENES FUNCTIONS ==========
+        async function cargarExamenesDisponibles() {
+            try {
+                const response = await fetch('/api/examenes');
+                const data = await response.json();
+                examenesData = data.filter(e => e.activo !== false);
+            } catch (error) {
+                console.error('Error al cargar exámenes:', error);
+            }
+        }
+
+        function renderEditExamenes() {
+            const container = document.getElementById('editExamenesContainer');
+
+            if (examenesData.length === 0) {
+                container.innerHTML = '<div style="padding: 12px; color: #9CA3AF; font-size: 13px;">No hay exámenes disponibles</div>';
+                return;
+            }
+
+            container.innerHTML = examenesData.map(examen => `
+                <div class="examen-checkbox" onclick="toggleEditExamen(${examen.id}, '${examen.nombre.replace(/'/g, "\\'")}')">
+                    <input type="checkbox" id="edit-examen-${examen.id}" ${editExamenesSeleccionados.includes(examen.nombre) ? 'checked' : ''}>
+                    <label for="edit-examen-${examen.id}">${examen.nombre}</label>
+                </div>
+            `).join('');
+        }
+
+        function toggleEditExamen(id, nombre) {
+            const index = editExamenesSeleccionados.indexOf(nombre);
+            if (index === -1) {
+                editExamenesSeleccionados.push(nombre);
+            } else {
+                editExamenesSeleccionados.splice(index, 1);
+            }
+            actualizarEditExamenesUI();
+        }
+
+        function quitarEditExamen(nombre) {
+            const index = editExamenesSeleccionados.indexOf(nombre);
+            if (index !== -1) {
+                editExamenesSeleccionados.splice(index, 1);
+            }
+            actualizarEditExamenesUI();
+        }
+
+        function actualizarEditExamenesUI() {
+            // Actualizar checkboxes
+            examenesData.forEach(examen => {
+                const checkbox = document.getElementById(`edit-examen-${examen.id}`);
+                if (checkbox) {
+                    checkbox.checked = editExamenesSeleccionados.includes(examen.nombre);
+                }
+            });
+
+            // Actualizar tags seleccionados
+            const selectedContainer = document.getElementById('editExamenesSelected');
+            selectedContainer.innerHTML = editExamenesSeleccionados.map(nombre => `
+                <span class="examen-tag">
+                    ${nombre}
+                    <button type="button" onclick="quitarEditExamen('${nombre.replace(/'/g, "\\'")}')">&times;</button>
+                </span>
+            `).join('');
+
+            // Actualizar input hidden
+            document.getElementById('edit-hc-examenes').value = editExamenesSeleccionados.join(', ');
+        }
+
         // ========== MODAL: EDITAR ==========
         async function editarOrden(ordenId) {
             try {
@@ -2812,7 +2959,17 @@
                 document.getElementById('edit-hc-pvEstado').value = orden.pvEstado || '';
                 document.getElementById('edit-hc-talla').value = orden.talla || '';
                 document.getElementById('edit-hc-peso').value = orden.peso || '';
-                document.getElementById('edit-hc-examenes').value = orden.examenes || '';
+
+                // Cargar exámenes seleccionados
+                const examenesStr = orden.examenes || '';
+                editExamenesSeleccionados = examenesStr
+                    .split(',')
+                    .map(e => e.trim())
+                    .filter(e => e.length > 0);
+                document.getElementById('edit-hc-examenes').value = examenesStr;
+                renderEditExamenes();
+                actualizarEditExamenesUI();
+
                 document.getElementById('edit-hc-motivoConsulta').value = orden.motivoConsulta || '';
                 document.getElementById('edit-hc-encuestaSalud').value = orden.encuestaSalud || '';
                 document.getElementById('edit-hc-antecedentesFamiliares').value = orden.antecedentesFamiliares || '';
@@ -3031,6 +3188,7 @@
 
             // Load data
             cargarFormularios();
+            cargarExamenesDisponibles();
 
             // Search - Búsqueda server-side con debounce
             document.getElementById('searchInput').addEventListener('input', async function(e) {
