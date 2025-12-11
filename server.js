@@ -2366,16 +2366,23 @@ app.patch('/api/historia-clinica/:id/pago', async (req, res) => {
 
         console.log(`💰 Pago ${nuevoEstado ? 'marcado' : 'desmarcado'} para orden ${id}`);
 
-        // Sincronizar con Wix
+        // Sincronizar con Wix (HistoriaClinica)
         try {
-            const wixResponse = await fetch('https://www.bsl.com.co/_functions/actualizarFormulario', {
+            const wixPayload = {
+                idGeneral: id,
+                pvEstado: pvEstado
+            };
+            console.log('📤 Sincronizando pvEstado con Wix:', JSON.stringify(wixPayload));
+
+            const wixResponse = await fetch('https://www.bsl-plataforma.com/_functions/actualizarFormulario', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    idGeneral: id,
-                    pvEstado: pvEstado
-                })
+                body: JSON.stringify(wixPayload)
             });
+
+            const wixText = await wixResponse.text();
+            console.log('📡 WIX Response Status:', wixResponse.status);
+            console.log('📡 WIX Response Body:', wixText);
 
             if (wixResponse.ok) {
                 console.log('✅ WIX: pvEstado sincronizado');
