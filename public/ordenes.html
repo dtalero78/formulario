@@ -2643,9 +2643,10 @@
             const nombreCompleto = `${orden.primerNombre || ''} ${orden.segundoNombre || ''} ${orden.primerApellido || ''} ${orden.segundoApellido || ''}`.replace(/\s+/g, ' ').trim() || 'Sin nombre';
             const initials = getInitials(orden.primerNombre, orden.primerApellido);
             const isAtendido = orden.atendido && orden.atendido.toUpperCase() === 'ATENDIDO';
-            const fechaCreacion = orden._createdDate ? new Date(orden._createdDate).toLocaleString('es-CO') : '—';
-            const fechaConsulta = orden.fechaConsulta ? new Date(orden.fechaConsulta).toLocaleString('es-CO') : '—';
-            const fechaAtencion = orden.fechaAtencion ? new Date(orden.fechaAtencion).toLocaleString('es-CO') : '—';
+            const opcionesFecha = { timeZone: 'America/Bogota', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
+            const fechaCreacion = orden._createdDate ? new Date(orden._createdDate).toLocaleString('es-CO', opcionesFecha) : '—';
+            const fechaConsulta = orden.fechaConsulta ? new Date(orden.fechaConsulta).toLocaleString('es-CO', opcionesFecha) : '—';
+            const fechaAtencion = orden.fechaAtencion ? new Date(orden.fechaAtencion).toLocaleString('es-CO', opcionesFecha) : '—';
 
             // Hide header titles (we'll show in body)
             document.getElementById('modalDetallesTitulo').textContent = '';

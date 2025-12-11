@@ -1066,8 +1066,9 @@
             const isAtendido = paciente.atendido === 'ATENDIDO';
             const isPagado = paciente.pvEstado === 'Pagado' || paciente.pagado === true;
 
-            // Fecha de atención para el header
+            // Fecha de atención para el header (zona horaria Colombia)
             const fechaAtencionHeader = paciente.fechaAtencion ? new Date(paciente.fechaAtencion).toLocaleString('es-CO', {
+                timeZone: 'America/Bogota',
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric',
