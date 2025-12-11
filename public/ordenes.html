@@ -2645,6 +2645,7 @@
             const isAtendido = orden.atendido && orden.atendido.toUpperCase() === 'ATENDIDO';
             const fechaCreacion = orden._createdDate ? new Date(orden._createdDate).toLocaleString('es-CO') : '—';
             const fechaConsulta = orden.fechaConsulta ? new Date(orden.fechaConsulta).toLocaleString('es-CO') : '—';
+            const fechaAtencion = orden.fechaAtencion ? new Date(orden.fechaAtencion).toLocaleString('es-CO') : '—';
 
             // Hide header titles (we'll show in body)
             document.getElementById('modalDetallesTitulo').textContent = '';
@@ -2796,7 +2797,7 @@
                     <div class="profile-info">
                         <div class="profile-name">${nombreCompleto}</div>
                         <div class="profile-meta">${orden.cargo || 'Sin cargo'} - ${orden.codEmpresa || 'Sin empresa'}</div>
-                        <div class="profile-date">${fechaCreacion}</div>
+                        <div class="profile-date">${fechaAtencion}</div>
                     </div>
                 </div>
 
@@ -2839,8 +2840,8 @@
                             <div class="detail-field-value">${orden.ciudad || '—'}</div>
                         </div>
                         <div class="detail-field">
-                            <div class="detail-field-label">Fecha Creación</div>
-                            <div class="detail-field-value">${fechaCreacion}</div>
+                            <div class="detail-field-label">Fecha Consulta</div>
+                            <div class="detail-field-value">${fechaConsulta}</div>
                         </div>
                     </div>
                 </div>
