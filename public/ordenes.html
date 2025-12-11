@@ -1742,10 +1742,6 @@
                                 <label class="form-label">Ciudad</label>
                                 <input type="text" class="form-input" id="edit-hc-ciudad" name="hc_ciudad">
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Fecha Nacimiento</label>
-                                <input type="date" class="form-input" id="edit-hc-fechaNacimiento" name="hc_fechaNacimiento">
-                            </div>
                         </div>
 
                         <!-- Datos Laborales HC -->
@@ -3117,7 +3113,6 @@
                 document.getElementById('edit-hc-celular').value = orden.celular || '';
                 document.getElementById('edit-hc-email').value = orden.email || '';
                 document.getElementById('edit-hc-ciudad').value = orden.ciudad || '';
-                document.getElementById('edit-hc-fechaNacimiento').value = orden.fechaNacimiento ? orden.fechaNacimiento.split('T')[0] : '';
 
                 // Datos laborales HC
                 document.getElementById('edit-hc-empresa').value = orden.empresa || '';
