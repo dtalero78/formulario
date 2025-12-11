@@ -2740,7 +2740,6 @@
             }
 
             // Show patient name as title
-            const nombreCompleto = `${orden.primerNombre || ''} ${orden.primerApellido || ''}`.trim();
             document.getElementById('modalDetallesTitulo').textContent = nombreCompleto || 'Detalles';
             document.getElementById('modalDetallesSubtitulo').textContent = orden.numeroId || '';
 
