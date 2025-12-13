@@ -1867,7 +1867,11 @@
             document.getElementById('modalCargo').value = '';
             document.getElementById('modalCiudad').value = '';
             document.getElementById('modalTipoExamen').value = '';
-            document.getElementById('modalFechaAtencion').value = '';
+            // Establecer fecha mínima como hoy
+            const hoy = new Date().toISOString().split('T')[0];
+            const inputFecha = document.getElementById('modalFechaAtencion');
+            inputFecha.min = hoy;
+            inputFecha.value = '';
             document.getElementById('modalHoraAtencion').innerHTML = '<option value="">Primero seleccione fecha...</option>';
             examenesSeleccionadosModal = [];
             actualizarExamenesUIModal();
