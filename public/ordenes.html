@@ -603,6 +603,11 @@
             color: #D97706;
         }
 
+        .btn-icon.visiometria:hover {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
         .btn-icon.disabled {
             opacity: 0.3;
             pointer-events: none;
@@ -2420,6 +2425,13 @@
                         <td>${formatearFechaAtencion(orden.fechaAtencion)}</td>
                         <td>
                             <div class="actions-cell">
+                                <a href="/visiometria.html?orden=${orden._id}"
+                                   target="_blank"
+                                   class="btn-icon visiometria"
+                                   title="Visiometría"
+                                   onclick="event.stopPropagation();">
+                                    <i data-feather="eye"></i>
+                                </a>
                                 <a href="/audiometria.html?orden=${orden._id}"
                                    target="_blank"
                                    class="btn-icon audiometria"
@@ -2484,9 +2496,9 @@
                             </span>
                         </div>
                         <div class="mobile-card-actions">
-                            <a href="/?_id=${wixId}"
+                            <a href="/visiometria.html?orden=${wixId}"
                                target="_blank"
-                               class="mobile-card-btn ${!hasWixId ? 'disabled' : ''}">📝 Formulario</a>
+                               class="mobile-card-btn ${!hasWixId ? 'disabled' : ''}">👁️ Visión</a>
                             <a href="/audiometria.html?orden=${wixId}"
                                target="_blank"
                                class="mobile-card-btn ${!hasWixId ? 'disabled' : ''}">🎧 Audio</a>

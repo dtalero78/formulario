@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visiometría - BSL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --bg-primary: #FAFAFA;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F3F4F6;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --border-color: #E5E7EB;
+            --accent-color: #0099B2;
+            --accent-hover: #007A8F;
+            --success-color: #10B981;
+            --error-color: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header h1 i {
+            color: var(--accent-color);
+        }
+
+        .patient-info {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .patient-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .patient-info-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .patient-info-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .patient-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .patient-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .patient-photo i {
+            color: var(--text-secondary);
+        }
+
+        /* Sections */
+        .section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: var(--accent-color);
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-grid.three-cols {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .form-grid.four-cols {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .form-grid.six-cols {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        @media (max-width: 1024px) {
+            .form-grid.six-cols {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid, .form-grid.three-cols, .form-grid.four-cols, .form-grid.six-cols {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-grid, .form-grid.three-cols, .form-grid.four-cols, .form-grid.six-cols {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(0, 153, 178, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        /* Vision Table */
+        .vision-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        .vision-table th,
+        .vision-table td {
+            padding: 8px 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        .vision-table th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        .vision-table td input,
+        .vision-table td select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .vision-table td input:focus,
+        .vision-table td select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .vision-table .row-label {
+            background: var(--bg-tertiary);
+            font-weight: 500;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        /* Sub-section titles */
+        .subsection-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 20px 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-primary:disabled {
+            background: #9CA3AF;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--error-color);
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Multi-select */
+        .multi-select-container {
+            position: relative;
+        }
+
+        .multi-select-btn {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .multi-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-top: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .multi-select-dropdown.show {
+            display: block;
+        }
+
+        .multi-select-option {
+            padding: 10px 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.15s;
+        }
+
+        .multi-select-option:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .multi-select-option input {
+            width: 16px;
+            height: 16px;
+        }
+
+        .selected-count {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Two columns layout for sections */
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .two-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                <i data-feather="eye"></i>
+                Visiometría
+            </h1>
+        </div>
+
+        <div class="patient-info" id="patientInfo">
+            <div class="patient-photo">
+                <i data-feather="user" style="width:32px;height:32px;"></i>
+            </div>
+            <div class="patient-info-item">
+                <span class="patient-info-label">Paciente</span>
+                <span class="patient-info-value" id="patientName">Cargando...</span>
+            </div>
+            <div class="patient-info-item">
+                <span class="patient-info-label">Cédula</span>
+                <span class="patient-info-value" id="patientId">—</span>
+            </div>
+            <div class="patient-info-item">
+                <span class="patient-info-label">Empresa</span>
+                <span class="patient-info-value" id="patientCompany">—</span>
+            </div>
+        </div>
+
+        <form id="visiometriaForm">
+            <!-- Visión Lejana y Cercana -->
+            <div class="section">
+                <h2 class="section-title">
+                    <i data-feather="eye"></i>
+                    Agudeza Visual
+                </h2>
+
+                <div class="two-columns">
+                    <!-- Visión Lejana -->
+                    <div>
+                        <h3 class="subsection-title">Visión Lejana</h3>
+                        <table class="vision-table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Sin Correc.</th>
+                                    <th>Con Correc.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="row-label">Ojo Derecho</td>
+                                    <td><input type="text" id="vl_od_sin_correccion" name="vl_od_sin_correccion" placeholder="20/25"></td>
+                                    <td><input type="text" id="vl_od_con_correccion" name="vl_od_con_correccion" placeholder="20/25"></td>
+                                </tr>
+                                <tr>
+                                    <td class="row-label">Ojo Izquierdo</td>
+                                    <td><input type="text" id="vl_oi_sin_correccion" name="vl_oi_sin_correccion" placeholder="20/25"></td>
+                                    <td><input type="text" id="vl_oi_con_correccion" name="vl_oi_con_correccion" placeholder="20/25"></td>
+                                </tr>
+                                <tr>
+                                    <td class="row-label">Ambos Ojos</td>
+                                    <td><input type="text" id="vl_ao_sin_correccion" name="vl_ao_sin_correccion" placeholder="20/25"></td>
+                                    <td><input type="text" id="vl_ao_con_correccion" name="vl_ao_con_correccion" placeholder="20/25"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Foria Lateral</label>
+                                <select id="vl_foria_lateral" name="vl_foria_lateral">
+                                    <option value="">--Seleccione--</option>
+                                    <option value="ORTOFORIA">ORTOFORIA</option>
+                                    <option value="EXOFORIA">EXOFORIA</option>
+                                    <option value="ENDOFORIA">ENDOFORIA</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Foria Vertical</label>
+                                <select id="vl_foria_vertical" name="vl_foria_vertical">
+                                    <option value="">--Seleccione--</option>
+                                    <option value="ORTOFORIA">ORTOFORIA</option>
+                                    <option value="HIPERFORIA">HIPERFORIA</option>
+                                    <option value="HIPOFORIA">HIPOFORIA</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visión Cercana -->
+                    <div>
+                        <h3 class="subsection-title">Visión Cercana</h3>
+                        <table class="vision-table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Sin Correc.</th>
+                                    <th>Con Correc.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="row-label">Ojo Derecho</td>
+                                    <td><input type="text" id="vc_od_sin_correccion" name="vc_od_sin_correccion" placeholder="20/25"></td>
+                                    <td><input type="text" id="vc_od_con_correccion" name="vc_od_con_correccion" placeholder="20/25"></td>
+                                </tr>
+                                <tr>
+                                    <td class="row-label">Ojo Izquierdo</td>
+                                    <td><input type="text" id="vc_oi_sin_correccion" name="vc_oi_sin_correccion" placeholder="20/25"></td>
+                                    <td><input type="text" id="vc_oi_con_correccion" name="vc_oi_con_correccion" placeholder="20/25"></td>
+                                </tr>
+                                <tr>
+                                    <td class="row-label">Ambos Ojos</td>
+                                    <td><input type="text" id="vc_ao_sin_correccion" name="vc_ao_sin_correccion" placeholder="20/25"></td>
+                                    <td><input type="text" id="vc_ao_con_correccion" name="vc_ao_con_correccion" placeholder="20/25"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Foria Lateral</label>
+                                <select id="vc_foria_lateral" name="vc_foria_lateral">
+                                    <option value="">--Seleccione--</option>
+                                    <option value="ORTOFORIA">ORTOFORIA</option>
+                                    <option value="EXOFORIA">EXOFORIA</option>
+                                    <option value="ENDOFORIA">ENDOFORIA</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Campimetría</label>
+                                <select id="vc_campimetria" name="vc_campimetria">
+                                    <option value="">--Seleccione--</option>
+                                    <option value="NORMAL">NORMAL</option>
+                                    <option value="ANORMAL">ANORMAL</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid four-cols" style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label>Ishihara</label>
+                        <input type="text" id="ishihara" name="ishihara">
+                    </div>
+                    <div class="form-group">
+                        <label>PPC</label>
+                        <input type="text" id="ppc" name="ppc">
+                    </div>
+                    <div class="form-group">
+                        <label>Visión Cromática</label>
+                        <select id="vision_cromatica" name="vision_cromatica">
+                            <option value="">--Seleccione--</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Enceguecimiento</label>
+                        <select id="enceguecimiento" name="enceguecimiento">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO">NO</option>
+                            <option value="SI">SI</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid three-cols" style="margin-top: 16px;">
+                    <div class="form-group">
+                        <label>Estado Fórico</label>
+                        <select id="estado_forico" name="estado_forico">
+                            <option value="">--Seleccione--</option>
+                            <option value="ORTOFORIA">ORTOFORIA</option>
+                            <option value="EXOFORIA">EXOFORIA</option>
+                            <option value="ENDOFORIA">ENDOFORIA</option>
+                            <option value="HIPERFORIA">HIPERFORIA</option>
+                            <option value="TROPIA">TROPIA</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cover Test Lejos</label>
+                        <select id="cover_test_lejos" name="cover_test_lejos">
+                            <option value="">--Seleccione--</option>
+                            <option value="ORTOFORIA">ORTOFORIA</option>
+                            <option value="EXOFORIA">EXOFORIA</option>
+                            <option value="ENDOFORIA">ENDOFORIA</option>
+                            <option value="EXOTROPIA">EXOTROPIA</option>
+                            <option value="ENDOTROPIA">ENDOTROPIA</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cover Test Cerca</label>
+                        <select id="cover_test_cerca" name="cover_test_cerca">
+                            <option value="">--Seleccione--</option>
+                            <option value="ORTOFORIA">ORTOFORIA</option>
+                            <option value="EXOFORIA">EXOFORIA</option>
+                            <option value="ENDOFORIA">ENDOFORIA</option>
+                            <option value="EXOTROPIA">EXOTROPIA</option>
+                            <option value="ENDOTROPIA">ENDOTROPIA</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Examen Externo y Queratometría -->
+            <div class="section">
+                <h2 class="section-title">
+                    <i data-feather="search"></i>
+                    Examen Ocular
+                </h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Queratometría OD</label>
+                        <textarea id="queratometria_od" name="queratometria_od" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Queratometría OI</label>
+                        <textarea id="queratometria_oi" name="queratometria_oi" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group full-width" style="margin-top: 16px;">
+                    <label>Examen Externo</label>
+                    <textarea id="examen_externo" name="examen_externo" rows="3"></textarea>
+                </div>
+
+                <h3 class="subsection-title">Rx en Uso</h3>
+                <div class="form-grid four-cols">
+                    <div class="form-group">
+                        <label>Rx en Uso</label>
+                        <select id="rx_en_uso" name="rx_en_uso">
+                            <option value="NO">NO</option>
+                            <option value="SI">SI</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title">Oftalmoscopia / Biomicroscopia / Tonometría</h3>
+                <div class="form-grid three-cols">
+                    <div class="form-group">
+                        <label>Oftalmoscopia OD</label>
+                        <select id="oftalmoscopia_od" name="oftalmoscopia_od">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO">NO</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Oftalmoscopia OI</label>
+                        <select id="oftalmoscopia_oi" name="oftalmoscopia_oi">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO">NO</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div></div>
+                    <div class="form-group">
+                        <label>Biomicroscopia OD</label>
+                        <select id="biomicroscopia_od" name="biomicroscopia_od">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO">NO</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Biomicroscopia OI</label>
+                        <select id="biomicroscopia_oi" name="biomicroscopia_oi">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO">NO</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div></div>
+                    <div class="form-group">
+                        <label>Tonometría OD</label>
+                        <select id="tonometria_od" name="tonometria_od">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO">NO</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ELEVADA">ELEVADA</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tonometría OI</label>
+                        <select id="tonometria_oi" name="tonometria_oi">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO">NO</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ELEVADA">ELEVADA</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title">Refractometría / Subjetivo / Rx Final</h3>
+                <div class="form-grid three-cols">
+                    <div class="form-group">
+                        <label>Refractometría OD</label>
+                        <select id="refractometria_od" name="refractometria_od">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO">NO</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Refractometría OI</label>
+                        <select id="refractometria_oi" name="refractometria_oi">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO">NO</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div></div>
+                    <div class="form-group">
+                        <label>Subjetivo OD</label>
+                        <select id="subjetivo_od" name="subjetivo_od">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO">NO</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Subjetivo OI</label>
+                        <select id="subjetivo_oi" name="subjetivo_oi">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO">NO</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div></div>
+                    <div class="form-group">
+                        <label>Rx Final OD</label>
+                        <select id="rx_final_od" name="rx_final_od">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO">NO</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Rx Final OI</label>
+                        <select id="rx_final_oi" name="rx_final_oi">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO">NO</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid three-cols" style="margin-top: 16px;">
+                    <div class="form-group">
+                        <label>DIP</label>
+                        <input type="text" id="dip" name="dip" placeholder="Ej: 62mm">
+                    </div>
+                    <div class="form-group">
+                        <label>Filtro</label>
+                        <input type="text" id="filtro" name="filtro" placeholder="Uso de corrección visual permanente">
+                    </div>
+                    <div class="form-group">
+                        <label>Uso</label>
+                        <select id="uso" name="uso">
+                            <option value="">--Seleccione--</option>
+                            <option value="PERMANENTES">PERMANENTES</option>
+                            <option value="LECTURA">LECTURA</option>
+                            <option value="DISTANCIA">DISTANCIA</option>
+                            <option value="NO REQUIERE">NO REQUIERE</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnóstico -->
+            <div class="section">
+                <h2 class="section-title">
+                    <i data-feather="clipboard"></i>
+                    Diagnóstico
+                </h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Diagnóstico</label>
+                        <select id="diagnostico" name="diagnostico">
+                            <option value="">--Seleccione--</option>
+                            <option value="EMETROPE">EMETROPE</option>
+                            <option value="AMETROPIA CON CORRECCIÓN">AMETROPIA CON CORRECCIÓN</option>
+                            <option value="AMETROPIA PARCIALMENTE CORREGIDA">AMETROPIA PARCIALMENTE CORREGIDA</option>
+                            <option value="AMETROPIA SIN CORRECCIÓN">AMETROPIA SIN CORRECCIÓN</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Remisión</label>
+                        <select id="remision" name="remision">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO">NO</option>
+                            <option value="OPTOMETRIA">OPTOMETRIA</option>
+                            <option value="OFTALMOLOGIA">OFTALMOLOGIA</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid" style="margin-top: 16px;">
+                    <div class="form-group">
+                        <label>Control</label>
+                        <select id="control" name="control">
+                            <option value="">--Seleccione--</option>
+                            <option value="ANUAL">ANUAL</option>
+                            <option value="6 MESES">6 MESES</option>
+                            <option value="3 MESES">3 MESES</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>DX2</label>
+                        <div class="multi-select-container">
+                            <button type="button" class="multi-select-btn" id="dx2Btn">
+                                <span id="dx2Text">Seleccionar...</span>
+                                <span class="selected-count" id="dx2Count"></span>
+                            </button>
+                            <div class="multi-select-dropdown" id="dx2Dropdown">
+                                <label class="multi-select-option">
+                                    <input type="checkbox" value="MIOPIA">
+                                    MIOPIA
+                                </label>
+                                <label class="multi-select-option">
+                                    <input type="checkbox" value="HIPERMETROPIA">
+                                    HIPERMETROPIA
+                                </label>
+                                <label class="multi-select-option">
+                                    <input type="checkbox" value="ASTIGMATISMO">
+                                    ASTIGMATISMO
+                                </label>
+                                <label class="multi-select-option">
+                                    <input type="checkbox" value="PRESBICIA">
+                                    PRESBICIA
+                                </label>
+                                <label class="multi-select-option">
+                                    <input type="checkbox" value="ANISOMETROPIA">
+                                    ANISOMETROPIA
+                                </label>
+                            </div>
+                        </div>
+                        <input type="hidden" name="dx2" id="dx2">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 16px;">
+                    <label>DX3</label>
+                    <textarea id="dx3" name="dx3" rows="2"></textarea>
+                </div>
+
+                <div class="form-group" style="margin-top: 16px;">
+                    <label>Observaciones</label>
+                    <textarea id="observaciones" name="observaciones" rows="3">NORMAL</textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="window.close()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <i data-feather="save"></i>
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Initialize feather icons
+        feather.replace();
+
+        // Get orden_id from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const ordenId = urlParams.get('orden');
+
+        if (!ordenId) {
+            showToast('Error: No se especificó una orden', 'error');
+        }
+
+        // DOM Elements
+        const form = document.getElementById('visiometriaForm');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // Multi-select for DX2
+        const dx2Btn = document.getElementById('dx2Btn');
+        const dx2Dropdown = document.getElementById('dx2Dropdown');
+
+        dx2Btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dx2Dropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!dx2Btn.contains(e.target) && !dx2Dropdown.contains(e.target)) {
+                dx2Dropdown.classList.remove('show');
+            }
+        });
+
+        dx2Dropdown.addEventListener('change', updateDx2);
+
+        function updateDx2() {
+            const checkboxes = dx2Dropdown.querySelectorAll('input[type="checkbox"]:checked');
+            const values = Array.from(checkboxes).map(cb => cb.value);
+
+            document.getElementById('dx2').value = values.join('; ');
+            document.getElementById('dx2Count').textContent = values.length > 0 ? `${values.length} seleccionados` : '';
+            document.getElementById('dx2Text').textContent = values.length > 0 ? values.join(', ').substring(0, 40) + (values.join(', ').length > 40 ? '...' : '') : 'Seleccionar...';
+        }
+
+        // Load existing data
+        async function loadData() {
+            if (!ordenId) return;
+
+            showLoading(true);
+            try {
+                const response = await fetch(`/api/visiometrias/${ordenId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    // Set patient info
+                    if (result.paciente) {
+                        document.getElementById('patientName').textContent =
+                            `${result.paciente.primerNombre || ''} ${result.paciente.primerApellido || ''}`.trim() || '—';
+                        document.getElementById('patientId').textContent = result.paciente.numeroId || '—';
+                        document.getElementById('patientCompany').textContent = result.paciente.empresa || result.paciente.codEmpresa || '—';
+                    }
+
+                    // Fill form if data exists
+                    if (result.data) {
+                        const data = result.data;
+
+                        // Patient info from visiometria
+                        if (!result.paciente) {
+                            document.getElementById('patientName').textContent =
+                                `${data.primer_nombre || ''} ${data.primer_apellido || ''}`.trim() || '—';
+                            document.getElementById('patientId').textContent = data.numero_id || '—';
+                            document.getElementById('patientCompany').textContent = data.empresa || data.cod_empresa || '—';
+                        }
+
+                        // Fill all form fields
+                        Object.keys(data).forEach(key => {
+                            const element = document.getElementById(key);
+                            if (element) {
+                                if (element.type === 'checkbox') {
+                                    element.checked = data[key];
+                                } else {
+                                    element.value = data[key] || '';
+                                }
+                            }
+                        });
+
+                        // Set dx2 checkboxes
+                        if (data.dx2) {
+                            const selectedDx2 = data.dx2.split('; ');
+                            dx2Dropdown.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                                cb.checked = selectedDx2.includes(cb.value);
+                            });
+                            updateDx2();
+                        }
+                    }
+                } else {
+                    showToast('Error al cargar datos', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error de conexión', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Submit form
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (!ordenId) {
+                showToast('Error: No se especificó una orden', 'error');
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                // Get patient info
+                const patientName = document.getElementById('patientName').textContent;
+                const nameParts = patientName.split(' ');
+                const primerNombre = nameParts[0] || '';
+                const primerApellido = nameParts.slice(1).join(' ') || '';
+
+                // Build form data from all inputs
+                const formData = {
+                    orden_id: ordenId,
+                    numero_id: document.getElementById('patientId').textContent,
+                    primer_nombre: primerNombre,
+                    primer_apellido: primerApellido,
+                    empresa: document.getElementById('patientCompany').textContent,
+                    cod_empresa: document.getElementById('patientCompany').textContent
+                };
+
+                // Get all form inputs
+                const inputs = form.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    if (input.name && input.name !== 'dx2') {
+                        formData[input.name] = input.value || null;
+                    }
+                });
+
+                // Add dx2
+                formData.dx2 = document.getElementById('dx2').value || null;
+
+                const response = await fetch('/api/visiometrias', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('Visiometría guardada correctamente', 'success');
+                } else {
+                    showToast(result.message || 'Error al guardar', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error de conexión', 'error');
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // Utility functions
+        function showLoading(show) {
+            loadingOverlay.classList.toggle('show', show);
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Load data on page load
+        loadData();
+    </script>
+</body>
+</html>
