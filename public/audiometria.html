@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audiometría - BSL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --bg-primary: #FAFAFA;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F3F4F6;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --border-color: #E5E7EB;
+            --accent-color: #0099B2;
+            --accent-hover: #007A8F;
+            --success-color: #10B981;
+            --error-color: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header h1 i {
+            color: var(--accent-color);
+        }
+
+        .patient-info {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .patient-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .patient-info-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .patient-info-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Sections */
+        .section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: var(--accent-color);
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .form-grid.four-cols {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        @media (max-width: 768px) {
+            .form-grid, .form-grid.four-cols {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(0, 153, 178, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Audiometry Grid */
+        .audiometry-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(8, 1fr);
+            gap: 8px;
+            align-items: center;
+        }
+
+        .audiometry-header {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .audiometry-header.freq {
+            color: #DC2626;
+        }
+
+        .audiometry-header.freq-left {
+            color: #2563EB;
+        }
+
+        .audiometry-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .audiometry-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .audiometry-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(0, 153, 178, 0.1);
+        }
+
+        .ear-section {
+            margin-bottom: 24px;
+        }
+
+        .ear-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ear-title.right {
+            color: #DC2626;
+        }
+
+        .ear-title.left {
+            color: #2563EB;
+        }
+
+        /* Checkbox for Oseo */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .oseo-section {
+            display: none;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .oseo-section.show {
+            display: block;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-primary:disabled {
+            background: #9CA3AF;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--error-color);
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Frequency headers */
+        .freq-row {
+            display: contents;
+        }
+
+        .freq-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            padding: 4px;
+        }
+
+        .freq-label.right {
+            color: #DC2626;
+        }
+
+        .freq-label.left {
+            color: #2563EB;
+        }
+
+        /* Multi-select for recomendaciones */
+        .multi-select-container {
+            position: relative;
+        }
+
+        .multi-select-btn {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .multi-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-top: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .multi-select-dropdown.show {
+            display: block;
+        }
+
+        .multi-select-option {
+            padding: 10px 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.15s;
+        }
+
+        .multi-select-option:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .multi-select-option input {
+            width: 16px;
+            height: 16px;
+        }
+
+        .selected-count {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                <i data-feather="headphones"></i>
+                Audiometría
+            </h1>
+        </div>
+
+        <div class="patient-info" id="patientInfo">
+            <div class="patient-info-item">
+                <span class="patient-info-label">Paciente</span>
+                <span class="patient-info-value" id="patientName">Cargando...</span>
+            </div>
+            <div class="patient-info-item">
+                <span class="patient-info-label">Cédula</span>
+                <span class="patient-info-value" id="patientId">—</span>
+            </div>
+            <div class="patient-info-item">
+                <span class="patient-info-label">Empresa</span>
+                <span class="patient-info-value" id="patientCompany">—</span>
+            </div>
+        </div>
+
+        <form id="audiometriaForm">
+            <!-- Otoscopia Section -->
+            <div class="section">
+                <h2 class="section-title">
+                    <i data-feather="eye"></i>
+                    Otoscopia
+                </h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Pabellón Auricular OI</label>
+                        <select name="pabellon_auricular_oi" id="pabellon_auricular_oi">
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Pabellón Auricular OD</label>
+                        <select name="pabellon_auricular_od" id="pabellon_auricular_od">
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Conducto Auditivo OI</label>
+                        <select name="conducto_auditivo_oi" id="conducto_auditivo_oi">
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Conducto Auditivo OD</label>
+                        <select name="conducto_auditivo_od" id="conducto_auditivo_od">
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Membrana Timpánica OI</label>
+                        <select name="membrana_timpanica_oi" id="membrana_timpanica_oi">
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Membrana Timpánica OD</label>
+                        <select name="membrana_timpanica_od" id="membrana_timpanica_od">
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="ANORMAL">ANORMAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Observaciones OI</label>
+                        <textarea name="observaciones_oi" id="observaciones_oi" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Observaciones OD</label>
+                        <textarea name="observaciones_od" id="observaciones_od" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Requiere Limpieza Ótica</label>
+                        <select name="requiere_limpieza_otica" id="requiere_limpieza_otica">
+                            <option value="NO">NO</option>
+                            <option value="SI">SI</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado Gripal</label>
+                        <select name="estado_gripal" id="estado_gripal">
+                            <option value="NO">NO</option>
+                            <option value="SI">SI</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultado Aéreo Section -->
+            <div class="section">
+                <h2 class="section-title">
+                    <i data-feather="activity"></i>
+                    Resultado Aéreo
+                </h2>
+
+                <!-- Oído Derecho -->
+                <div class="ear-section">
+                    <div class="ear-title right">Oído Derecho</div>
+                    <div class="audiometry-grid">
+                        <div></div>
+                        <div class="freq-label right">250</div>
+                        <div class="freq-label right">500</div>
+                        <div class="freq-label right">1000</div>
+                        <div class="freq-label right">2000</div>
+                        <div class="freq-label right">3000</div>
+                        <div class="freq-label right">4000</div>
+                        <div class="freq-label right">6000</div>
+                        <div class="freq-label right">8000</div>
+
+                        <div class="audiometry-label">dB</div>
+                        <input type="number" class="audiometry-input" name="aereo_od_250" id="aereo_od_250" min="-10" max="120">
+                        <input type="number" class="audiometry-input" name="aereo_od_500" id="aereo_od_500" min="-10" max="120">
+                        <input type="number" class="audiometry-input" name="aereo_od_1000" id="aereo_od_1000" min="-10" max="120">
+                        <input type="number" class="audiometry-input" name="aereo_od_2000" id="aereo_od_2000" min="-10" max="120">
+                        <input type="number" class="audiometry-input" name="aereo_od_3000" id="aereo_od_3000" min="-10" max="120">
+                        <input type="number" class="audiometry-input" name="aereo_od_4000" id="aereo_od_4000" min="-10" max="120">
+                        <input type="number" class="audiometry-input" name="aereo_od_6000" id="aereo_od_6000" min="-10" max="120">
+                        <input type="number" class="audiometry-input" name="aereo_od_8000" id="aereo_od_8000" min="-10" max="120">
+                    </div>
+                </div>
+
+                <!-- Oído Izquierdo -->
+                <div class="ear-section">
+                    <div class="ear-title left">Oído Izquierdo</div>
+                    <div class="audiometry-grid">
+                        <div></div>
+                        <div class="freq-label left">250</div>
+                        <div class="freq-label left">500</div>
+                        <div class="freq-label left">1000</div>
+                        <div class="freq-label left">2000</div>
+                        <div class="freq-label left">3000</div>
+                        <div class="freq-label left">4000</div>
+                        <div class="freq-label left">6000</div>
+                        <div class="freq-label left">8000</div>
+
+                        <div class="audiometry-label">dB</div>
+                        <input type="number" class="audiometry-input" name="aereo_oi_250" id="aereo_oi_250" min="-10" max="120">
+                        <input type="number" class="audiometry-input" name="aereo_oi_500" id="aereo_oi_500" min="-10" max="120">
+                        <input type="number" class="audiometry-input" name="aereo_oi_1000" id="aereo_oi_1000" min="-10" max="120">
+                        <input type="number" class="audiometry-input" name="aereo_oi_2000" id="aereo_oi_2000" min="-10" max="120">
+                        <input type="number" class="audiometry-input" name="aereo_oi_3000" id="aereo_oi_3000" min="-10" max="120">
+                        <input type="number" class="audiometry-input" name="aereo_oi_4000" id="aereo_oi_4000" min="-10" max="120">
+                        <input type="number" class="audiometry-input" name="aereo_oi_6000" id="aereo_oi_6000" min="-10" max="120">
+                        <input type="number" class="audiometry-input" name="aereo_oi_8000" id="aereo_oi_8000" min="-10" max="120">
+                    </div>
+                </div>
+
+                <!-- Resultado Óseo (Opcional) -->
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showOseo">
+                    <label for="showOseo">Resultado Óseo</label>
+                </div>
+
+                <div class="oseo-section" id="oseoSection">
+                    <!-- Oído Derecho Óseo -->
+                    <div class="ear-section">
+                        <div class="ear-title right">Oído Derecho (Óseo)</div>
+                        <div class="audiometry-grid" style="grid-template-columns: 80px repeat(6, 1fr);">
+                            <div></div>
+                            <div class="freq-label right">250</div>
+                            <div class="freq-label right">500</div>
+                            <div class="freq-label right">1000</div>
+                            <div class="freq-label right">2000</div>
+                            <div class="freq-label right">3000</div>
+                            <div class="freq-label right">4000</div>
+
+                            <div class="audiometry-label">dB</div>
+                            <input type="number" class="audiometry-input" name="oseo_od_250" id="oseo_od_250" min="-10" max="120">
+                            <input type="number" class="audiometry-input" name="oseo_od_500" id="oseo_od_500" min="-10" max="120">
+                            <input type="number" class="audiometry-input" name="oseo_od_1000" id="oseo_od_1000" min="-10" max="120">
+                            <input type="number" class="audiometry-input" name="oseo_od_2000" id="oseo_od_2000" min="-10" max="120">
+                            <input type="number" class="audiometry-input" name="oseo_od_3000" id="oseo_od_3000" min="-10" max="120">
+                            <input type="number" class="audiometry-input" name="oseo_od_4000" id="oseo_od_4000" min="-10" max="120">
+                        </div>
+                    </div>
+
+                    <!-- Oído Izquierdo Óseo -->
+                    <div class="ear-section">
+                        <div class="ear-title left">Oído Izquierdo (Óseo)</div>
+                        <div class="audiometry-grid" style="grid-template-columns: 80px repeat(6, 1fr);">
+                            <div></div>
+                            <div class="freq-label left">250</div>
+                            <div class="freq-label left">500</div>
+                            <div class="freq-label left">1000</div>
+                            <div class="freq-label left">2000</div>
+                            <div class="freq-label left">3000</div>
+                            <div class="freq-label left">4000</div>
+
+                            <div class="audiometry-label">dB</div>
+                            <input type="number" class="audiometry-input" name="oseo_oi_250" id="oseo_oi_250" min="-10" max="120">
+                            <input type="number" class="audiometry-input" name="oseo_oi_500" id="oseo_oi_500" min="-10" max="120">
+                            <input type="number" class="audiometry-input" name="oseo_oi_1000" id="oseo_oi_1000" min="-10" max="120">
+                            <input type="number" class="audiometry-input" name="oseo_oi_2000" id="oseo_oi_2000" min="-10" max="120">
+                            <input type="number" class="audiometry-input" name="oseo_oi_3000" id="oseo_oi_3000" min="-10" max="120">
+                            <input type="number" class="audiometry-input" name="oseo_oi_4000" id="oseo_oi_4000" min="-10" max="120">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid" style="margin-top: 24px;">
+                    <div class="form-group">
+                        <label>Cabina</label>
+                        <select name="cabina" id="cabina">
+                            <option value="">--Seleccione--</option>
+                            <option value="CABINA 1">CABINA 1</option>
+                            <option value="CABINA 2">CABINA 2</option>
+                            <option value="CABINA MOVIL">CABINA MOVIL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Equipo</label>
+                        <input type="text" name="equipo" id="equipo" value="MA 790">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnóstico Section -->
+            <div class="section">
+                <h2 class="section-title">
+                    <i data-feather="clipboard"></i>
+                    Diagnóstico
+                </h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Diagnóstico Oído Izquierdo</label>
+                        <select name="diagnostico_oi" id="diagnostico_oi">
+                            <option value="">--Seleccione--</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="HIPOACUSIA LEVE">HIPOACUSIA LEVE</option>
+                            <option value="HIPOACUSIA MODERADA">HIPOACUSIA MODERADA</option>
+                            <option value="HIPOACUSIA MODERADA SEVERA">HIPOACUSIA MODERADA SEVERA</option>
+                            <option value="HIPOACUSIA SEVERA">HIPOACUSIA SEVERA</option>
+                            <option value="HIPOACUSIA PROFUNDA">HIPOACUSIA PROFUNDA</option>
+                            <option value="COFOSIS">COFOSIS</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Diagnóstico Oído Derecho</label>
+                        <select name="diagnostico_od" id="diagnostico_od">
+                            <option value="">--Seleccione--</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="HIPOACUSIA LEVE">HIPOACUSIA LEVE</option>
+                            <option value="HIPOACUSIA MODERADA">HIPOACUSIA MODERADA</option>
+                            <option value="HIPOACUSIA MODERADA SEVERA">HIPOACUSIA MODERADA SEVERA</option>
+                            <option value="HIPOACUSIA SEVERA">HIPOACUSIA SEVERA</option>
+                            <option value="HIPOACUSIA PROFUNDA">HIPOACUSIA PROFUNDA</option>
+                            <option value="COFOSIS">COFOSIS</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 16px;">
+                    <label>Interpretación</label>
+                    <textarea name="interpretacion" id="interpretacion" rows="4"></textarea>
+                </div>
+
+                <div class="form-grid" style="margin-top: 16px;">
+                    <div class="form-group">
+                        <label>Recomendaciones</label>
+                        <div class="multi-select-container">
+                            <button type="button" class="multi-select-btn" id="recomendacionesBtn">
+                                <span id="recomendacionesText">Seleccionar recomendaciones...</span>
+                                <span class="selected-count" id="recomendacionesCount"></span>
+                            </button>
+                            <div class="multi-select-dropdown" id="recomendacionesDropdown">
+                                <label class="multi-select-option">
+                                    <input type="checkbox" value="Uso de protección auditiva">
+                                    Uso de protección auditiva
+                                </label>
+                                <label class="multi-select-option">
+                                    <input type="checkbox" value="Control audiométrico anual">
+                                    Control audiométrico anual
+                                </label>
+                                <label class="multi-select-option">
+                                    <input type="checkbox" value="Evitar exposición a ruido intenso">
+                                    Evitar exposición a ruido intenso
+                                </label>
+                                <label class="multi-select-option">
+                                    <input type="checkbox" value="Consulta con ORL">
+                                    Consulta con ORL
+                                </label>
+                                <label class="multi-select-option">
+                                    <input type="checkbox" value="Reposo auditivo de 48 horas">
+                                    Reposo auditivo de 48 horas
+                                </label>
+                                <label class="multi-select-option">
+                                    <input type="checkbox" value="Seguimiento en 6 meses">
+                                    Seguimiento en 6 meses
+                                </label>
+                            </div>
+                        </div>
+                        <input type="hidden" name="recomendaciones" id="recomendaciones">
+                    </div>
+                    <div class="form-group">
+                        <label>Remisión</label>
+                        <select name="remision" id="remision">
+                            <option value="">--Seleccione--</option>
+                            <option value="NO APLICA">NO APLICA</option>
+                            <option value="OTORRINOLARINGOLOGIA">OTORRINOLARINGOLOGIA</option>
+                            <option value="AUDIOLOGIA">AUDIOLOGIA</option>
+                            <option value="MEDICINA LABORAL">MEDICINA LABORAL</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="window.close()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <i data-feather="save"></i>
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Initialize feather icons
+        feather.replace();
+
+        // Get orden_id from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const ordenId = urlParams.get('orden');
+
+        if (!ordenId) {
+            showToast('Error: No se especificó una orden', 'error');
+        }
+
+        // DOM Elements
+        const form = document.getElementById('audiometriaForm');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const showOseoCheckbox = document.getElementById('showOseo');
+        const oseoSection = document.getElementById('oseoSection');
+        const recomendacionesBtn = document.getElementById('recomendacionesBtn');
+        const recomendacionesDropdown = document.getElementById('recomendacionesDropdown');
+
+        // Toggle Oseo Section
+        showOseoCheckbox.addEventListener('change', function() {
+            oseoSection.classList.toggle('show', this.checked);
+        });
+
+        // Multi-select for Recomendaciones
+        recomendacionesBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            recomendacionesDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!recomendacionesBtn.contains(e.target) && !recomendacionesDropdown.contains(e.target)) {
+                recomendacionesDropdown.classList.remove('show');
+            }
+        });
+
+        recomendacionesDropdown.addEventListener('change', updateRecomendaciones);
+
+        function updateRecomendaciones() {
+            const checkboxes = recomendacionesDropdown.querySelectorAll('input[type="checkbox"]:checked');
+            const values = Array.from(checkboxes).map(cb => cb.value);
+
+            document.getElementById('recomendaciones').value = values.join('; ');
+            document.getElementById('recomendacionesCount').textContent = values.length > 0 ? `${values.length} seleccionadas` : '';
+            document.getElementById('recomendacionesText').textContent = values.length > 0 ? values.join(', ').substring(0, 50) + (values.join(', ').length > 50 ? '...' : '') : 'Seleccionar recomendaciones...';
+        }
+
+        // Load existing data
+        async function loadData() {
+            if (!ordenId) return;
+
+            showLoading(true);
+            try {
+                const response = await fetch(`/api/audiometrias/${ordenId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    // Set patient info
+                    if (result.paciente) {
+                        document.getElementById('patientName').textContent =
+                            `${result.paciente.primerNombre || ''} ${result.paciente.primerApellido || ''}`.trim() || '—';
+                        document.getElementById('patientId').textContent = result.paciente.numeroId || '—';
+                        document.getElementById('patientCompany').textContent = result.paciente.empresa || result.paciente.codEmpresa || '—';
+                    }
+
+                    // Fill form if data exists
+                    if (result.data) {
+                        const data = result.data;
+
+                        // Patient info from audiometria
+                        if (!result.paciente) {
+                            document.getElementById('patientName').textContent =
+                                `${data.primer_nombre || ''} ${data.primer_apellido || ''}`.trim() || '—';
+                            document.getElementById('patientId').textContent = data.numero_id || '—';
+                            document.getElementById('patientCompany').textContent = data.empresa || data.cod_empresa || '—';
+                        }
+
+                        // Fill all form fields
+                        Object.keys(data).forEach(key => {
+                            const element = document.getElementById(key);
+                            if (element) {
+                                if (element.type === 'checkbox') {
+                                    element.checked = data[key];
+                                } else {
+                                    element.value = data[key] || '';
+                                }
+                            }
+                        });
+
+                        // Check if oseo data exists
+                        if (data.oseo_od_250 || data.oseo_od_500 || data.oseo_oi_250 || data.oseo_oi_500) {
+                            showOseoCheckbox.checked = true;
+                            oseoSection.classList.add('show');
+                        }
+
+                        // Set recomendaciones checkboxes
+                        if (data.recomendaciones) {
+                            const selectedRecs = data.recomendaciones.split('; ');
+                            recomendacionesDropdown.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                                cb.checked = selectedRecs.includes(cb.value);
+                            });
+                            updateRecomendaciones();
+                        }
+                    }
+                } else {
+                    showToast('Error al cargar datos', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error de conexión', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Submit form
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (!ordenId) {
+                showToast('Error: No se especificó una orden', 'error');
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                // Get patient info
+                const patientName = document.getElementById('patientName').textContent;
+                const [primerNombre, primerApellido] = patientName.split(' ');
+
+                const formData = {
+                    orden_id: ordenId,
+                    numero_id: document.getElementById('patientId').textContent,
+                    primer_nombre: primerNombre || '',
+                    primer_apellido: primerApellido || '',
+                    empresa: document.getElementById('patientCompany').textContent,
+                    cod_empresa: document.getElementById('patientCompany').textContent,
+
+                    // Otoscopia
+                    pabellon_auricular_oi: document.getElementById('pabellon_auricular_oi').value,
+                    pabellon_auricular_od: document.getElementById('pabellon_auricular_od').value,
+                    conducto_auditivo_oi: document.getElementById('conducto_auditivo_oi').value,
+                    conducto_auditivo_od: document.getElementById('conducto_auditivo_od').value,
+                    membrana_timpanica_oi: document.getElementById('membrana_timpanica_oi').value,
+                    membrana_timpanica_od: document.getElementById('membrana_timpanica_od').value,
+                    observaciones_oi: document.getElementById('observaciones_oi').value,
+                    observaciones_od: document.getElementById('observaciones_od').value,
+                    requiere_limpieza_otica: document.getElementById('requiere_limpieza_otica').value,
+                    estado_gripal: document.getElementById('estado_gripal').value,
+
+                    // Aéreo OD
+                    aereo_od_250: parseInt(document.getElementById('aereo_od_250').value) || null,
+                    aereo_od_500: parseInt(document.getElementById('aereo_od_500').value) || null,
+                    aereo_od_1000: parseInt(document.getElementById('aereo_od_1000').value) || null,
+                    aereo_od_2000: parseInt(document.getElementById('aereo_od_2000').value) || null,
+                    aereo_od_3000: parseInt(document.getElementById('aereo_od_3000').value) || null,
+                    aereo_od_4000: parseInt(document.getElementById('aereo_od_4000').value) || null,
+                    aereo_od_6000: parseInt(document.getElementById('aereo_od_6000').value) || null,
+                    aereo_od_8000: parseInt(document.getElementById('aereo_od_8000').value) || null,
+
+                    // Aéreo OI
+                    aereo_oi_250: parseInt(document.getElementById('aereo_oi_250').value) || null,
+                    aereo_oi_500: parseInt(document.getElementById('aereo_oi_500').value) || null,
+                    aereo_oi_1000: parseInt(document.getElementById('aereo_oi_1000').value) || null,
+                    aereo_oi_2000: parseInt(document.getElementById('aereo_oi_2000').value) || null,
+                    aereo_oi_3000: parseInt(document.getElementById('aereo_oi_3000').value) || null,
+                    aereo_oi_4000: parseInt(document.getElementById('aereo_oi_4000').value) || null,
+                    aereo_oi_6000: parseInt(document.getElementById('aereo_oi_6000').value) || null,
+                    aereo_oi_8000: parseInt(document.getElementById('aereo_oi_8000').value) || null,
+
+                    // Óseo OD
+                    oseo_od_250: parseInt(document.getElementById('oseo_od_250').value) || null,
+                    oseo_od_500: parseInt(document.getElementById('oseo_od_500').value) || null,
+                    oseo_od_1000: parseInt(document.getElementById('oseo_od_1000').value) || null,
+                    oseo_od_2000: parseInt(document.getElementById('oseo_od_2000').value) || null,
+                    oseo_od_3000: parseInt(document.getElementById('oseo_od_3000').value) || null,
+                    oseo_od_4000: parseInt(document.getElementById('oseo_od_4000').value) || null,
+
+                    // Óseo OI
+                    oseo_oi_250: parseInt(document.getElementById('oseo_oi_250').value) || null,
+                    oseo_oi_500: parseInt(document.getElementById('oseo_oi_500').value) || null,
+                    oseo_oi_1000: parseInt(document.getElementById('oseo_oi_1000').value) || null,
+                    oseo_oi_2000: parseInt(document.getElementById('oseo_oi_2000').value) || null,
+                    oseo_oi_3000: parseInt(document.getElementById('oseo_oi_3000').value) || null,
+                    oseo_oi_4000: parseInt(document.getElementById('oseo_oi_4000').value) || null,
+
+                    // Equipo
+                    cabina: document.getElementById('cabina').value,
+                    equipo: document.getElementById('equipo').value,
+
+                    // Diagnóstico
+                    diagnostico_oi: document.getElementById('diagnostico_oi').value,
+                    diagnostico_od: document.getElementById('diagnostico_od').value,
+                    interpretacion: document.getElementById('interpretacion').value,
+                    recomendaciones: document.getElementById('recomendaciones').value,
+                    remision: document.getElementById('remision').value
+                };
+
+                const response = await fetch('/api/audiometrias', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('Audiometría guardada correctamente', 'success');
+                } else {
+                    showToast(result.message || 'Error al guardar', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error de conexión', 'error');
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // Utility functions
+        function showLoading(show) {
+            loadingOverlay.classList.toggle('show', show);
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Load data on page load
+        loadData();
+    </script>
+</body>
+</html>

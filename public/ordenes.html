@@ -598,6 +598,11 @@
             color: #0099B2;
         }
 
+        .btn-icon.audiometria:hover {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+
         .btn-icon.disabled {
             opacity: 0.3;
             pointer-events: none;
@@ -1664,6 +1669,7 @@
                             <th>Tipo Examen</th>
                             <th>Estado</th>
                             <th>Fecha Atención</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -2412,9 +2418,23 @@
                             </span>
                         </td>
                         <td>${formatearFechaAtencion(orden.fechaAtencion)}</td>
+                        <td>
+                            <div class="actions-cell">
+                                <a href="/audiometria.html?orden=${orden._id}"
+                                   target="_blank"
+                                   class="btn-icon audiometria"
+                                   title="Audiometría"
+                                   onclick="event.stopPropagation();">
+                                    <i data-feather="headphones"></i>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                 `;
             }).join('');
+
+            // Re-render feather icons for new elements
+            feather.replace();
         }
 
         function renderMobileCards(ordenes) {
@@ -2467,9 +2487,9 @@
                             <a href="/?_id=${wixId}"
                                target="_blank"
                                class="mobile-card-btn ${!hasWixId ? 'disabled' : ''}">📝 Formulario</a>
-                            <a href="https://bsl-utilidades-yp78a.ondigitalocean.app/static/solicitar-certificado.html?id=${wixId}"
+                            <a href="/audiometria.html?orden=${wixId}"
                                target="_blank"
-                               class="mobile-card-btn ${!hasWixId ? 'disabled' : ''}">📱 WhatsApp</a>
+                               class="mobile-card-btn ${!hasWixId ? 'disabled' : ''}">🎧 Audio</a>
                             <button class="mobile-card-btn primary" onclick="abrirModalDetalles('${orden._id}')">Ver</button>
                         </div>
                     </div>
