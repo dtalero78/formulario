@@ -237,15 +237,17 @@
             stroke-width: 2;
         }
 
-        .empresa-badge-sidebar {
-            background: var(--accent-color);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
+        .empresa-name-topbar {
             font-size: 14px;
             font-weight: 600;
-            margin: 0 12px 16px;
-            text-align: center;
+            color: var(--accent-color);
+            padding: 6px 12px;
+            background: rgba(0, 184, 230, 0.1);
+            border-radius: 6px;
+        }
+
+        [data-theme="dark"] .empresa-name-topbar {
+            background: rgba(0, 184, 230, 0.15);
         }
 
         /* Top Bar Fijo */
@@ -267,7 +269,8 @@
 
         .top-bar-search {
             position: relative;
-            width: 400px;
+            flex: 1;
+            max-width: 600px;
         }
 
         .top-bar-search input {
@@ -1431,7 +1434,6 @@
                 <div class="sidebar-logo">
                     <img src="/bsl-logo.png" alt="BSL - Bienestar & Salud Laboral">
                 </div>
-                <div class="empresa-badge-sidebar" id="empresaBadgeSidebar">EMPRESA</div>
                 <nav class="sidebar-nav">
                     <a href="#" class="nav-item active" onclick="event.preventDefault()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1441,6 +1443,14 @@
                             <line x1="16" y1="17" x2="8" y2="17"></line>
                         </svg>
                         Órdenes
+                    </a>
+                    <a href="#" class="nav-item" onclick="abrirModalNuevaOrden(); event.preventDefault();">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="16"></line>
+                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                        </svg>
+                        Nueva Orden
                     </a>
                 </nav>
             </aside>
@@ -1455,6 +1465,7 @@
                     <input type="text" id="searchInput" placeholder="Buscar por cédula o nombre...">
                 </div>
                 <div class="top-bar-actions">
+                    <span class="empresa-name-topbar" id="empresaNameTopbar">EMPRESA</span>
                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="themeIcon">
                             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -1497,15 +1508,6 @@
                             Órdenes
                         </h1>
                         <p>Gestión de órdenes médicas</p>
-                    </div>
-                    <div class="header-actions">
-                        <button class="btn btn-primary" onclick="abrirModalNuevaOrden()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-                                <line x1="12" y1="5" x2="12" y2="19"></line>
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                            </svg>
-                            Nueva Orden
-                        </button>
                     </div>
                 </div>
 
@@ -2011,7 +2013,7 @@
         function mostrarPanel() {
             loginScreen.style.display = 'none';
             panelScreen.classList.add('active');
-            document.getElementById('empresaBadgeSidebar').textContent = codEmpresa;
+            document.getElementById('empresaNameTopbar').textContent = codEmpresa;
             actualizarDatos();
         }
 
